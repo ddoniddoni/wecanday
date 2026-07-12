@@ -1,0 +1,21 @@
+{
+  "primer": {
+    "eyebrow": "Keep your rhythm",
+    "title": "Would you like routine reminders?",
+    "description": "We’ll only use notifications for the routines you choose to be reminded about.",
+    "allow": "Allow reminders",
+    "notNow": "Not now",
+    "requesting": "Requesting notification permission"
+  },
+  "result": {
+    "granted": {
+      "title": "Reminders are on",
+      "description": "You can choose reminder times for routines in a later step."
+    },
+    "denied": {
+      "title": "Reminders are off",
+      "description": "That’s okay. You can keep using WeCanDay and change this later in your device settings."
+    },
+    "continue": "Continue"
+  }
+}

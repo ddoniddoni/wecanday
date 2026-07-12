@@ -2,16 +2,43 @@
   "eyebrow": "{{name}}’s routine day",
   "title": "Today’s small steps",
   "signOut": "Sign out",
+  "openPlans": "My plans",
   "signOutError": "We couldn’t sign you out. Please try again.",
   "planCreated": "Your first routine is ready.",
   "routineDayLabel": "Routine day",
+  "routineTiming": {
+    "accessibilityLabel": "This routine day ends at {{endTime}}. {{hours}} hours and {{minutes}} minutes remaining.",
+    "endLabel": "Ends at",
+    "remaining": "{{hours}}h {{minutes}}m remaining"
+  },
   "progress": "{{completed}} of {{total}} complete",
+  "stats": {
+    "accessibilityLabel": "Today’s progress: {{progress}}. Daily streak: {{streak}}.",
+    "progressLabel": "Today’s progress",
+    "noScheduled": "No routines scheduled",
+    "streakLabel": "Daily streak",
+    "streakLoading": "Calculating…",
+    "streakUnavailable": "Unavailable",
+    "streakValue_one": "{{count}} day",
+    "streakValue_other": "{{count}} days"
+  },
+  "companion": {
+    "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}.",
+    "imageLabel": "WeCanDay companion, {{status}}",
+    "states": {
+      "resting": "Ready for one small step.",
+      "encouraging": "You are building a good rhythm.",
+      "celebrating": "Everything for today is complete!"
+    }
+  },
   "loading": "Loading today’s routines…",
   "retry": "Try again",
   "emptyTitle": "Nothing is scheduled for this routine day.",
   "emptyDescription": "Create a plan and add one small action to get started.",
   "createPlan": "Create a plan",
   "addRoutine": "Add a routine",
+  "edit": "Edit",
+  "editItem": "Edit {{title}}",
   "completeItem": "Complete {{title}}",
   "undoItem": "Undo {{title}}",
   "sync": {

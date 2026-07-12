@@ -2,23 +2,60 @@ import { useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
+import {
+  markNotificationPermissionPrimerHandled,
+  requestRoutineNotificationPermission,
+  shouldShowNotificationPermissionPrimer,
+} from '@/features/notifications/services/notificationPermissionService';
 import { PlanCreateScreen } from '@/features/plans/PlanCreateScreen';
+import { PlanListScreen } from '@/features/plans/PlanListScreen';
+import { RoutineCreateScreen } from '@/features/plans/RoutineCreateScreen';
 import { PlanDomainError } from '@/features/plans/domain/planErrors';
-import { createPlanWithRoutine } from '@/features/plans/services/planService';
+import {
+  addRoutineItem,
+  archivePlan,
+  archiveRoutineItem,
+  createPlanWithRoutine,
+  setRoutineItemStatus,
+  updateRoutineItem,
+  type PlanListItem,
+} from '@/features/plans/services/planService';
 import { getCurrentRoutineDayWindow } from '@/features/routine-day/domain/routineDay';
 import { RoutineDaySetupScreen } from '@/features/routine-day/RoutineDaySetupScreen';
 import { completeInitialRoutineDaySettings } from '@/features/routine-day/services/routineDaySettingsService';
 import { supabaseClient } from '@/lib/supabase/client';
 
+type AppScreen =
+  | 'notification-permission'
+  | 'plan-create'
+  | 'plan-list'
+  | 'routine-create'
+  | 'routine-edit'
+  | 'today';
+type PlanCreationReturnScreen = 'plan-list' | 'today';
+
 export function ProfileHomeScreen() {
   const auth = useAuth();
   const [hasSignOutError, setHasSignOutError] = useState(false);
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
-  const [isCreatingPlan, setIsCreatingPlan] = useState(false);
+  const [screen, setScreen] = useState<AppScreen>('today');
+  const [planCreationReturnScreen, setPlanCreationReturnScreen] =
+    useState<PlanCreationReturnScreen>('today');
+  const [selectedPlan, setSelectedPlan] = useState<PlanListItem | null>(null);
+  const [selectedRoutine, setSelectedRoutine] = useState<{
+    id: string;
+    returnTo: 'plans' | 'today';
+    schedule_weekdays: number[];
+    status: 'active' | 'paused';
+    title: string;
+  } | null>(null);
 
   if (auth.status !== 'signed_in') {
     return null;
   }
+
+  const authenticatedUserId = auth.userId;
 
   if (
     auth.profile.time_zone === null ||
@@ -43,7 +80,26 @@ export function ProfileHomeScreen() {
     );
   }
 
-  if (isCreatingPlan) {
+  function showPlanCreation(returnScreen: PlanCreationReturnScreen) {
+    setPlanCreationReturnScreen(returnScreen);
+    setScreen('plan-create');
+  }
+
+  async function completePlanCreation(returnScreen: PlanCreationReturnScreen) {
+    setHasPlanCreationSuccess(true);
+
+    if (
+      returnScreen === 'today' &&
+      await shouldShowNotificationPermissionPrimer(authenticatedUserId)
+    ) {
+      setScreen('notification-permission');
+      return;
+    }
+
+    setScreen(returnScreen);
+  }
+
+  if (screen === 'plan-create') {
     const startsOn = getCurrentRoutineDayWindow({
       dayStartMinute: auth.profile.day_start_minute,
       timeZone: auth.profile.time_zone,
@@ -52,8 +108,7 @@ export function ProfileHomeScreen() {
     return (
       <PlanCreateScreen
         onComplete={() => {
-          setHasPlanCreationSuccess(true);
-          setIsCreatingPlan(false);
+          void completePlanCreation(planCreationReturnScreen);
         }}
         onSave={async (input) => {
           if (!supabaseClient) {
@@ -62,6 +117,84 @@ export function ProfileHomeScreen() {
 
           await createPlanWithRoutine(supabaseClient, { ...input, startsOn });
         }}
+      />
+    );
+  }
+
+  if (screen === 'routine-create' && selectedPlan) {
+    return (
+      <RoutineCreateScreen
+        onBack={() => setScreen('plan-list')}
+        onComplete={() => setScreen('plan-list')}
+        onSave={async (input) => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await addRoutineItem(supabaseClient, {
+            ...input,
+            planId: selectedPlan.id,
+          });
+        }}
+        planTitle={selectedPlan.title}
+      />
+    );
+  }
+
+  if (screen === 'notification-permission') {
+    return (
+      <NotificationPermissionScreen
+        onAllow={async () => {
+          const result = await requestRoutineNotificationPermission();
+
+          await markNotificationPermissionPrimerHandled(authenticatedUserId);
+          return result;
+        }}
+        onContinue={() => setScreen('today')}
+        onNotNow={() => {
+          void markNotificationPermissionPrimerHandled(authenticatedUserId);
+          setScreen('today');
+        }}
+      />
+    );
+  }
+  if (screen === 'routine-edit' && selectedRoutine) {
+    const returnScreen = selectedRoutine.returnTo === 'plans' ? 'plan-list' : 'today';
+
+    return (
+      <RoutineCreateScreen
+        initialRoutineTitle={selectedRoutine.title}
+        initialScheduleWeekdays={selectedRoutine.schedule_weekdays}
+        mode="edit"
+        onArchive={async () => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await archiveRoutineItem(supabaseClient, selectedRoutine.id);
+        }}
+        onBack={() => setScreen(returnScreen)}
+        onChangeStatus={async (status) => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await setRoutineItemStatus(supabaseClient, selectedRoutine.id, status);
+        }}
+        onComplete={() => setScreen(returnScreen)}
+        onSave={async (input) => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await updateRoutineItem(supabaseClient, {
+            ...input,
+            routineId: selectedRoutine.id,
+          });
+        }}
+        planTitle=""
+        returnTo={selectedRoutine.returnTo}
+        routineStatus={selectedRoutine.status}
       />
     );
   }
@@ -80,13 +213,59 @@ export function ProfileHomeScreen() {
     return null;
   }
 
+  if (screen === 'plan-list') {
+    return (
+      <PlanListScreen
+        client={supabaseClient}
+        onAddRoutine={(plan) => {
+          setSelectedPlan(plan);
+          setScreen('routine-create');
+        }}
+        onBack={() => setScreen('today')}
+        onCreatePlan={() => showPlanCreation('plan-list')}
+        onArchivePlan={async (planId) => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await archivePlan(supabaseClient, planId);
+        }}
+        onEditRoutine={(_plan, routine) => {
+          const routineStatus = routine.status;
+
+          if (routineStatus === 'archived') {
+            return;
+          }
+
+          setSelectedRoutine({
+            id: routine.id,
+            returnTo: 'plans',
+            schedule_weekdays: routine.schedule_weekdays,
+            status: routineStatus,
+            title: routine.title,
+          });
+          setScreen('routine-edit');
+        }}
+      />
+    );
+  }
+
   return (
     <TodayRoutineScreen
       client={supabaseClient}
       displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
       hasSignOutError={hasSignOutError}
-      onCreatePlan={() => setIsCreatingPlan(true)}
+      onCreatePlan={() => showPlanCreation('today')}
+      onEditRoutine={(routine) => {
+        setSelectedRoutine({
+          ...routine,
+          returnTo: 'today',
+          status: 'active',
+        });
+        setScreen('routine-edit');
+      }}
+      onOpenPlans={() => setScreen('plan-list')}
       onSignOut={() => void handleSignOut()}
       routineDayConfig={{
         dayStartMinute: auth.profile.day_start_minute,

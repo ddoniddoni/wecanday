@@ -20,10 +20,75 @@
   },
   "create": "루틴 만들기",
   "saving": "루틴을 만들고 있어요",
+  "routineCreate": {
+    "back": "계획으로 돌아가기",
+    "planLabel": "{{planTitle}}에 추가",
+    "title": "루틴 추가",
+    "description": "작은 행동 하나와 수행할 요일을 골라 주세요.",
+    "create": "루틴 추가",
+    "saving": "루틴을 추가하고 있어요"
+  },
+  "routineEdit": {
+    "back": "오늘로 돌아가기",
+    "backToPlans": "계획으로 돌아가기",
+    "planLabel": "루틴 수정",
+    "title": "루틴 수정",
+    "description": "행동이나 수행할 요일을 바꿔 주세요.",
+    "create": "변경사항 저장",
+    "saving": "루틴을 저장하고 있어요",
+    "pause": "루틴 일시정지",
+    "pausing": "루틴을 일시정지하고 있어요",
+    "resume": "루틴 다시 시작",
+    "resuming": "루틴을 다시 시작하고 있어요",
+    "archive": "루틴 보관",
+    "archiving": "루틴을 보관하고 있어요",
+    "archiveConfirmationTitle": "이 루틴을 보관할까요?",
+    "archiveConfirmationDescription": "오늘 목록에서는 숨겨지고, 이전 체크인은 그대로 남아요.",
+    "archiveCancel": "취소",
+    "archiveConfirm": "보관"
+  },
+  "list": {
+    "title": "내 계획",
+    "back": "오늘로 돌아가기",
+    "loading": "계획을 불러오고 있어요",
+    "retry": "다시 시도",
+    "emptyTitle": "아직 만든 계획이 없어요",
+    "emptyDescription": "작은 행동 하나부터 시작해 볼까요?",
+    "createPlan": "새 계획 만들기",
+    "addRoutine": "루틴 추가",
+    "addRoutineToPlan": "{{title}}에 루틴 추가",
+    "editRoutine": "{{title}} 수정, {{status}}",
+    "archivePlan": "계획 보관",
+    "archivePlanFor": "{{title}} 보관",
+    "archivingPlan": "계획을 보관하고 있어요",
+    "archivePlanConfirmationTitle": "이 계획을 보관할까요?",
+    "archivePlanConfirmationDescription": "포함된 루틴이 오늘 목록에서 숨겨지고, 이전 체크인은 그대로 남아요.",
+    "archivePlanCancel": "취소",
+    "archivePlanConfirm": "보관",
+    "itemAccessibilityLabel": "{{title}}, {{status}} 계획, {{routineCount}}",
+    "activeRoutineCount": "활성 루틴 {{count}}개",
+    "statuses": {
+      "active": "진행 중",
+      "archived": "보관됨",
+      "completed": "완료됨",
+      "draft": "초안",
+      "paused": "일시정지"
+    },
+    "routineStatuses": {
+      "active": "활성",
+      "archived": "보관됨",
+      "completed": "완료됨",
+      "paused": "일시정지"
+    }
+  },
   "errors": {
     "INVALID_PLAN_INPUT": "계획 제목, 행동, 하나 이상의 요일을 입력해 주세요.",
+    "INVALID_ROUTINE_STATUS": "지금은 이 루틴을 일시정지하거나 다시 시작할 수 없어요.",
     "INVALID_ROUTINE_SCHEDULE": "하나 이상의 유효한 요일을 선택해 주세요.",
     "ROUTINE_LIMIT_REACHED": "무료 계정은 활성 루틴을 최대 4개까지 만들 수 있어요.",
-    "PLAN_CREATION_FAILED": "루틴을 만들지 못했어요. 다시 시도해 주세요."
+    "PLAN_CREATION_FAILED": "루틴을 만들지 못했어요. 다시 시도해 주세요.",
+    "PLAN_LIST_FAILED": "계획을 불러오지 못했어요. 다시 시도해 주세요.",
+    "PLAN_NOT_FOUND": "이 계획을 더 이상 찾을 수 없어요. 돌아가서 다시 선택해 주세요.",
+    "ROUTINE_NOT_FOUND": "이 루틴을 더 이상 찾을 수 없어요. 돌아가서 다시 시도해 주세요."
   }
 }

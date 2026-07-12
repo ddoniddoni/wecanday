@@ -2,16 +2,42 @@
   "eyebrow": "{{name}}님의 루틴 데이",
   "title": "오늘의 작은 걸음",
   "signOut": "로그아웃",
+  "openPlans": "내 계획",
   "signOutError": "로그아웃하지 못했어요. 다시 시도해 주세요.",
   "planCreated": "첫 루틴을 만들었어요.",
   "routineDayLabel": "루틴 데이",
+  "routineTiming": {
+    "accessibilityLabel": "이 루틴 데이는 {{endTime}}에 끝나요. {{hours}}시간 {{minutes}}분 남았어요.",
+    "endLabel": "종료 시각",
+    "remaining": "{{hours}}시간 {{minutes}}분 남음"
+  },
   "progress": "{{total}}개 중 {{completed}}개 완료",
+  "stats": {
+    "accessibilityLabel": "오늘 진행률: {{progress}}. 데일리 스트릭: {{streak}}.",
+    "progressLabel": "오늘 진행률",
+    "noScheduled": "예정된 루틴 없음",
+    "streakLabel": "데일리 스트릭",
+    "streakLoading": "계산 중…",
+    "streakUnavailable": "확인할 수 없음",
+    "streakValue": "{{count}}일"
+  },
+  "companion": {
+    "accessibilityLabel": "루틴 데이 {{routineDay}}. 동반자 상태: {{status}}.",
+    "imageLabel": "위캔데이 동반자, {{status}}",
+    "states": {
+      "resting": "작은 한 걸음을 기다리고 있어요.",
+      "encouraging": "좋은 흐름을 만들고 있어요.",
+      "celebrating": "오늘의 작은 걸음을 모두 마쳤어요!"
+    }
+  },
   "loading": "오늘의 루틴을 불러오는 중…",
   "retry": "다시 시도",
   "emptyTitle": "이 루틴 데이에 예정된 항목이 없어요.",
   "emptyDescription": "계획을 만들고 작은 행동 하나를 추가해 보세요.",
   "createPlan": "계획 만들기",
   "addRoutine": "루틴 추가",
+  "edit": "수정",
+  "editItem": "{{title}} 수정",
   "completeItem": "{{title}} 완료",
   "undoItem": "{{title}} 완료 취소",
   "sync": {

@@ -4,7 +4,7 @@ import type { RoutineItemRow } from '@/lib/supabase/database.types';
 
 export type CheckInSyncStatus = 'queued' | 'synced' | 'syncing';
 
-export type TodayRoutineItem = Pick<RoutineItemRow, 'id' | 'title'> & {
+export type TodayRoutineItem = Pick<RoutineItemRow, 'id' | 'schedule_weekdays' | 'title'> & {
   completedAt: string | null;
   syncStatus: CheckInSyncStatus | null;
 };
@@ -33,6 +33,7 @@ export function createTodayRoutineItems(
     .map((routine) => ({
       completedAt: completedByRoutineId.get(routine.id) ?? null,
       id: routine.id,
+      schedule_weekdays: routine.schedule_weekdays,
       syncStatus: null,
       title: routine.title,
     }));

@@ -19,6 +19,10 @@ import {
   applyPendingCheckInOperations,
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
+import { CompanionHero } from '@/features/companion/CompanionHero';
+import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
+import { TodayStatsSummary } from '@/features/streaks/TodayStatsSummary';
+import { loadCurrentDailyStreak } from '@/features/streaks/services/dailyStreakService';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
   completeCheckIn,
@@ -49,6 +53,8 @@ type TodayRoutineScreenProps = {
   hasPlanCreationSuccess: boolean;
   hasSignOutError: boolean;
   onCreatePlan: () => void;
+  onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'schedule_weekdays' | 'title'>) => void;
+  onOpenPlans: () => void;
   onSignOut: () => void;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -60,6 +66,8 @@ export function TodayRoutineScreen({
   hasPlanCreationSuccess,
   hasSignOutError,
   onCreatePlan,
+  onEditRoutine,
+  onOpenPlans,
   onSignOut,
   routineDayConfig,
   userId,
@@ -76,6 +84,9 @@ export function TodayRoutineScreen({
     new Set(),
   );
   const [errorCode, setErrorCode] = useState<CheckInErrorCode | null>(null);
+  const [companionReactionId, setCompanionReactionId] = useState(0);
+  const [dailyStreak, setDailyStreak] = useState<number | null>(null);
+  const [isDailyStreakLoading, setIsDailyStreakLoading] = useState(true);
 
   const refresh = useCallback(
     async (showLoading: boolean) => {
@@ -88,12 +99,19 @@ export function TodayRoutineScreen({
       } else {
         setIsRefreshing(true);
       }
+      setIsDailyStreakLoading(true);
 
       try {
         await synchronizePendingCheckIns(client, userId, systemClock.now());
-        const [loadedItems, pendingOperations] = await Promise.all([
+        const [loadedItems, pendingOperations, loadedDailyStreak] = await Promise.all([
           loadTodayRoutineItems(client, userId, nextRoutineDayWindow.key),
           loadPendingCheckInOperations(userId, nextRoutineDayWindow.key),
+          loadCurrentDailyStreak(
+            client,
+            userId,
+            nextRoutineDayWindow.key,
+            routineDayConfig,
+          ),
         ]);
 
         setItems(
@@ -106,11 +124,13 @@ export function TodayRoutineScreen({
             })),
           ),
         );
+        setDailyStreak(loadedDailyStreak);
       } catch (error) {
         setErrorCode(getCheckInErrorCode(error));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsDailyStreakLoading(false);
       }
     },
     [client, routineDayConfig, userId],
@@ -133,6 +153,11 @@ export function TodayRoutineScreen({
 
   async function handleToggle(item: TodayRoutineItem) {
     const isComplete = item.completedAt !== null;
+    const completedCountBeforeToggle = items.filter(
+      (candidate) => candidate.completedAt !== null,
+    ).length;
+    const isDailyStreakCompleteBeforeToggle =
+      items.length > 0 && completedCountBeforeToggle === items.length;
     const occurredAt = systemClock.now().toISOString();
     const operation = createCheckInOutboxOperation({
       kind: isComplete ? 'undo' : 'complete',
@@ -155,6 +180,19 @@ export function TodayRoutineScreen({
           : candidate,
       ),
     );
+    if (!isComplete) {
+      setCompanionReactionId((previousReactionId) => previousReactionId + 1);
+    }
+    if (!isComplete && completedCountBeforeToggle + 1 === items.length) {
+      setDailyStreak((previousStreak) =>
+        previousStreak === null ? null : previousStreak + 1,
+      );
+    }
+    if (isComplete && isDailyStreakCompleteBeforeToggle) {
+      setDailyStreak((previousStreak) =>
+        previousStreak === null ? null : Math.max(0, previousStreak - 1),
+      );
+    }
 
     try {
       const mutation = {
@@ -199,10 +237,6 @@ export function TodayRoutineScreen({
   }
 
   const completedCount = items.filter((item) => item.completedAt !== null).length;
-  const progressLabel = t('progress', {
-    completed: completedCount,
-    total: items.length,
-  });
 
   return (
     <SafeAreaView
@@ -221,43 +255,55 @@ export function TodayRoutineScreen({
               {t('title')}
             </Text>
           </View>
-          <Pressable
-            accessibilityLabel={t('signOut')}
-            accessibilityRole="button"
-            onPress={onSignOut}
-            style={({ pressed }) => [
-              styles.signOutButton,
-              {
-                borderColor: theme.colors.border,
-                opacity: pressed ? 0.72 : 1,
-              },
-            ]}
-          >
-            <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-              {t('signOut')}
-            </Text>
-          </Pressable>
+          <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={t('openPlans')}
+              accessibilityRole="button"
+              onPress={onOpenPlans}
+              style={({ pressed }) => [
+                styles.signOutButton,
+                {
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
+                {t('openPlans')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('signOut')}
+              accessibilityRole="button"
+              onPress={onSignOut}
+              style={({ pressed }) => [
+                styles.signOutButton,
+                {
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
+                {t('signOut')}
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
-        <View
-          style={[
-            styles.summaryCard,
-            { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-          ]}
-        >
-          <Text style={[styles.routineDayLabel, { color: theme.colors.textMuted }]}>
-            {t('routineDayLabel')}
-          </Text>
-          <Text style={[styles.routineDayValue, { color: theme.colors.text }]}>
-            {routineDayWindow.key}
-          </Text>
-          <Text
-            accessibilityLabel={progressLabel}
-            style={[styles.progress, { color: theme.colors.primary }]}
-          >
-            {progressLabel}
-          </Text>
-        </View>
+        <CompanionHero
+          completedCount={completedCount}
+          reactionId={companionReactionId}
+          routineDay={routineDayWindow.key}
+          totalCount={items.length}
+        />
+        <RoutineDayTiming config={routineDayConfig} />
+        <TodayStatsSummary
+          completedCount={completedCount}
+          dailyStreak={dailyStreak}
+          isDailyStreakLoading={isDailyStreakLoading}
+          totalCount={items.length}
+        />
 
         {hasPlanCreationSuccess ? (
           <Text style={[styles.success, { color: theme.colors.primary }]}>
@@ -338,56 +384,70 @@ export function TodayRoutineScreen({
                 : t('completeItem', { title: item.title });
 
               return (
-                <Pressable
-                  accessibilityLabel={actionLabel}
-                  accessibilityRole="button"
-                  accessibilityState={{ busy: isMutating, checked: isComplete }}
-                  disabled={isMutating}
+                <View
                   key={item.id}
-                  onPress={() => void handleToggle(item)}
-                  style={({ pressed }) => [
+                  style={[
                     styles.routineItem,
                     {
                       backgroundColor: theme.colors.surface,
                       borderColor: isComplete ? theme.colors.primary : theme.colors.border,
-                      opacity: pressed || isMutating ? 0.72 : 1,
+                      opacity: isMutating ? 0.72 : 1,
                     },
                   ]}
                 >
-                  <View
-                    style={[
-                      styles.checkmark,
-                      {
-                        backgroundColor: isComplete
-                          ? theme.colors.primary
-                          : theme.colors.background,
-                        borderColor: isComplete ? theme.colors.primary : theme.colors.border,
-                      },
-                    ]}
+                  <Pressable
+                    accessibilityLabel={actionLabel}
+                    accessibilityRole="button"
+                    accessibilityState={{ busy: isMutating, checked: isComplete }}
+                    disabled={isMutating}
+                    onPress={() => void handleToggle(item)}
+                    style={styles.toggleArea}
                   >
-                    <Text style={{ color: isComplete ? theme.colors.onPrimary : theme.colors.textMuted }}>
-                      {isComplete ? '✓' : ''}
-                    </Text>
-                  </View>
-                  <View style={styles.itemCopy}>
-                    <Text
+                    <View
                       style={[
-                        styles.itemTitle,
+                        styles.checkmark,
                         {
-                          color: theme.colors.text,
-                          textDecorationLine: isComplete ? 'line-through' : 'none',
+                          backgroundColor: isComplete
+                            ? theme.colors.primary
+                            : theme.colors.background,
+                          borderColor: isComplete ? theme.colors.primary : theme.colors.border,
                         },
                       ]}
                     >
-                      {item.title}
-                    </Text>
-                    {item.syncStatus ? (
-                      <Text style={[styles.syncLabel, { color: theme.colors.textMuted }]}>
-                        {t(`sync.${item.syncStatus}`)}
+                      <Text style={{ color: isComplete ? theme.colors.onPrimary : theme.colors.textMuted }}>
+                        {isComplete ? '✓' : ''}
                       </Text>
-                    ) : null}
-                  </View>
-                </Pressable>
+                    </View>
+                    <View style={styles.itemCopy}>
+                      <Text
+                        style={[
+                          styles.itemTitle,
+                          {
+                            color: theme.colors.text,
+                            textDecorationLine: isComplete ? 'line-through' : 'none',
+                          },
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                      {item.syncStatus ? (
+                        <Text style={[styles.syncLabel, { color: theme.colors.textMuted }]}>
+                          {t(`sync.${item.syncStatus}`)}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel={t('editItem', { title: item.title })}
+                    accessibilityRole="button"
+                    onPress={() => onEditRoutine(item)}
+                    style={[styles.editButton, { borderColor: theme.colors.border }]}
+                  >
+                    <Text style={[styles.editButtonLabel, { color: theme.colors.text }]}>
+                      {t('edit')}
+                    </Text>
+                  </Pressable>
+                </View>
               );
             })}
             <Pressable
@@ -414,14 +474,11 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
   header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   headerCopy: { flex: 1, gap: spacing.xs },
+  headerActions: { flexDirection: 'row', gap: spacing.xs },
   eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
   signOutButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   signOutLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  summaryCard: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.xs, padding: spacing.lg },
-  routineDayLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  routineDayValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  progress: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, marginTop: spacing.sm },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
@@ -433,10 +490,13 @@ const styles = StyleSheet.create({
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   list: { gap: spacing.sm },
   routineItem: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 68, padding: spacing.md },
+  toggleArea: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: spacing.md },
   checkmark: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
   itemCopy: { flex: 1, gap: spacing.xs },
   itemTitle: { fontSize: typography.size.body, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.body },
   syncLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
+  editButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.sm },
+  editButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   addButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   addButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });

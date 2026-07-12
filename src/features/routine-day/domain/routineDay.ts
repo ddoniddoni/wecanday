@@ -15,6 +15,12 @@ export type RoutineDayWindow = {
   startsAt: string;
 };
 
+export type RoutineDayTiming = RoutineDayWindow & {
+  remainingHours: number;
+  remainingMinutes: number;
+  remainingTotalMinutes: number;
+};
+
 export type Clock = {
   now: () => Date;
 };
@@ -124,6 +130,47 @@ export function getNextRoutineDayStart(
   config: RoutineDayConfig,
 ): string {
   return getRoutineDayWindow(instant, config).endsAt;
+}
+
+export function getRoutineDayTiming(
+  instant: Date,
+  config: RoutineDayConfig,
+): RoutineDayTiming {
+  const window = getRoutineDayWindow(instant, config);
+  const remainingMilliseconds = Date.parse(window.endsAt) - instant.getTime();
+  const remainingTotalMinutes = Math.max(
+    0,
+    Math.ceil(remainingMilliseconds / 60_000),
+  );
+
+  return {
+    ...window,
+    remainingHours: Math.floor(remainingTotalMinutes / 60),
+    remainingMinutes: remainingTotalMinutes % 60,
+    remainingTotalMinutes,
+  };
+}
+
+export function getMillisecondsUntilNextMinute(instant: Date): number {
+  assertValidInstant(instant);
+
+  return 60_000 - (instant.getSeconds() * 1_000 + instant.getMilliseconds());
+}
+
+export function formatRoutineDayEndTime(
+  endsAt: string,
+  locale: string,
+  timeZone: string,
+): string {
+  const end = new Date(endsAt);
+
+  assertValidInstant(end);
+
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone,
+  }).format(end);
 }
 
 function assertValidInstant(instant: Date): void {

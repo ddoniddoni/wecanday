@@ -53,6 +53,15 @@ export type CheckInRow = {
   user_id: string;
 };
 
+export type RoutineItemStatusEventRow = {
+  created_at: string;
+  effective_at: string;
+  id: string;
+  routine_item_id: string;
+  status: 'active' | 'archived' | 'completed' | 'paused';
+  user_id: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -106,6 +115,12 @@ export type Database = {
         Update: never;
         Relationships: [];
       };
+      routine_item_status_events: {
+        Row: RoutineItemStatusEventRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
     };
     Views: Record<never, never>;
     Functions: {
@@ -124,6 +139,30 @@ export type Database = {
           p_starts_on: string;
         };
         Returns: RoutineItemRow;
+      };
+      add_routine_item: {
+        Args: {
+          p_plan_id: string;
+          p_routine_title: string;
+          p_schedule_weekdays: number[];
+        };
+        Returns: RoutineItemRow;
+      };
+      update_routine_item: {
+        Args: { p_routine_item_id: string; p_routine_title: string; p_schedule_weekdays: number[] };
+        Returns: RoutineItemRow;
+      };
+      set_routine_item_status: {
+        Args: { p_routine_item_id: string; p_status: 'active' | 'paused' };
+        Returns: RoutineItemRow;
+      };
+      archive_routine_item: {
+        Args: { p_routine_item_id: string };
+        Returns: RoutineItemRow;
+      };
+      archive_plan: {
+        Args: { p_plan_id: string };
+        Returns: PlanRow;
       };
       complete_check_in: {
         Args: {

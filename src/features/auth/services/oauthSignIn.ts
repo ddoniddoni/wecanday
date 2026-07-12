@@ -1,8 +1,10 @@
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { AuthDomainError } from '@/features/auth/domain/authErrors';
 import { supabaseClient } from '@/lib/supabase/client';
+import type { Database } from '@/lib/supabase/database.types';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -20,6 +22,25 @@ export function parseOAuthCallbackCode(url: string): string | null {
   const parsedUrl = new URL(url);
 
   return parsedUrl.searchParams.get('code');
+}
+
+type OAuthClient = {
+  auth: Pick<SupabaseClient<Database>['auth'], 'exchangeCodeForSession'>;
+};
+
+export async function exchangeOAuthCallbackCode(
+  code: string,
+  client: OAuthClient | null = supabaseClient,
+): Promise<void> {
+  if (!client) {
+    throw new AuthDomainError('AUTH_CONFIGURATION_MISSING');
+  }
+
+  const { error } = await client.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    throw new AuthDomainError('AUTH_PROVIDER_FAILED');
+  }
 }
 
 export async function signInWithGoogle(): Promise<'success' | 'cancelled'> {
@@ -55,18 +76,8 @@ export async function signInWithGoogle(): Promise<'success' | 'cancelled'> {
     throw new AuthDomainError('AUTH_PROVIDER_FAILED');
   }
 
-  const code = parseOAuthCallbackCode(result.url);
-
-  if (!code) {
-    throw new AuthDomainError('AUTH_TOKEN_MISSING');
-  }
-
-  const { error: sessionError } =
-    await supabaseClient.auth.exchangeCodeForSession(code);
-
-  if (sessionError) {
-    throw new AuthDomainError('AUTH_PROVIDER_FAILED');
-  }
-
+  // Expo Router opens the callback route on Android. That route exchanges the
+  // PKCE code exactly once, avoiding a duplicate exchange after the browser
+  // returns to the app.
   return 'success';
 }

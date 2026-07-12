@@ -1,8 +1,11 @@
 import {
   adjustRoutineDayStartTime,
   formatRoutineDayStartTime,
+  formatRoutineDayEndTime,
   getCurrentRoutineDayWindow,
+  getMillisecondsUntilNextMinute,
   getNextRoutineDayStart,
+  getRoutineDayTiming,
   getRoutineDayWindow,
   parseRoutineDayStartTime,
   type RoutineDayConfig,
@@ -121,6 +124,27 @@ describe('getRoutineDayWindow', () => {
     expect(
       getNextRoutineDayStart(new Date('2026-07-12T18:00:00.000Z'), seoulAtFour),
     ).toBe('2026-07-12T19:00:00.000Z');
+  });
+
+  it('calculates the remaining routine-day time by minutes and formats the local end time', () => {
+    expect(
+      getRoutineDayTiming(new Date('2026-07-12T18:30:01.000Z'), seoulAtFour),
+    ).toMatchObject({
+      endsAt: '2026-07-12T19:00:00.000Z',
+      remainingHours: 0,
+      remainingMinutes: 30,
+      remainingTotalMinutes: 30,
+    });
+    expect(getMillisecondsUntilNextMinute(new Date('2026-07-12T18:30:01.250Z'))).toBe(
+      58_750,
+    );
+    expect(
+      formatRoutineDayEndTime(
+        '2026-07-12T19:00:00.000Z',
+        'en-US',
+        'Asia/Seoul',
+      ),
+    ).toBe('4:00 AM');
   });
 
   it('rejects invalid day-start and time-zone inputs', () => {

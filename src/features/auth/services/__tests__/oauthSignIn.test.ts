@@ -1,4 +1,5 @@
 import {
+  exchangeOAuthCallbackCode,
   getOAuthRedirectUrl,
   parseOAuthCallbackCode,
 } from '@/features/auth/services/oauthSignIn';
@@ -22,5 +23,15 @@ describe('OAuth callback parsing', () => {
     expect(
       parseOAuthCallbackCode('wecanday://auth/callback?error=access_denied'),
     ).toBeNull();
+  });
+
+  it('exchanges the PKCE code once without exposing it to the UI', async () => {
+    const exchangeCodeForSession = jest.fn().mockResolvedValue({ error: null });
+
+    await exchangeOAuthCallbackCode('authorization-code', {
+      auth: { exchangeCodeForSession },
+    });
+
+    expect(exchangeCodeForSession).toHaveBeenCalledWith('authorization-code');
   });
 });

@@ -20,10 +20,76 @@
   },
   "create": "Create routine",
   "saving": "Creating your routine",
+  "routineCreate": {
+    "back": "Back to plans",
+    "planLabel": "Add to {{planTitle}}",
+    "title": "Add a routine",
+    "description": "Choose one small action and the days you want to do it.",
+    "create": "Add routine",
+    "saving": "Adding your routine"
+  },
+  "routineEdit": {
+    "back": "Back to today",
+    "backToPlans": "Back to plans",
+    "planLabel": "Edit your routine",
+    "title": "Edit routine",
+    "description": "Update the action or the days you want to do it.",
+    "create": "Save changes",
+    "saving": "Saving your routine",
+    "pause": "Pause routine",
+    "pausing": "Pausing routine",
+    "resume": "Resume routine",
+    "resuming": "Resuming routine",
+    "archive": "Archive routine",
+    "archiving": "Archiving routine",
+    "archiveConfirmationTitle": "Archive this routine?",
+    "archiveConfirmationDescription": "It will be hidden from today. Your past check-ins will stay saved.",
+    "archiveCancel": "Cancel",
+    "archiveConfirm": "Archive"
+  },
+  "list": {
+    "title": "My plans",
+    "back": "Back to today",
+    "loading": "Loading your plans",
+    "retry": "Try again",
+    "emptyTitle": "You don't have a plan yet",
+    "emptyDescription": "Start with one small action.",
+    "createPlan": "Create a new plan",
+    "addRoutine": "Add routine",
+    "addRoutineToPlan": "Add a routine to {{title}}",
+    "editRoutine": "Edit {{title}}, {{status}}",
+    "archivePlan": "Archive plan",
+    "archivePlanFor": "Archive {{title}}",
+    "archivingPlan": "Archiving plan",
+    "archivePlanConfirmationTitle": "Archive this plan?",
+    "archivePlanConfirmationDescription": "Its routines will be hidden from today. Your past check-ins will stay saved.",
+    "archivePlanCancel": "Cancel",
+    "archivePlanConfirm": "Archive",
+    "itemAccessibilityLabel": "{{title}}, {{status}} plan, {{routineCount}}",
+    "activeRoutineCount_one": "{{count}} active routine",
+    "activeRoutineCount_other": "{{count}} active routines",
+    "statuses": {
+      "active": "Active",
+      "archived": "Archived",
+      "completed": "Completed",
+      "draft": "Draft",
+      "paused": "Paused"
+    },
+    "routineStatuses": {
+      "active": "Active",
+      "archived": "Archived",
+      "completed": "Completed",
+      "paused": "Paused"
+    }
+  },
   "errors": {
     "INVALID_PLAN_INPUT": "Add a plan title, an action, and at least one day.",
+    "INVALID_ROUTINE_STATUS": "This routine cannot be paused or resumed right now.",
     "INVALID_ROUTINE_SCHEDULE": "Choose at least one valid day.",
     "ROUTINE_LIMIT_REACHED": "Free accounts can have up to four active routines.",
-    "PLAN_CREATION_FAILED": "We couldn't create your routine. Please try again."
+    "PLAN_CREATION_FAILED": "We couldn't create your routine. Please try again.",
+    "PLAN_LIST_FAILED": "We couldn't load your plans. Please try again.",
+    "PLAN_NOT_FOUND": "This plan is no longer available. Go back and choose a plan again.",
+    "ROUTINE_NOT_FOUND": "This routine is no longer available. Go back and try again."
   }
 }

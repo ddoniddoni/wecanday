@@ -53,6 +53,7 @@
           "experimentalLauncherActivity": false
         }
       ],
+      "expo-notifications",
       "expo-sqlite"
     ],
     "experiments": {
