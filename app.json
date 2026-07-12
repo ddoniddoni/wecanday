@@ -1,16 +1,18 @@
 {
   "expo": {
-    "name": "wecanday",
+    "name": "WeCanDay",
     "slug": "wecanday",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "wecanday",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "bundleIdentifier": "com.wecanday.app",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.wecanday.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -26,6 +28,15 @@
     "plugins": [
       "expo-router",
       [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "ko"],
+            "android": ["en", "ko"]
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
@@ -37,6 +48,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "supportsRTL": true
     }
   }
 }

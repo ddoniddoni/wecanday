@@ -1,56 +1,35 @@
-# Welcome to your Expo app 👋
+# WeCanDay
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo 기반 iOS·Android 목표 완주 앱입니다. 제품 동작은 `PRD.md`, 개발 규칙은
+`AGENTS.md`를 기준으로 합니다.
 
-## Get started
+## 현재 구현 범위
 
-1. Install dependencies
+M0의 첫 번째 실행 가능한 단위만 포함합니다.
 
-   ```bash
-   npm install
-   ```
+- Expo SDK 57, React Native, TypeScript strict, Expo Router
+- 라이트·다크·기본 픽셀 테마와 디자인 토큰
+- `i18next`, `react-i18next`, `expo-localization` 기반 한국어·영어 구조
+- Jest, `jest-expo`, React Native Testing Library
+- 번역 fallback, locale 선택, 번역 키 정합성, 테마 계약, 기반 화면 테스트
 
-2. Start the app
+아직 M0의 Supabase 로컬 개발·초기 마이그레이션과 CI는 구현하지 않았습니다.
+M1 이후 제품 기능도 포함하지 않습니다.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## 실행
 
 ```bash
-npm run reset-project
+npm install
+npm run start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Expo 개발 서버에서 iOS, Android 또는 web 대상을 선택할 수 있습니다.
 
-### Other setup steps
+## 품질 게이트
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run test:ci
+```
