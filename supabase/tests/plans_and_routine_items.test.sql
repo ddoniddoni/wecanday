@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(32);
+select plan(34);
 
 select has_table('public', 'plans', 'plans table exists');
 select has_table('public', 'routine_items', 'routine items table exists');
@@ -179,6 +179,20 @@ select is(
   ),
   'Updated routine',
   'the updated title and weekdays are stored'
+);
+select lives_ok(
+  $$select public.update_routine_item(
+    (select id from public.routine_items where user_id = '30000000-0000-0000-0000-000000000002' and title = 'Updated routine'),
+    'Updated routine',
+    array[0, 6]::smallint[],
+    570
+  )$$,
+  'a routine owner can save a reminder minute'
+);
+select is(
+  (select reminder_minute from public.routine_items where user_id = '30000000-0000-0000-0000-000000000002' and title = 'Updated routine'),
+  570::smallint,
+  'the routine reminder minute is stored'
 );
 select set_config(
   'test.routine_item_id',

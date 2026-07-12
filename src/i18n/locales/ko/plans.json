@@ -9,6 +9,9 @@
   "routineTitleLabel": "오늘의 행동",
   "routineTitlePlaceholder": "예: 책 한 챕터 읽기",
   "scheduleLabel": "반복 요일",
+  "reminderTimeLabel": "알림 시각",
+  "reminderTimePlaceholder": "09:00",
+  "reminderTimeHint": "선택 사항이에요. 비워 두면 알림을 끌 수 있어요.",
   "weekdays": {
     "sunday": "일",
     "monday": "월",

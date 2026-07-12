@@ -24,13 +24,14 @@ const ALL_WEEKDAYS = WEEKDAYS.map(({ value }) => value);
 
 type RoutineCreateScreenProps = {
   initialRoutineTitle?: string;
+  initialReminderMinute?: number | null;
   initialScheduleWeekdays?: number[];
   mode?: 'create' | 'edit';
   onArchive?: () => Promise<void>;
   onBack: () => void;
   onChangeStatus?: (status: 'active' | 'paused') => Promise<void>;
   onComplete: () => void;
-  onSave: (input: { routineTitle: string; scheduleWeekdays: number[] }) => Promise<void>;
+  onSave: (input: { reminderMinute: number | null; routineTitle: string; scheduleWeekdays: number[] }) => Promise<void>;
   planTitle: string;
   returnTo?: 'plans' | 'today';
   routineStatus?: 'active' | 'paused';
@@ -42,6 +43,7 @@ export function RoutineCreateScreen({
   onSave,
   planTitle,
   initialRoutineTitle = '',
+  initialReminderMinute = null,
   initialScheduleWeekdays = ALL_WEEKDAYS,
   mode = 'create',
   onArchive,
@@ -52,6 +54,7 @@ export function RoutineCreateScreen({
   const { t } = useTranslation('plans');
   const { theme } = useTheme();
   const [routineTitle, setRoutineTitle] = useState(initialRoutineTitle);
+  const [reminderTime, setReminderTime] = useState(formatReminderTime(initialReminderMinute));
   const [scheduleWeekdays, setScheduleWeekdays] = useState<number[]>(initialScheduleWeekdays);
   const copyKey = mode === 'edit' ? 'routineEdit' : 'routineCreate';
   const [errorCode, setErrorCode] = useState<RoutineCreationErrorCode | null>(null);
@@ -76,7 +79,8 @@ export function RoutineCreateScreen({
   }
 
   async function handleSave() {
-    if (routineTitle.trim().length === 0 || scheduleWeekdays.length === 0) {
+    const reminderMinute = parseReminderMinute(reminderTime);
+    if (routineTitle.trim().length === 0 || scheduleWeekdays.length === 0 || reminderMinute === undefined) {
       setErrorCode('INVALID_PLAN_INPUT');
       return;
     }
@@ -86,6 +90,7 @@ export function RoutineCreateScreen({
 
     try {
       await onSave({
+        reminderMinute,
         routineTitle: routineTitle.trim(),
         scheduleWeekdays,
       });
@@ -179,6 +184,21 @@ export function RoutineCreateScreen({
             ]}
             value={routineTitle}
           />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={[styles.label, { color: theme.colors.text }]}>{t('reminderTimeLabel')}</Text>
+          <TextInput
+            accessibilityLabel={t('reminderTimeLabel')}
+            keyboardType="numbers-and-punctuation"
+            maxLength={5}
+            onChangeText={setReminderTime}
+            placeholder={t('reminderTimePlaceholder')}
+            placeholderTextColor={theme.colors.textMuted}
+            style={[styles.input, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, color: theme.colors.text }]}
+            value={reminderTime}
+          />
+          <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('reminderTimeHint')}</Text>
         </View>
 
         <View style={styles.fieldGroup}>
@@ -381,3 +401,16 @@ const styles = StyleSheet.create({
   archiveConfirmButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   archiveConfirmLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
 });
+
+function formatReminderTime(reminderMinute: number | null): string {
+  if (reminderMinute === null) return '';
+  return `${Math.floor(reminderMinute / 60).toString().padStart(2, '0')}:${(reminderMinute % 60).toString().padStart(2, '0')}`;
+}
+
+function parseReminderMinute(value: string): number | null | undefined {
+  if (value.trim() === '') return null;
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
+  if (!match) return undefined;
+  const hour = Number(match[1]); const minute = Number(match[2]);
+  return hour <= 23 && minute <= 59 ? hour * 60 + minute : undefined;
+}

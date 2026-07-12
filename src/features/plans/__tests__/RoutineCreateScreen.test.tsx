@@ -30,6 +30,7 @@ describe('RoutineCreateScreen', () => {
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith({
+        reminderMinute: null,
         routineTitle: 'Read two chapters',
         scheduleWeekdays: [1, 2, 3, 4, 5, 6],
       });
@@ -84,11 +85,22 @@ describe('RoutineCreateScreen', () => {
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith({
+        reminderMinute: null,
         routineTitle: 'Walk the dog',
         scheduleWeekdays: [1, 3],
       });
       expect(onComplete).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('saves an optional reminder time as minutes after midnight', async () => {
+    await i18n.changeLanguage('en');
+    const onSave = jest.fn<Promise<void>, [{ reminderMinute: number | null; routineTitle: string; scheduleWeekdays: number[] }]>(() => Promise.resolve());
+    const screen = await render(<ThemeProvider preference="light"><RoutineCreateScreen onBack={jest.fn()} onComplete={jest.fn()} onSave={onSave} planTitle="Read" /></ThemeProvider>);
+    await fireEvent.changeText(screen.getByLabelText('Today’s action'), 'Read');
+    await fireEvent.changeText(screen.getByLabelText('Reminder time'), '09:30');
+    await fireEvent.press(screen.getByRole('button', { name: 'Add routine' }));
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith({ reminderMinute: 570, routineTitle: 'Read', scheduleWeekdays: [0, 1, 2, 3, 4, 5, 6] }));
   });
 
   it('pauses an active routine independently from its title and weekdays', async () => {

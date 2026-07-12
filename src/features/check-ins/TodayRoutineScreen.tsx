@@ -55,6 +55,7 @@ type TodayRoutineScreenProps = {
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
+  onRoutineCompleted: (item: Pick<TodayRoutineItem, 'id' | 'schedule_weekdays'>) => void;
   onSignOut: () => void;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -68,6 +69,7 @@ export function TodayRoutineScreen({
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
+  onRoutineCompleted,
   onSignOut,
   routineDayConfig,
   userId,
@@ -211,6 +213,7 @@ export function TodayRoutineScreen({
 
       if (operation.kind === 'complete') {
         await completeCheckIn(client, mutation);
+        onRoutineCompleted(item);
       } else {
         await undoCheckIn(client, mutation);
       }

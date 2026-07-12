@@ -143,13 +143,14 @@ export type Database = {
       add_routine_item: {
         Args: {
           p_plan_id: string;
+          p_reminder_minute?: number | null;
           p_routine_title: string;
           p_schedule_weekdays: number[];
         };
         Returns: RoutineItemRow;
       };
       update_routine_item: {
-        Args: { p_routine_item_id: string; p_routine_title: string; p_schedule_weekdays: number[] };
+        Args: { p_reminder_minute?: number | null; p_routine_item_id: string; p_routine_title: string; p_schedule_weekdays: number[] };
         Returns: RoutineItemRow;
       };
       set_routine_item_status: {

@@ -24,6 +24,7 @@ export type PlanListItem = Pick<
 
 export type AddRoutineItemInput = {
   planId: string;
+  reminderMinute: number | null;
   routineTitle: string;
   scheduleWeekdays: number[];
 };
@@ -36,6 +37,7 @@ export type PlanRoutineItem = Omit<Pick<
 };
 
 export type UpdateRoutineItemInput = {
+  reminderMinute: number | null;
   routineId: string;
   routineTitle: string;
   scheduleWeekdays: number[];
@@ -104,15 +106,16 @@ export async function loadPlans(
 export async function addRoutineItem(
   client: SupabaseClient<Database>,
   input: AddRoutineItemInput,
-): Promise<void> {
-  const { error } = await client.rpc('add_routine_item', {
+): Promise<RoutineItemRow> {
+  const { data, error } = await client.rpc('add_routine_item', {
     p_plan_id: input.planId,
+    p_reminder_minute: input.reminderMinute,
     p_routine_title: input.routineTitle,
     p_schedule_weekdays: input.scheduleWeekdays,
   });
 
-  if (!error) {
-    return;
+  if (!error && data) {
+    return data;
   }
 
   if (error.message.includes('ROUTINE_LIMIT_REACHED')) {
@@ -137,14 +140,15 @@ export async function addRoutineItem(
 export async function updateRoutineItem(
   client: SupabaseClient<Database>,
   input: UpdateRoutineItemInput,
-): Promise<void> {
-  const { error } = await client.rpc('update_routine_item', {
+): Promise<RoutineItemRow> {
+  const { data, error } = await client.rpc('update_routine_item', {
     p_routine_item_id: input.routineId,
+    p_reminder_minute: input.reminderMinute,
     p_routine_title: input.routineTitle,
     p_schedule_weekdays: input.scheduleWeekdays,
   });
-  if (!error) {
-    return;
+  if (!error && data) {
+    return data;
   }
 
   if (error.message.includes('INVALID_ROUTINE_SCHEDULE')) {

@@ -9,6 +9,9 @@
   "routineTitleLabel": "Today’s action",
   "routineTitlePlaceholder": "Example: Read one chapter",
   "scheduleLabel": "Repeat on",
+  "reminderTimeLabel": "Reminder time",
+  "reminderTimePlaceholder": "09:00",
+  "reminderTimeHint": "Optional. Leave blank to turn reminders off.",
   "weekdays": {
     "sunday": "Sun",
     "monday": "Mon",

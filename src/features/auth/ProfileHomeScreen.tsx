@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
+import { cancelRoutineReminder, synchronizeRoutineReminder } from '@/features/notifications/services/routineReminderService';
 import {
   markNotificationPermissionPrimerHandled,
   requestRoutineNotificationPermission,
@@ -131,10 +132,11 @@ export function ProfileHomeScreen() {
             throw new PlanDomainError('PLAN_CREATION_FAILED');
           }
 
-          await addRoutineItem(supabaseClient, {
+          const routine = await addRoutineItem(supabaseClient, {
             ...input,
             planId: selectedPlan.id,
           });
+          await synchronizeRoutineReminder({ reminderMinute: routine.reminder_minute, routineId: routine.id, scheduleWeekdays: routine.schedule_weekdays });
         }}
         planTitle={selectedPlan.title}
       />
@@ -172,6 +174,7 @@ export function ProfileHomeScreen() {
           }
 
           await archiveRoutineItem(supabaseClient, selectedRoutine.id);
+          await cancelRoutineReminder(selectedRoutine.id, selectedRoutine.schedule_weekdays);
         }}
         onBack={() => setScreen(returnScreen)}
         onChangeStatus={async (status) => {
@@ -180,6 +183,7 @@ export function ProfileHomeScreen() {
           }
 
           await setRoutineItemStatus(supabaseClient, selectedRoutine.id, status);
+          if (status === 'paused') await cancelRoutineReminder(selectedRoutine.id, selectedRoutine.schedule_weekdays);
         }}
         onComplete={() => setScreen(returnScreen)}
         onSave={async (input) => {
@@ -187,10 +191,11 @@ export function ProfileHomeScreen() {
             throw new PlanDomainError('PLAN_CREATION_FAILED');
           }
 
-          await updateRoutineItem(supabaseClient, {
+          const routine = await updateRoutineItem(supabaseClient, {
             ...input,
             routineId: selectedRoutine.id,
           });
+          await synchronizeRoutineReminder({ reminderMinute: routine.reminder_minute, routineId: routine.id, scheduleWeekdays: routine.schedule_weekdays });
         }}
         planTitle=""
         returnTo={selectedRoutine.returnTo}
@@ -266,6 +271,9 @@ export function ProfileHomeScreen() {
         setScreen('routine-edit');
       }}
       onOpenPlans={() => setScreen('plan-list')}
+      onRoutineCompleted={(routine) => {
+        void cancelRoutineReminder(routine.id, routine.schedule_weekdays);
+      }}
       onSignOut={() => void handleSignOut()}
       routineDayConfig={{
         dayStartMinute: auth.profile.day_start_minute,
