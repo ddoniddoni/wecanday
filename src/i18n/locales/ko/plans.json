@@ -1,0 +1,29 @@
+{
+  "createFirstPlan": "첫 계획 만들기",
+  "firstPlanCreated": "첫 루틴을 만들었어요.",
+  "eyebrow": "첫 번째 작은 걸음",
+  "title": "목표를 오늘의 행동으로 바꿔 볼까요?",
+  "description": "간단한 루틴 하나로 시작해요. 나중에 더 추가할 수 있어요.",
+  "planTitleLabel": "계획 제목",
+  "planTitlePlaceholder": "예: 독서 습관 만들기",
+  "routineTitleLabel": "오늘의 행동",
+  "routineTitlePlaceholder": "예: 책 한 챕터 읽기",
+  "scheduleLabel": "반복 요일",
+  "weekdays": {
+    "sunday": "일",
+    "monday": "월",
+    "tuesday": "화",
+    "wednesday": "수",
+    "thursday": "목",
+    "friday": "금",
+    "saturday": "토"
+  },
+  "create": "루틴 만들기",
+  "saving": "루틴을 만들고 있어요",
+  "errors": {
+    "INVALID_PLAN_INPUT": "계획 제목, 행동, 하나 이상의 요일을 입력해 주세요.",
+    "INVALID_ROUTINE_SCHEDULE": "하나 이상의 유효한 요일을 선택해 주세요.",
+    "ROUTINE_LIMIT_REACHED": "무료 계정은 활성 루틴을 최대 4개까지 만들 수 있어요.",
+    "PLAN_CREATION_FAILED": "루틴을 만들지 못했어요. 다시 시도해 주세요."
+  }
+}

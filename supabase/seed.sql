@@ -1,0 +1,1 @@
+-- Intentionally empty. Product data is created through authenticated flows.

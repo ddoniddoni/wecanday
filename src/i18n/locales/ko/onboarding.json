@@ -1,3 +1,23 @@
 {
-  "greeting": "안녕하세요, 우리 할 수 있어요"
+  "greeting": "안녕하세요, 우리 할 수 있어요",
+  "loading": "설정을 준비하고 있어요…",
+  "loadErrorTitle": "설정을 불러오지 못했어요.",
+  "loadErrorBody": "선택한 정보는 안전해요. 다시 시도해 주세요.",
+  "retry": "다시 시도",
+  "stepProgress": "{{total}}단계 중 {{current}}단계",
+  "countryTitle": "국가를 선택해 주세요",
+  "countryDescription": "국가는 지역 형식에만 사용하며 앱 언어나 시간대를 결정하지 않아요.",
+  "countrySearchLabel": "국가 검색",
+  "countrySearchPlaceholder": "국가 이름 또는 코드로 검색",
+  "countryEmpty": "일치하는 국가가 없어요.",
+  "countryOptionLabel": "{{country}}({{code}}) 선택",
+  "selected": "선택됨",
+  "languageTitle": "언어를 선택해 주세요",
+  "languageDescription": "설정에서 언제든 바꿀 수 있어요.",
+  "languageOptionLabel": "{{language}} 사용",
+  "greetingDescription": "국가와 언어는 서로 독립적으로 저장돼요.",
+  "continue": "계속",
+  "back": "뒤로",
+  "start": "시작하기",
+  "saveError": "선택한 내용을 저장하지 못했어요. 다시 시도해 주세요."
 }

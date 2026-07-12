@@ -37,11 +37,11 @@
 다음 규칙은 명시적 제품 결정 없이는 변경하지 않는다.
 
 - 앱은 Expo 기반 React Native로 구현한다. 핵심 앱을 WebView로 대체하지 않는다.
-- iOS와 Android를 모두 지원한다.
+- 초기 출시는 Android만 지원한다. iOS 지원은 Android 출시 성과를 검토한 뒤 명시적 제품 결정으로 추가한다.
 - 국가, 언어, 시간대는 독립된 설정이다.
 - 사용자에게 보이는 문자열은 전부 번역 키를 사용한다.
 - 한국어 인사 원문은 `안녕하세요, 우리 할 수 있어요`다.
-- 로그인 제공자는 Google과 Apple이다.
+- 초기 출시 로그인 제공자는 Google이다. Apple 로그인은 iOS 출시와 함께 후속으로 추가한다.
 - 신규 계정에는 서버 생성 12자리 Base62 고유 코드가 있어야 한다.
 - 무료 사용자는 최대 4개의 활성 루틴 항목만 가질 수 있다.
 - 루틴 데이는 사용자의 IANA 시간대와 하루 시작 시각을 기준으로 한다.
@@ -49,7 +49,7 @@
 - 친구 검색은 정확한 고유 코드로만 가능하다.
 - 픽셀 캐릭터와 테마는 오리지널 디자인이어야 한다.
 - 첫 출시에는 강제 광고를 넣지 않는다.
-- 디지털 기능 결제는 Apple·Google 인앱 결제와 RevenueCat entitlement를 사용한다.
+- 초기 Android 출시의 디지털 기능 결제는 Google Play 인앱 결제와 RevenueCat entitlement를 사용한다. iOS 출시 시 Apple 인앱 결제를 추가한다.
 - 계정 삭제를 앱 안에서 시작할 수 있어야 한다.
 
 ---
@@ -60,7 +60,7 @@
 
 ### 4.1 앱
 
-- Expo 최신 안정 SDK
+- Expo 최신 안정 SDK (초기 Android 출시)
 - React Native
 - TypeScript strict mode
 - Expo Router
@@ -110,7 +110,6 @@
 ### 4.8 결제
 
 - RevenueCat React Native SDK
-- iOS StoreKit 상품
 - Google Play Billing 상품
 
 ### 4.9 테스트
@@ -373,16 +372,13 @@ interface Clock {
 ### 10.2 Google
 
 - Expo가 권장하는 provider 전용 네이티브 라이브러리 또는 Supabase 공식 Expo 소셜 인증 방식을 사용한다.
-- iOS·Android client ID를 분리해 설정한다.
+- 초기 Android 출시에는 Android용 client ID와 redirect URI를 설정한다.
 - redirect URI와 앱 scheme을 환경별로 관리한다.
 
-### 10.3 Apple
+### 10.3 Apple (iOS 출시 후)
 
-- iOS는 `expo-apple-authentication` 기반 네이티브 흐름을 우선한다.
-- Android는 Supabase Apple OAuth 브라우저 흐름을 사용한다.
-- nonce를 검증한다.
-- Apple이 최초 로그인에서만 제공하는 이름을 놓치지 않는다.
-- 계정 삭제 시 Apple token revoke 요구사항을 처리한다.
+- 초기 Android 앱에는 Apple 로그인 UI, SDK, provider 설정을 넣지 않는다.
+- iOS 출시를 결정한 뒤 `expo-apple-authentication` 기반 네이티브 흐름, nonce 검증, 최초 이름 저장, 계정 삭제 시 Apple token revoke를 함께 구현한다.
 
 ### 10.4 프로필 생성
 
@@ -485,7 +481,7 @@ interface Clock {
 - 보상 내용과 광고 시청 사실을 사전에 표시
 - 테스트 광고 ID를 개발 환경에서 사용
 - 지역별 동의 처리 후에만 광고 요청
-- 필요할 경우 Google UMP와 Apple ATT 적용
+- 필요할 경우 Google UMP를 적용하고, iOS 출시 후 Apple ATT를 추가한다.
 - 동의 상태를 변경할 수 있는 개인정보 설정 제공
 - Premium은 광고를 보지 않음
 - 광고 보상이 친구 챌린지 순위를 조작하지 않음
@@ -703,7 +699,6 @@ UI 테스트는 구현 세부보다 사용자 행동과 접근 가능한 query�
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
-    "ios": "expo run:ios",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
@@ -723,13 +718,24 @@ UI 테스트는 구현 세부보다 사용자 행동과 접근 가능한 query�
 - 관련 unit/component test 통과
 - DB 변경 시 마이그레이션 재적용 성공
 - RLS 테스트 통과
-- 네이티브 모듈 변경 시 Android 또는 iOS development build 확인
+- 네이티브 모듈 변경 시 Android development build 확인
 
 테스트를 실행하지 못한 경우 완료라고 주장하지 말고 실행하지 못한 항목과 이유를 결과에 적는다.
 
 ---
 
-## 22. CI/CD 규칙
+## 22. Git과 PR 규칙
+
+- 일상 개발은 `develop`, 안정적인 릴리스는 `main` 브랜치를 사용한다.
+- 작업 브랜치는 최신 `develop`에서 만들고 짧게 유지한다.
+- 브랜치 이름은 목적이 드러나게 작성하며 `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `chore/*` 접두사를 사용한다.
+- 한 브랜치와 PR에는 하나의 집중된 변경만 담고, 관련 lint·typecheck·test·build를 통과한 뒤 push한다.
+- 커밋은 `type(scope): subject` 형식의 Conventional Commits를 사용한다. 주요 type은 `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `revert`다.
+- PR과 최종 보고에는 변경 파일 요약, 실행한 검증, 남은 위험을 정확히 기록한다.
+
+---
+
+## 23. CI/CD 규칙
 
 ### Pull Request
 
@@ -749,7 +755,7 @@ UI 테스트는 구현 세부보다 사용자 행동과 접근 가능한 query�
 
 - version과 build number 갱신
 - production 환경 변수 확인
-- TestFlight와 Play Internal Testing
+- Google Play Internal Testing
 - sandbox가 아닌 production 상품 연결 확인
 - account deletion URL/화면 확인
 - privacy labels와 Data Safety 검토
@@ -759,7 +765,7 @@ OTA 업데이트로 네이티브 런타임과 호환되지 않는 코드를 배�
 
 ---
 
-## 23. 기능 플래그
+## 24. 기능 플래그
 
 기능 플래그는 단일 typed config에서 관리한다.
 
@@ -789,7 +795,7 @@ advancedStatsEnabled = false
 
 ---
 
-## 24. 분석과 로그 규칙
+## 25. 분석과 로그 규칙
 
 - 이벤트 이름은 snake_case를 사용한다.
 - PII를 analytics에 넣지 않는다.
@@ -800,7 +806,7 @@ advancedStatsEnabled = false
 
 ---
 
-## 25. 오류 처리 규칙
+## 26. 오류 처리 규칙
 
 도메인 오류 코드 예시:
 
@@ -827,12 +833,12 @@ SYNC_CONFLICT
 
 ---
 
-## 26. 정의 완료(Definition of Done)
+## 27. 정의 완료(Definition of Done)
 
 기능은 다음 조건을 모두 충족해야 완료다.
 
 - PRD 수용 기준 충족
-- Android와 iOS 차이 검토
+- Android 출시 기준의 기기·OS 차이 검토
 - 한국어와 영어 번역 추가
 - loading, empty, error, offline 상태 구현
 - 접근성 label과 터치 영역 확인
@@ -847,7 +853,7 @@ SYNC_CONFLICT
 
 ---
 
-## 27. 에이전트가 하지 말아야 할 것
+## 28. 에이전트가 하지 말아야 할 것
 
 - PRD를 읽지 않고 화면부터 대량 생성
 - 모든 기능을 한 번에 거대한 PR로 구현
@@ -868,7 +874,7 @@ SYNC_CONFLICT
 
 ---
 
-## 28. 권장 구현 순서
+## 29. 권장 구현 순서
 
 Codex는 가능한 한 아래 수직 순서를 따른다.
 
@@ -891,7 +897,7 @@ Codex는 가능한 한 아래 수직 순서를 따른다.
 
 ---
 
-## 29. 작업 결과 보고 형식
+## 30. 작업 결과 보고 형식
 
 에이전트의 최종 보고는 다음 내용을 짧고 정확하게 포함한다.
 
@@ -907,7 +913,8 @@ Codex는 가능한 한 아래 수직 순서를 따른다.
 - npm run typecheck: 통과/미실행
 - npm run test: 통과/미실행
 - DB/RLS test: 통과/미실행
-- Android/iOS build: 통과/미실행
+- Android build: 통과/미실행
+- iOS build: 출시 후 검토/미실행
 
 남은 위험 또는 후속 작업
 - ...
@@ -917,7 +924,7 @@ Codex는 가능한 한 아래 수직 순서를 따른다.
 
 ---
 
-## 30. 공식 문서 우선 원칙
+## 31. 공식 문서 우선 원칙
 
 라이브러리 사용법이나 스토어 정책이 바뀔 수 있으므로, 구현 당시 다음 공식 문서를 우선 확인한다.
 

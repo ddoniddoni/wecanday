@@ -7,10 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "wecanday",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "bundleIdentifier": "com.wecanday.app",
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "package": "com.wecanday.app",
       "adaptiveIcon": {
@@ -31,8 +27,14 @@
         "expo-localization",
         {
           "supportedLocales": {
-            "ios": ["en", "ko"],
-            "android": ["en", "ko"]
+            "ios": [
+              "en",
+              "ko"
+            ],
+            "android": [
+              "en",
+              "ko"
+            ]
           }
         }
       ],
@@ -43,7 +45,15 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-secure-store",
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": false
+        }
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

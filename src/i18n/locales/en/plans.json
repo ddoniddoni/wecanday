@@ -1,0 +1,29 @@
+{
+  "createFirstPlan": "Create your first plan",
+  "firstPlanCreated": "Your first routine is ready.",
+  "eyebrow": "Your first small step",
+  "title": "Turn a goal into today’s action",
+  "description": "Start with one simple routine. You can add more later.",
+  "planTitleLabel": "Plan title",
+  "planTitlePlaceholder": "Example: Read more books",
+  "routineTitleLabel": "Today’s action",
+  "routineTitlePlaceholder": "Example: Read one chapter",
+  "scheduleLabel": "Repeat on",
+  "weekdays": {
+    "sunday": "Sun",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat"
+  },
+  "create": "Create routine",
+  "saving": "Creating your routine",
+  "errors": {
+    "INVALID_PLAN_INPUT": "Add a plan title, an action, and at least one day.",
+    "INVALID_ROUTINE_SCHEDULE": "Choose at least one valid day.",
+    "ROUTINE_LIMIT_REACHED": "Free accounts can have up to four active routines.",
+    "PLAN_CREATION_FAILED": "We couldn't create your routine. Please try again."
+  }
+}

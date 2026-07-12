@@ -1,0 +1,21 @@
+appId: com.wecanday.app
+tags:
+  - onboarding
+  - en
+---
+- launchApp:
+    clearState: true
+- assertVisible: Choose your country
+- tapOn: Search countries
+- inputText: South Korea
+- hideKeyboard
+- tapOn: South Korea
+- tapOn: Continue
+- assertVisible: Choose your language
+- tapOn: 한국어
+- assertVisible: 안녕하세요, 우리 할 수 있어요
+- tapOn: 시작하기
+- assertVisible: 앱 기반 준비가 완료됐어요.
+- killApp
+- launchApp
+- assertVisible: 앱 기반 준비가 완료됐어요.

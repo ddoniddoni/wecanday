@@ -10,6 +10,7 @@ export const lightTheme: AppTheme = {
     text: palette.ink,
     textMuted: palette.moss,
     primary: palette.moss,
+    onPrimary: palette.paper,
     accent: palette.sun,
     border: palette.borderLight,
     focus: palette.moss,

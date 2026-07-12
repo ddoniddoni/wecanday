@@ -1,0 +1,80 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
+import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { completeCheckIn } from '@/features/check-ins/services/checkInService';
+import { i18n } from '@/i18n';
+import type { Database } from '@/lib/supabase/database.types';
+import { ThemeProvider } from '@/theme/ThemeProvider';
+
+jest.mock('@/features/check-ins/services/checkInOutboxService', () => ({
+  synchronizePendingCheckIns: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@/features/check-ins/services/checkInService', () => ({
+  completeCheckIn: jest.fn(() => Promise.resolve()),
+  loadTodayRoutineItems: jest.fn(() =>
+    Promise.resolve([
+      {
+        completedAt: null,
+        id: 'routine-1',
+        syncStatus: null,
+        title: 'Morning walk',
+      },
+    ]),
+  ),
+  undoCheckIn: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@/local-db/checkInOutbox', () => ({
+  createCheckInOutboxOperation: jest.fn(() => ({
+    createdAt: '2026-07-12T01:00:00.000Z',
+    id: 'operation-1',
+    idempotencyKey: 'operation-1',
+    kind: 'complete',
+    occurredAt: '2026-07-12T01:00:00.000Z',
+    routineDay: '2026-07-12',
+    routineItemId: 'routine-1',
+    userId: 'user-1',
+  })),
+  enqueueCheckInOperation: jest.fn(() => Promise.resolve()),
+  loadPendingCheckInOperations: jest.fn(() => Promise.resolve([])),
+  removeCheckInOperationsForRoutine: jest.fn(() => Promise.resolve()),
+}));
+
+describe('TodayRoutineScreen', () => {
+  it('optimistically completes a routine item and sends its idempotency key', async () => {
+    await i18n.changeLanguage('en');
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <TodayRoutineScreen
+          client={{} as SupabaseClient<Database>}
+          displayName="Jamie"
+          hasPlanCreationSuccess={false}
+          hasSignOutError={false}
+          onCreatePlan={jest.fn()}
+          onSignOut={jest.fn()}
+          routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
+          userId="user-1"
+        />
+      </ThemeProvider>,
+    );
+
+    await screen.findByRole('button', { name: 'Complete Morning walk' });
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Complete Morning walk' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('1 of 1 complete')).toBeTruthy();
+      expect(completeCheckIn).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          idempotencyKey: 'operation-1',
+          routineItemId: 'routine-1',
+          source: 'online',
+        }),
+      );
+    });
+  });
+});

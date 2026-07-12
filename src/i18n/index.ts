@@ -16,7 +16,7 @@ void i18n.use(initReactI18next).init({
     escapeValue: false,
   },
   lng: resolveSupportedLocale(deviceLanguageCode),
-  ns: ['common', 'onboarding'],
+  ns: ['auth', 'common', 'onboarding', 'plans', 'routineDay', 'today'],
   parseMissingKeyHandler: () => resources.en.common.safeFallback,
   resources,
   returnEmptyString: false,

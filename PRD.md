@@ -3,7 +3,7 @@
 - 문서 상태: Draft v1.0
 - 작성일: 2026-07-12
 - 제품명: **WeCanDay** (가칭, 한국어 표기: 위캔데이)
-- 대상 플랫폼: iOS, Android
+- 대상 플랫폼: Android (초기 출시), iOS (출시 후 검토)
 - 주요 독자: 제품 기획자, 디자이너, Codex 및 개발 에이전트, QA
 - 연관 문서: `AGENTS.md`
 
@@ -114,10 +114,10 @@
 
 ### 8.1 첫 정식 버전의 P0 범위
 
-- Expo 기반 iOS·Android 앱
+- Expo 기반 Android 앱
 - 국가와 언어 선택
 - 선택한 언어로 인사 화면 표시
-- Google 및 Apple 로그인·회원가입
+- Google 로그인·회원가입
 - 사용자 프로필과 12자리 고유 코드
 - 사용자별 시간대 및 하루 시작 시각
 - 계획·루틴 항목 생성, 수정, 보관
@@ -135,6 +135,7 @@
 
 ### 8.2 P1 범위
 
+- iOS 지원과 Apple 로그인·회원가입
 - 고유 코드 QR 공유와 코드 재발급
 - 그룹 챌린지 확장
 - 고급 통계 비교 및 데이터 내보내기
@@ -154,6 +155,7 @@
 
 ### 8.4 첫 출시에서 하지 않는 것
 
+- iOS 앱 배포와 Apple 로그인·회원가입 (Android 출시 성과를 검토한 뒤 별도 단계로 진행)
 - 강제 전면 광고 또는 화면 하단 고정 배너
 - 공개 피드, 댓글, 자유로운 1:1 채팅
 - 전화번호부 업로드
@@ -172,8 +174,8 @@
 | D-001 | 앱은 웹뷰가 아닌 Expo 기반 React Native로 개발한다. |
 | D-002 | 다국어는 `i18next + react-i18next + expo-localization` 조합을 사용한다. |
 | D-003 | 백엔드는 Supabase Auth, PostgreSQL, Row Level Security, Edge Functions를 사용한다. |
-| D-004 | 소셜 로그인은 Google과 Apple 두 가지를 제공한다. |
-| D-005 | 결제 권한 관리는 RevenueCat을 사용하고 실제 결제는 Apple·Google 인앱 결제를 따른다. |
+| D-004 | 초기 Android 출시는 Google 로그인만 제공한다. iOS 지원과 Apple 로그인은 출시 성과를 검토한 뒤 별도 제품 결정으로 추가한다. |
+| D-005 | 결제 권한 관리는 RevenueCat을 사용한다. 초기 Android 출시는 Google Play 인앱 결제를 따르며, iOS 출시 시 Apple 인앱 결제를 추가한다. |
 | D-006 | 무료 사용자는 최대 4개의 활성 루틴 항목을 가진다. 보관된 항목과 과거 기록은 제한에 포함하지 않는다. |
 | D-007 | 첫 출시에는 강제 광고를 넣지 않는다. 광고 SDK도 기본적으로 비활성화한다. |
 | D-008 | 광고를 추가할 경우 사용자가 명시적으로 선택하는 보상형 광고만 우선 검토한다. |
@@ -191,7 +193,7 @@
 3. 언어 선택
 4. 선택한 언어로 인사 화면 표시
 5. 로그인·회원가입 화면
-6. Google 또는 Apple로 계정 생성
+6. Google로 계정 생성
 7. 표시 이름 확인 또는 입력
 8. 시간대 확인
 9. 하루 시작 시각 설정
@@ -277,19 +279,19 @@
 
 ### AUTH-001 Google 로그인·회원가입 — P0
 
-- iOS와 Android 모두에서 제공한다.
+- 초기 Android 출시에서 제공한다.
 - 신규 사용자는 인증 성공 후 프로필 생성 단계로 이동한다.
 - 기존 사용자는 동일 계정으로 로그인한다.
 - 사용자가 로그인 창을 취소한 경우 오류처럼 취급하지 않는다.
 
-### AUTH-002 Apple 로그인·회원가입 — P0
+### AUTH-002 Apple 로그인·회원가입 — P1 / iOS 출시 후
 
+- Android 초기 출시에서는 제공하지 않는다.
 - iOS에서는 네이티브 Sign in with Apple을 사용한다.
-- Android에서는 Apple OAuth 브라우저 흐름을 제공한다.
 - nonce, PKCE, 딥링크, 토큰 검증을 올바르게 처리한다.
 - Apple이 이름을 최초 한 번만 제공할 수 있으므로 최초 응답을 안전하게 저장한다.
 
-### AUTH-003 계정 연결 — P1
+### AUTH-003 계정 연결 — P1 / Apple 로그인 추가 후
 
 - 동일한 검증 이메일을 사용하는 Google·Apple 계정은 백엔드의 안전한 identity linking 규칙을 따른다.
 - Apple 비공개 이메일로 자동 연결할 수 없는 경우 사용자가 명시적으로 계정을 연결할 수 있는 흐름을 제공한다.
@@ -306,7 +308,7 @@
 - 재인증 또는 명확한 확인 절차를 제공한다.
 - 사용자 데이터, 친구 관계, 토큰, 루틴, 체크인, 챌린지 멤버십을 삭제 또는 익명화한다.
 - 법적·보안상 보관해야 하는 데이터가 있다면 사용자에게 고지한다.
-- Sign in with Apple 사용자의 경우 필요한 토큰 해지 절차를 포함한다.
+- Apple 로그인을 추가한 경우 필요한 Apple token revoke 절차를 포함한다.
 
 ---
 
@@ -756,7 +758,7 @@ pending / accepted / declined / cancelled / removed
 - 월간 Premium
 - 연간 Premium
 
-가격은 App Store Connect와 Google Play Console에서 지역별로 관리하며 앱에 숫자를 하드코딩하지 않는다.
+초기 Android 출시 가격은 Google Play Console에서 지역별로 관리하며 앱에 숫자를 하드코딩하지 않는다. iOS 출시 시 App Store Connect 상품을 별도로 추가한다.
 
 ### BILL-002 Premium 권한 — P0
 
@@ -957,7 +959,6 @@ rewarded_ads_enabled = false
 - EAS Build
 - EAS Submit
 - EAS Update는 스토어 정책과 런타임 버전 호환 범위 안에서 사용
-- TestFlight
 - Google Play Internal Testing
 
 ---
@@ -1267,7 +1268,7 @@ account_deletion_requested
 
 - 국가·언어
 - 인사 화면
-- Google·Apple 인증
+- Google 인증
 - 프로필과 공개 코드
 - 하루 시작 시각
 - 계정 삭제 골격
@@ -1305,7 +1306,7 @@ account_deletion_requested
 - 접근성 검수
 - 계정 삭제 완성
 - 개인정보·약관
-- TestFlight / Play Internal Test
+- Google Play Internal Test
 - 스토어 메타데이터 및 심사 계정
 
 ---
@@ -1378,7 +1379,8 @@ account_deletion_requested
 | 항목 | 개발 기본값 |
 |---|---|
 | 최종 앱 이름 | WeCanDay |
-| iOS Bundle ID | `com.wecanday.app` 자리표시자 |
+| 초기 출시 플랫폼 | Android (iOS는 출시 후 검토) |
+| iOS Bundle ID | iOS 출시 결정 시 설정 |
 | Android Package | `com.wecanday.app` 자리표시자 |
 | 첫 출시 언어 | 한국어, 영어 |
 | 후속 언어 | 일본어, 스페인어, 중국어 간체·번체 후보 |
