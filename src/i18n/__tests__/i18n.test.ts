@@ -14,6 +14,9 @@ describe('i18n foundation', () => {
   });
 
   it('keeps Korean and English translation keys aligned', () => {
+    expect(Object.keys(resources.ko.auth).sort()).toEqual(
+      Object.keys(resources.en.auth).sort(),
+    );
     expect(Object.keys(resources.ko.common).sort()).toEqual(
       Object.keys(resources.en.common).sort(),
     );

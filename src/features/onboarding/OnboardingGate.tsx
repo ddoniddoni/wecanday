@@ -1,5 +1,5 @@
 import type { i18n as I18nInstance } from 'i18next';
-import { useEffect, useState } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,7 +28,7 @@ async function readPreferencesAndApplyLocale(i18n: I18nInstance) {
   return preferences;
 }
 
-export function OnboardingGate() {
+export function OnboardingGate({ children }: PropsWithChildren) {
   const { i18n, t } = useTranslation('onboarding');
   const { theme } = useTheme();
   const [state, setState] = useState<GateState>({ status: 'loading' });
@@ -123,7 +123,7 @@ export function OnboardingGate() {
   }
 
   if (state.preferences.isComplete) {
-    return <FoundationScreen />;
+    return children ?? <FoundationScreen />;
   }
 
   return (

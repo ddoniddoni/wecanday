@@ -3,9 +3,11 @@ import '@/i18n';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { AuthProvider, useAuth } from '@/features/auth/AuthProvider';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
 function RootNavigator() {
+  const auth = useAuth();
   const { theme } = useTheme();
 
   return (
@@ -15,7 +17,14 @@ function RootNavigator() {
           contentStyle: { backgroundColor: theme.colors.background },
           headerShown: false,
         }}
-      />
+      >
+        <Stack.Protected guard={auth.status !== 'signed_in'}>
+          <Stack.Screen name="index" />
+        </Stack.Protected>
+        <Stack.Protected guard={auth.status === 'signed_in'}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+      </Stack>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
     </>
   );
@@ -24,7 +33,9 @@ function RootNavigator() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <RootNavigator />
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
