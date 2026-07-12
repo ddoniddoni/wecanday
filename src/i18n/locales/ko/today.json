@@ -1,0 +1,29 @@
+{
+  "eyebrow": "{{name}}님의 루틴 데이",
+  "title": "오늘의 작은 걸음",
+  "signOut": "로그아웃",
+  "signOutError": "로그아웃하지 못했어요. 다시 시도해 주세요.",
+  "planCreated": "첫 루틴을 만들었어요.",
+  "routineDayLabel": "루틴 데이",
+  "progress": "{{total}}개 중 {{completed}}개 완료",
+  "loading": "오늘의 루틴을 불러오는 중…",
+  "retry": "다시 시도",
+  "emptyTitle": "이 루틴 데이에 예정된 항목이 없어요.",
+  "emptyDescription": "계획을 만들고 작은 행동 하나를 추가해 보세요.",
+  "createPlan": "계획 만들기",
+  "addRoutine": "루틴 추가",
+  "completeItem": "{{title}} 완료",
+  "undoItem": "{{title}} 완료 취소",
+  "sync": {
+    "queued": "이 기기에 저장했어요. 동기화를 기다리는 중이에요.",
+    "syncing": "저장 중…",
+    "synced": "저장됨"
+  },
+  "errors": {
+    "CHECK_IN_FAILED": "지금은 루틴을 불러오거나 저장할 수 없어요. 다시 시도해 주세요.",
+    "CHECK_IN_WINDOW_CLOSED": "이 루틴 데이는 이미 끝났어요.",
+    "INVALID_ROUTINE_DAY": "이 동작은 현재 루틴 데이에 해당하지 않아요.",
+    "ROUTINE_NOT_SCHEDULED": "이 루틴은 해당 날짜에 예정되어 있지 않아요.",
+    "ROUTINE_DAY_SETTINGS_REQUIRED": "체크인하기 전에 루틴 데이를 설정해 주세요."
+  }
+}

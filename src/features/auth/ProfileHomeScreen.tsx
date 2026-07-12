@@ -1,20 +1,69 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { PlanCreateScreen } from '@/features/plans/PlanCreateScreen';
+import { PlanDomainError } from '@/features/plans/domain/planErrors';
+import { createPlanWithRoutine } from '@/features/plans/services/planService';
+import { getCurrentRoutineDayWindow } from '@/features/routine-day/domain/routineDay';
+import { RoutineDaySetupScreen } from '@/features/routine-day/RoutineDaySetupScreen';
+import { completeInitialRoutineDaySettings } from '@/features/routine-day/services/routineDaySettingsService';
+import { supabaseClient } from '@/lib/supabase/client';
 
 export function ProfileHomeScreen() {
-  const { t } = useTranslation('auth');
-  const { theme } = useTheme();
   const auth = useAuth();
   const [hasSignOutError, setHasSignOutError] = useState(false);
+  const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
+  const [isCreatingPlan, setIsCreatingPlan] = useState(false);
 
   if (auth.status !== 'signed_in') {
     return null;
+  }
+
+  if (
+    auth.profile.time_zone === null ||
+    auth.profile.day_start_minute === null ||
+    auth.profile.routine_day_settings_completed_at === null
+  ) {
+    return (
+      <RoutineDaySetupScreen
+        onSave={async (config) => {
+          if (!supabaseClient) {
+            throw new Error('Supabase client is unavailable.');
+          }
+
+          const profile = await completeInitialRoutineDaySettings(
+            supabaseClient,
+            config,
+          );
+
+          auth.replaceProfile(profile);
+        }}
+      />
+    );
+  }
+
+  if (isCreatingPlan) {
+    const startsOn = getCurrentRoutineDayWindow({
+      dayStartMinute: auth.profile.day_start_minute,
+      timeZone: auth.profile.time_zone,
+    }).key;
+
+    return (
+      <PlanCreateScreen
+        onComplete={() => {
+          setHasPlanCreationSuccess(true);
+          setIsCreatingPlan(false);
+        }}
+        onSave={async (input) => {
+          if (!supabaseClient) {
+            throw new PlanDomainError('PLAN_CREATION_FAILED');
+          }
+
+          await createPlanWithRoutine(supabaseClient, { ...input, startsOn });
+        }}
+      />
+    );
   }
 
   async function handleSignOut() {
@@ -27,116 +76,23 @@ export function ProfileHomeScreen() {
     }
   }
 
+  if (!supabaseClient) {
+    return null;
+  }
+
   return (
-    <SafeAreaView
-      style={[styles.screen, { backgroundColor: theme.colors.background }]}
-    >
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.border,
-          },
-        ]}
-      >
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-          {t('signedInEyebrow')}
-        </Text>
-        <Text
-          accessibilityRole="header"
-          style={[styles.title, { color: theme.colors.text }]}
-        >
-          {auth.profile.display_name}
-        </Text>
-        <Text style={[styles.label, { color: theme.colors.textMuted }]}>
-          {t('publicCodeLabel')}
-        </Text>
-        <Text
-          accessibilityLabel={t('publicCodeAccessibilityLabel', {
-            code: auth.profile.public_code,
-          })}
-          selectable
-          style={[styles.code, { color: theme.colors.text }]}
-        >
-          {auth.profile.public_code}
-        </Text>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => void handleSignOut()}
-          style={({ pressed }) => [
-            styles.signOutButton,
-            {
-              borderColor: theme.colors.border,
-              opacity: pressed ? 0.75 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-            {t('signOut')}
-          </Text>
-        </Pressable>
-        {hasSignOutError ? (
-          <Text
-            accessibilityRole="alert"
-            style={[styles.error, { color: theme.colors.text }]}
-          >
-            {t('signOutError')}
-          </Text>
-        ) : null}
-      </View>
-    </SafeAreaView>
+    <TodayRoutineScreen
+      client={supabaseClient}
+      displayName={auth.profile.display_name}
+      hasPlanCreationSuccess={hasPlanCreationSuccess}
+      hasSignOutError={hasSignOutError}
+      onCreatePlan={() => setIsCreatingPlan(true)}
+      onSignOut={() => void handleSignOut()}
+      routineDayConfig={{
+        dayStartMinute: auth.profile.day_start_minute,
+        timeZone: auth.profile.time_zone,
+      }}
+      userId={auth.userId}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  card: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    gap: spacing.md,
-    padding: spacing.xl,
-  },
-  eyebrow: {
-    fontSize: typography.size.caption,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.caption,
-  },
-  title: {
-    fontSize: typography.size.title,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.title,
-  },
-  label: {
-    fontSize: typography.size.caption,
-    lineHeight: typography.lineHeight.caption,
-  },
-  code: {
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
-    letterSpacing: 2,
-    lineHeight: typography.lineHeight.body,
-  },
-  signOutButton: {
-    alignItems: 'center',
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: touchTarget.minimum,
-    paddingHorizontal: spacing.lg,
-  },
-  signOutLabel: {
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.body,
-  },
-  error: {
-    fontSize: typography.size.caption,
-    lineHeight: typography.lineHeight.caption,
-    textAlign: 'center',
-  },
-});

@@ -25,5 +25,27 @@ const webStorage: SupportedStorage = {
   setItem: (key, value) => AsyncStorage.setItem(key, value),
 };
 
-export const authStorage =
-  Platform.OS === 'web' ? webStorage : nativeSecureStorage;
+const serverStorage: SupportedStorage = {
+  getItem: () => null,
+  removeItem: () => undefined,
+  setItem: () => undefined,
+};
+
+export function getAuthStorageForRuntime({
+  isServer,
+  platform,
+}: {
+  isServer: boolean;
+  platform: typeof Platform.OS;
+}): SupportedStorage {
+  if (platform !== 'web') {
+    return nativeSecureStorage;
+  }
+
+  return isServer ? serverStorage : webStorage;
+}
+
+export const authStorage = getAuthStorageForRuntime({
+  isServer: typeof window === 'undefined',
+  platform: Platform.OS,
+});

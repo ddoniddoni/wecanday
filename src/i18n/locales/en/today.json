@@ -1,0 +1,29 @@
+{
+  "eyebrow": "{{name}}’s routine day",
+  "title": "Today’s small steps",
+  "signOut": "Sign out",
+  "signOutError": "We couldn’t sign you out. Please try again.",
+  "planCreated": "Your first routine is ready.",
+  "routineDayLabel": "Routine day",
+  "progress": "{{completed}} of {{total}} complete",
+  "loading": "Loading today’s routines…",
+  "retry": "Try again",
+  "emptyTitle": "Nothing is scheduled for this routine day.",
+  "emptyDescription": "Create a plan and add one small action to get started.",
+  "createPlan": "Create a plan",
+  "addRoutine": "Add a routine",
+  "completeItem": "Complete {{title}}",
+  "undoItem": "Undo {{title}}",
+  "sync": {
+    "queued": "Saved on this device. Waiting to sync.",
+    "syncing": "Saving…",
+    "synced": "Saved"
+  },
+  "errors": {
+    "CHECK_IN_FAILED": "We couldn’t load or save your routine right now. Please try again.",
+    "CHECK_IN_WINDOW_CLOSED": "This routine day has already ended.",
+    "INVALID_ROUTINE_DAY": "This action no longer belongs to the current routine day.",
+    "ROUTINE_NOT_SCHEDULED": "This routine is not scheduled for this day.",
+    "ROUTINE_DAY_SETTINGS_REQUIRED": "Set your routine day before checking in."
+  }
+}

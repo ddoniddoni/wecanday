@@ -1,0 +1,20 @@
+{
+  "eyebrow": "Your daily rhythm",
+  "title": "When does your day begin?",
+  "description": "Your routines, streaks, and reminders will follow this setting.",
+  "timeZoneLabel": "Time zone",
+  "timeZoneInputAccessibilityLabel": "Time zone",
+  "timeZonePlaceholder": "Example: Asia/Seoul",
+  "timeZoneHint": "We recommended your device setting. You can change it when you travel.",
+  "dayStartLabel": "Day start time",
+  "dayStartHint": "Enter 00:00–23:59 directly. The buttons change the time by one hour.",
+  "dayStartInputAccessibilityLabel": "Day start time in 24-hour format",
+  "dayStartInputPlaceholder": "04:00",
+  "decreaseDayStartAccessibilityLabel": "Choose a day start time one hour earlier",
+  "increaseDayStartAccessibilityLabel": "Choose a day start time one hour later",
+  "invalidDayStart": "Enter a time from 00:00 to 23:59.",
+  "invalidTimeZone": "Enter a valid IANA time zone, such as Asia/Seoul.",
+  "saveError": "We couldn't save your daily rhythm. Please try again.",
+  "saving": "Saving your daily rhythm",
+  "continue": "Continue"
+}

@@ -1,17 +1,15 @@
-import * as AppleAuthentication from 'expo-apple-authentication';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   type AuthErrorCode,
   getAuthErrorCode,
 } from '@/features/auth/domain/authErrors';
-import { signInWithApple } from '@/features/auth/services/appleSignIn';
-import { signInWithOAuthProvider } from '@/features/auth/services/oauthSignIn';
+import { signInWithGoogle } from '@/features/auth/services/oauthSignIn';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { spacing, touchTarget, typography } from '@/theme/tokens';
 
 type ProviderButtonProps = {
   isDisabled: boolean;
@@ -19,72 +17,43 @@ type ProviderButtonProps = {
   onPress: () => void;
 };
 
-function ProviderButton({
+const googleLogo = require('../../../assets/brands/google-g-logo.png');
+
+const googleButton = {
+  borderColor: '#747775',
+  height: 48,
+  logoLeftPadding: 12,
+  logoSize: 18,
+  textColor: '#1F1F1F',
+} as const;
+
+function GoogleProviderButton({
   isDisabled,
   label,
   onPress,
 }: ProviderButtonProps) {
-  const { theme } = useTheme();
-
   return (
     <Pressable
+      accessibilityLabel={label}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
       disabled={isDisabled}
       onPress={onPress}
       style={({ pressed }) => [
-        styles.providerButton,
+        styles.googleButton,
         {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
           opacity: isDisabled ? 0.5 : pressed ? 0.75 : 1,
         },
       ]}
     >
-      <Text style={[styles.providerLabel, { color: theme.colors.text }]}>
-        {label}
-      </Text>
+      <Image
+        accessibilityIgnoresInvertColors
+        source={googleLogo}
+        style={styles.googleLogo}
+        testID="google-sign-in-logo"
+      />
+      <Text style={styles.googleButtonLabel}>{label}</Text>
     </Pressable>
-  );
-}
-
-function AppleProviderButton({
-  isDisabled,
-  label,
-  onPress,
-}: ProviderButtonProps) {
-  const { theme } = useTheme();
-
-  if (Platform.OS !== 'ios') {
-    return (
-      <ProviderButton
-        isDisabled={isDisabled}
-        label={label}
-        onPress={onPress}
-      />
-    );
-  }
-
-  return (
-    <View
-      accessibilityState={{ disabled: isDisabled }}
-      pointerEvents={isDisabled ? 'none' : 'auto'}
-      style={{ opacity: isDisabled ? 0.5 : 1 }}
-    >
-      <AppleAuthentication.AppleAuthenticationButton
-        buttonStyle={
-          theme.isDark
-            ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-            : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-        }
-        buttonType={
-          AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-        }
-        cornerRadius={radii.lg}
-        onPress={onPress}
-        style={styles.appleButton}
-      />
-    </View>
   );
 }
 
@@ -139,17 +108,10 @@ export function LoginScreen() {
           {t('description')}
         </Text>
         <View style={styles.providers}>
-          <AppleProviderButton
+          <GoogleProviderButton
             isDisabled={isSubmitting}
             label={t('googleButton')}
-            onPress={() =>
-              void runSignIn(() => signInWithOAuthProvider('google'))
-            }
-          />
-          <ProviderButton
-            isDisabled={isSubmitting}
-            label={t('appleButton')}
-            onPress={() => void runSignIn(signInWithApple)}
+            onPress={() => void runSignIn(signInWithGoogle)}
           />
         </View>
         {errorCode && errorCode !== 'AUTH_PROVIDER_CANCELLED' ? (
@@ -193,22 +155,27 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginTop: spacing.md,
   },
-  providerButton: {
+  googleButton: {
     alignItems: 'center',
-    borderRadius: radii.lg,
+    backgroundColor: '#FFFFFF',
+    borderColor: googleButton.borderColor,
+    borderRadius: googleButton.height / 2,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: touchTarget.minimum,
-    padding: spacing.md,
+    minHeight: Math.max(googleButton.height, touchTarget.minimum),
   },
-  appleButton: {
-    height: 52,
-    width: '100%',
+  googleLogo: {
+    height: googleButton.logoSize,
+    left: googleButton.logoLeftPadding,
+    position: 'absolute',
+    resizeMode: 'contain',
+    width: googleButton.logoSize,
   },
-  providerLabel: {
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.body,
+  googleButtonLabel: {
+    color: googleButton.textColor,
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 20,
   },
   error: {
     fontSize: typography.size.caption,

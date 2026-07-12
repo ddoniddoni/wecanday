@@ -1,4 +1,4 @@
-import type { Provider } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 import { AuthDomainError } from '@/features/auth/domain/authErrors';
@@ -6,7 +6,15 @@ import { supabaseClient } from '@/lib/supabase/client';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const OAUTH_REDIRECT_URL = 'wecanday://auth/callback';
+const OAUTH_CALLBACK_PATH = 'auth/callback';
+
+type CreateUrl = (path: string) => string;
+
+export function getOAuthRedirectUrl(
+  createUrl: CreateUrl = Linking.createURL,
+): string {
+  return createUrl(OAUTH_CALLBACK_PATH);
+}
 
 export function parseOAuthCallbackCode(url: string): string | null {
   const parsedUrl = new URL(url);
@@ -14,19 +22,19 @@ export function parseOAuthCallbackCode(url: string): string | null {
   return parsedUrl.searchParams.get('code');
 }
 
-export async function signInWithOAuthProvider(
-  provider: Extract<Provider, 'apple' | 'google'>,
-): Promise<'success' | 'cancelled'> {
+export async function signInWithGoogle(): Promise<'success' | 'cancelled'> {
   if (!supabaseClient) {
     throw new AuthDomainError('AUTH_CONFIGURATION_MISSING');
   }
 
+  const redirectUrl = getOAuthRedirectUrl();
+
   const { data, error } = await supabaseClient.auth.signInWithOAuth({
-    provider,
+    provider: 'google',
     options: {
-      redirectTo: OAUTH_REDIRECT_URL,
+      redirectTo: redirectUrl,
       skipBrowserRedirect: true,
-      queryParams: provider === 'google' ? { prompt: 'consent' } : undefined,
+      queryParams: { prompt: 'consent' },
     },
   });
 
@@ -36,7 +44,7 @@ export async function signInWithOAuthProvider(
 
   const result = await WebBrowser.openAuthSessionAsync(
     data.url,
-    OAUTH_REDIRECT_URL,
+    redirectUrl,
   );
 
   if (result.type === 'cancel' || result.type === 'dismiss') {

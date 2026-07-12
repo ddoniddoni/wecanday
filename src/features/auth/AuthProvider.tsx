@@ -21,6 +21,7 @@ type AuthState =
   | { status: 'signed_in'; profile: ProfileRow; userId: string };
 
 type AuthContextValue = AuthState & {
+  replaceProfile: (profile: ProfileRow) => void;
   retry: () => void;
   signOut: () => Promise<void>;
 };
@@ -137,8 +138,16 @@ export function AuthProvider({
     }
   }
 
+  function replaceProfile(profile: ProfileRow) {
+    setState((previousState) =>
+      previousState.status === 'signed_in' && previousState.userId === profile.id
+        ? { ...previousState, profile }
+        : previousState,
+    );
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, retry, signOut }}>
+    <AuthContext.Provider value={{ ...state, replaceProfile, retry, signOut }}>
       {children}
     </AuthContext.Provider>
   );

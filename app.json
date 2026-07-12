@@ -7,11 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "wecanday",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "bundleIdentifier": "com.wecanday.app",
-      "usesAppleSignIn": true,
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "package": "com.wecanday.app",
       "adaptiveIcon": {
@@ -52,13 +47,13 @@
         }
       ],
       "expo-secure-store",
-      "expo-apple-authentication",
       [
         "expo-web-browser",
         {
           "experimentalLauncherActivity": false
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,
