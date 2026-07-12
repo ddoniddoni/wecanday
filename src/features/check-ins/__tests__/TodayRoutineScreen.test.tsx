@@ -94,4 +94,38 @@ describe('TodayRoutineScreen', () => {
       );
     });
   });
+
+  it('keeps today routines available when the daily streak summary cannot load', async () => {
+    await i18n.changeLanguage('en');
+    mockedLoadCurrentDailyStreak.mockRejectedValueOnce(
+      new Error('DAILY_STREAK_LOAD_FAILED'),
+    );
+
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <TodayRoutineScreen
+          client={{} as SupabaseClient<Database>}
+          displayName="Jamie"
+          hasPlanCreationSuccess={false}
+          hasSignOutError={false}
+          onCreatePlan={jest.fn()}
+          onEditRoutine={jest.fn()}
+          onOpenPlans={jest.fn()}
+          onSignOut={jest.fn()}
+          routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
+          userId="user-1"
+        />
+      </ThemeProvider>,
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Complete Morning walk' }),
+    ).toBeTruthy();
+    expect(screen.getByText('Unavailable')).toBeTruthy();
+    expect(
+      screen.queryByText(
+        'We couldn’t load or save your routine right now. Please try again.',
+      ),
+    ).toBeNull();
+  });
 });

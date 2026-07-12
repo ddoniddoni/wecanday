@@ -103,15 +103,9 @@ export function TodayRoutineScreen({
 
       try {
         await synchronizePendingCheckIns(client, userId, systemClock.now());
-        const [loadedItems, pendingOperations, loadedDailyStreak] = await Promise.all([
+        const [loadedItems, pendingOperations] = await Promise.all([
           loadTodayRoutineItems(client, userId, nextRoutineDayWindow.key),
           loadPendingCheckInOperations(userId, nextRoutineDayWindow.key),
-          loadCurrentDailyStreak(
-            client,
-            userId,
-            nextRoutineDayWindow.key,
-            routineDayConfig,
-          ),
         ]);
 
         setItems(
@@ -124,7 +118,19 @@ export function TodayRoutineScreen({
             })),
           ),
         );
-        setDailyStreak(loadedDailyStreak);
+
+        try {
+          const loadedDailyStreak = await loadCurrentDailyStreak(
+            client,
+            userId,
+            nextRoutineDayWindow.key,
+            routineDayConfig,
+          );
+
+          setDailyStreak(loadedDailyStreak);
+        } catch {
+          setDailyStreak(null);
+        }
       } catch (error) {
         setErrorCode(getCheckInErrorCode(error));
       } finally {
