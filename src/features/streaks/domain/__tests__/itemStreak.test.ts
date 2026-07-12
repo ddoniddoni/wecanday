@@ -1,9 +1,23 @@
 import {
   calculateRoutineItemStreak,
+  getRoutineItemStatusOnDay,
   isRoutineItemScheduledOnDay,
 } from '@/features/streaks/domain/itemStreak';
 
 describe('routine item streak domain', () => {
+  it('orders status events without mutating the supplied history', () => {
+    const statusEvents = [
+      { effectiveRoutineDay: '2026-07-08', status: 'active' as const },
+      { effectiveRoutineDay: '2026-07-07', status: 'paused' as const },
+    ];
+
+    expect(getRoutineItemStatusOnDay(statusEvents, '2026-07-07')).toBe('paused');
+    expect(statusEvents).toEqual([
+      { effectiveRoutineDay: '2026-07-08', status: 'active' },
+      { effectiveRoutineDay: '2026-07-07', status: 'paused' },
+    ]);
+  });
+
   it('counts three consecutive daily completions', () => {
     expect(
       calculateRoutineItemStreak({

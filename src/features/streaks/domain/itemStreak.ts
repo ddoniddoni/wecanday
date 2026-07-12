@@ -78,7 +78,7 @@ export function getRoutineItemStatusOnDay(
   parseRoutineDayKey(routineDay);
   let status: RoutineItemStatus = 'active';
 
-  for (const event of statusEvents.toSorted((left, right) =>
+  for (const event of [...statusEvents].sort((left, right) =>
     left.effectiveRoutineDay.localeCompare(right.effectiveRoutineDay),
   )) {
     parseRoutineDayKey(event.effectiveRoutineDay);
