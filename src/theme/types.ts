@@ -10,6 +10,7 @@ export type AppTheme = {
     text: string;
     textMuted: string;
     primary: string;
+    onPrimary: string;
     accent: string;
     border: string;
     focus: string;

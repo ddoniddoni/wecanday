@@ -10,6 +10,7 @@ export const pixelDefaultTheme: AppTheme = {
     text: palette.ink,
     textMuted: palette.moss,
     primary: palette.pixelGround,
+    onPrimary: palette.paper,
     accent: palette.sun,
     border: palette.ink,
     focus: palette.ink,

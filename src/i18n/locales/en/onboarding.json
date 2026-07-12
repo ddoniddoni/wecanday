@@ -1,3 +1,23 @@
 {
-  "greeting": "Hello, we can do it."
+  "greeting": "Hello, we can do it.",
+  "loading": "Preparing your setup…",
+  "loadErrorTitle": "We couldn't load your setup.",
+  "loadErrorBody": "Your choices are still safe. Please try again.",
+  "retry": "Try again",
+  "stepProgress": "Step {{current}} of {{total}}",
+  "countryTitle": "Choose your country",
+  "countryDescription": "Country affects regional formatting, not your app language or time zone.",
+  "countrySearchLabel": "Search countries",
+  "countrySearchPlaceholder": "Search by country name or code",
+  "countryEmpty": "No matching country found.",
+  "countryOptionLabel": "Select {{country}} ({{code}})",
+  "selected": "Selected",
+  "languageTitle": "Choose your language",
+  "languageDescription": "You can change this anytime in settings.",
+  "languageOptionLabel": "Use {{language}}",
+  "greetingDescription": "Your country and language are set independently.",
+  "continue": "Continue",
+  "back": "Back",
+  "start": "Get started",
+  "saveError": "We couldn't save that choice. Please try again."
 }

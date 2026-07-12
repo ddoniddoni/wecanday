@@ -1,5 +1,5 @@
-import { FoundationScreen } from '@/features/foundation/FoundationScreen';
+import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 
 export default function IndexRoute() {
-  return <FoundationScreen />;
+  return <OnboardingGate />;
 }

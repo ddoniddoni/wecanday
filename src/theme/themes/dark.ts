@@ -10,6 +10,7 @@ export const darkTheme: AppTheme = {
     text: palette.nightText,
     textMuted: palette.mint,
     primary: palette.mint,
+    onPrimary: palette.ink,
     accent: palette.sun,
     border: palette.borderDark,
     focus: palette.mint,
