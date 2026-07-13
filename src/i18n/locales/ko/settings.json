@@ -1,0 +1,16 @@
+{
+  "theme": {
+    "eyebrow": "화면 모양",
+    "title": "테마를 선택하세요",
+    "description": "선택한 테마는 바로 적용되고 계정에 저장돼요.",
+    "back": "오늘로 돌아가기",
+    "saving": "테마 저장 중",
+    "saveError": "테마를 저장하지 못했어요. 다시 시도해 주세요.",
+    "options": {
+      "system": { "label": "시스템 설정", "description": "기기의 화면 모양을 따라가요." },
+      "light": { "label": "라이트", "description": "밝고 차분한 화면이에요." },
+      "dark": { "label": "다크", "description": "어두운 곳에서 보기 편한 화면이에요." },
+      "pixel-default": { "label": "픽셀", "description": "즐거운 픽셀 분위기의 테마예요." }
+    }
+  }
+}

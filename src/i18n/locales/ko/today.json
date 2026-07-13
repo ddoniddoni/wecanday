@@ -3,6 +3,7 @@
   "title": "오늘의 작은 걸음",
   "signOut": "로그아웃",
   "openPlans": "내 계획",
+  "openThemes": "테마",
   "signOutError": "로그아웃하지 못했어요. 다시 시도해 주세요.",
   "planCreated": "첫 루틴을 만들었어요.",
   "routineDayLabel": "루틴 데이",

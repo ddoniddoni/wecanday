@@ -3,6 +3,7 @@ import {
   type PropsWithChildren,
   useContext,
   useMemo,
+  useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
 
@@ -19,6 +20,7 @@ const themes: Record<ThemeId, AppTheme> = {
 
 type ThemeContextValue = {
   preference: ThemePreference;
+  setPreference: (preference: ThemePreference) => void;
   theme: AppTheme;
 };
 
@@ -32,16 +34,17 @@ export function ThemeProvider({
   children,
   preference = 'system',
 }: ThemeProviderProps) {
+  const [selectedPreference, setSelectedPreference] = useState<ThemePreference>(preference);
   const systemColorScheme = useColorScheme();
   const resolvedThemeId: ThemeId =
-    preference === 'system'
+    selectedPreference === 'system'
       ? systemColorScheme === 'dark'
         ? 'dark'
         : 'light'
-      : preference;
+      : selectedPreference;
   const value = useMemo(
-    () => ({ preference, theme: themes[resolvedThemeId] }),
-    [preference, resolvedThemeId],
+    () => ({ preference: selectedPreference, setPreference: setSelectedPreference, theme: themes[resolvedThemeId] }),
+    [selectedPreference, resolvedThemeId],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

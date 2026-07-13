@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
+import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
 import { cancelRoutineReminder, synchronizeRoutineReminder } from '@/features/notifications/services/routineReminderService';
 import { synchronizeActiveRoutineReminders } from '@/features/notifications/services/routineReminderSynchronizationService';
@@ -28,6 +30,8 @@ import { RoutineDaySetupScreen } from '@/features/routine-day/RoutineDaySetupScr
 import { completeInitialRoutineDaySettings } from '@/features/routine-day/services/routineDaySettingsService';
 import { i18n } from '@/i18n';
 import { supabaseClient } from '@/lib/supabase/client';
+import { useTheme } from '@/theme/ThemeProvider';
+import { isThemePreference } from '@/theme/types';
 
 type AppScreen =
   | 'notification-permission'
@@ -35,11 +39,13 @@ type AppScreen =
   | 'plan-list'
   | 'routine-create'
   | 'routine-edit'
+  | 'theme-selection'
   | 'today';
 type PlanCreationReturnScreen = 'plan-list' | 'today';
 
 export function ProfileHomeScreen() {
   const auth = useAuth();
+  const { setPreference } = useTheme();
   const profileForReminderSync = auth.status === 'signed_in' ? auth.profile : null;
   const userIdForReminderSync = auth.status === 'signed_in' ? auth.userId : null;
   const [hasSignOutError, setHasSignOutError] = useState(false);
@@ -80,6 +86,12 @@ export function ProfileHomeScreen() {
     profileForReminderSync,
     userIdForReminderSync,
   ]);
+
+  useEffect(() => {
+    if (profileForReminderSync && isThemePreference(profileForReminderSync.theme_id)) {
+      setPreference(profileForReminderSync.theme_id);
+    }
+  }, [profileForReminderSync, setPreference]);
 
   if (auth.status !== 'signed_in') {
     return null;
@@ -185,6 +197,26 @@ export function ProfileHomeScreen() {
         onNotNow={() => {
           void markNotificationPermissionPrimerHandled(authenticatedUserId);
           setScreen('today');
+        }}
+      />
+    );
+  }
+  if (screen === 'theme-selection') {
+    return (
+      <ThemeSelectionScreen
+        onBack={() => setScreen('today')}
+        onSave={async (preference) => {
+          if (!supabaseClient) {
+            throw new Error('THEME_PREFERENCE_SAVE_FAILED');
+          }
+
+          const profile = await saveThemePreference(
+            supabaseClient,
+            authenticatedUserId,
+            preference,
+          );
+          auth.replaceProfile(profile);
+          setPreference(preference);
         }}
       />
     );
@@ -311,6 +343,7 @@ export function ProfileHomeScreen() {
         setScreen('routine-edit');
       }}
       onOpenPlans={() => setScreen('plan-list')}
+      onOpenThemes={() => setScreen('theme-selection')}
       onRoutineCompletionChanged={(routine, isCompleted) => {
         if (isCompleted) {
           void cancelRoutineReminder(routine.id);

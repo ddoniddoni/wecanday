@@ -1,0 +1,16 @@
+{
+  "theme": {
+    "eyebrow": "Appearance",
+    "title": "Choose your theme",
+    "description": "Your choice applies right away and stays with your account.",
+    "back": "Back to today",
+    "saving": "Saving theme",
+    "saveError": "We couldn't save your theme. Please try again.",
+    "options": {
+      "system": { "label": "System", "description": "Match your device appearance." },
+      "light": { "label": "Light", "description": "A bright, calm workspace." },
+      "dark": { "label": "Dark", "description": "A low-light workspace." },
+      "pixel-default": { "label": "Pixel", "description": "A playful pixel-inspired theme." }
+    }
+  }
+}

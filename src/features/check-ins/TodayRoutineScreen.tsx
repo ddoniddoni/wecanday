@@ -55,6 +55,7 @@ type TodayRoutineScreenProps = {
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
+  onOpenThemes: () => void;
   onRoutineCompletionChanged: (
     item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays'>,
     isCompleted: boolean,
@@ -72,6 +73,7 @@ export function TodayRoutineScreen({
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
+  onOpenThemes,
   onRoutineCompletionChanged,
   onSignOut,
   routineDayConfig,
@@ -268,6 +270,22 @@ export function TodayRoutineScreen({
             </Text>
           </View>
           <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={t('openThemes')}
+              accessibilityRole="button"
+              onPress={onOpenThemes}
+              style={({ pressed }) => [
+                styles.signOutButton,
+                {
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
+                {t('openThemes')}
+              </Text>
+            </Pressable>
             <Pressable
               accessibilityLabel={t('openPlans')}
               accessibilityRole="button"
