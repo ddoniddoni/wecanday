@@ -55,6 +55,7 @@ type TodayRoutineScreenProps = {
   hasSignOutError: boolean;
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
+  onOpenFriendSearch: () => void;
   onOpenPlans: () => void;
   onOpenAnnualStatistics: () => void;
   onOpenMonthlyStatistics: () => void;
@@ -77,6 +78,7 @@ export function TodayRoutineScreen({
   hasSignOutError,
   onCreatePlan,
   onEditRoutine,
+  onOpenFriendSearch,
   onOpenPlans,
   onOpenAnnualStatistics,
   onOpenMonthlyStatistics,
@@ -343,7 +345,7 @@ export function TodayRoutineScreen({
           isDailyStreakLoading={isDailyStreakLoading}
           totalCount={items.length}
         />
-        <PublicCodeShareCard publicCode={publicCode} />
+        <PublicCodeShareCard onFindFriend={onOpenFriendSearch} publicCode={publicCode} />
         <View style={styles.statisticsActions}>
           <Pressable
             accessibilityLabel={t('openWeeklyStatistics')}

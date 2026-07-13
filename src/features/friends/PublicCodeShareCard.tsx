@@ -7,10 +7,14 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 type PublicCodeShareCardProps = {
+  onFindFriend: () => void;
   publicCode: string;
 };
 
-export function PublicCodeShareCard({ publicCode }: PublicCodeShareCardProps) {
+export function PublicCodeShareCard({
+  onFindFriend,
+  publicCode,
+}: PublicCodeShareCardProps) {
   const { t } = useTranslation('friends');
   const { theme } = useTheme();
   const [actionState, setActionState] = useState<'idle' | 'copying' | 'copied' | 'error' | 'sharing'>('idle');
@@ -88,6 +92,20 @@ export function PublicCodeShareCard({ publicCode }: PublicCodeShareCardProps) {
           <Text style={[styles.buttonLabel, { color: theme.colors.text }]}>{t('publicCode.share')}</Text>
         </Pressable>
       </View>
+      <Pressable
+        accessibilityLabel={t('search.open')}
+        accessibilityRole="button"
+        disabled={isBusy}
+        onPress={onFindFriend}
+        style={({ pressed }) => [
+          styles.findFriendButton,
+          { borderColor: theme.colors.border, opacity: pressed || isBusy ? 0.72 : 1 },
+        ]}
+      >
+        <Text style={[styles.buttonLabel, { color: theme.colors.text }]}>
+          {t('search.open')}
+        </Text>
+      </Pressable>
       {feedback ? (
         <Text accessibilityRole={actionState === 'error' ? 'alert' : 'text'} style={[styles.feedback, { color: actionState === 'error' ? theme.colors.text : theme.colors.primary }]}>
           {feedback}
@@ -103,6 +121,7 @@ const styles = StyleSheet.create({
   title: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   code: { fontSize: typography.size.body, fontWeight: typography.weight.bold, letterSpacing: 1.5, lineHeight: typography.lineHeight.body },
+  findFriendButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   actions: { flexDirection: 'row', gap: spacing.sm },
   button: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   buttonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },

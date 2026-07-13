@@ -9,5 +9,24 @@
     "error": "친구 코드를 공유하지 못했어요. 다시 시도해 주세요.",
     "shareTitle": "나의 WeCanDay 친구 코드",
     "shareMessage": "나의 WeCanDay 친구 코드는 {{code}}"
+  },
+  "search": {
+    "open": "코드로 친구 찾기",
+    "back": "뒤로",
+    "title": "친구 찾기",
+    "description": "친구가 공유한 12자리 전체 코드를 입력하세요.",
+    "inputLabel": "친구 코드",
+    "placeholder": "Ab7kL2xP9Qm4",
+    "submit": "코드 검색",
+    "searching": "친구 검색 중",
+    "notFound": "해당 코드의 친구를 찾을 수 없어요.",
+    "resultEyebrow": "친구를 찾았어요",
+    "resultAccessibilityLabel": "찾은 친구: {{displayName}}.",
+    "avatarPreview": "아바타 미리보기: {{seed}}",
+    "errors": {
+      "INVALID_PUBLIC_CODE": "12자리 전체 친구 코드를 입력하세요.",
+      "FRIEND_CODE_RATE_LIMITED": "코드 검색이 너무 많아요. 1분 뒤에 다시 시도하세요.",
+      "FRIEND_SEARCH_FAILED": "코드를 검색하지 못했어요. 다시 시도하세요."
+    }
   }
 }

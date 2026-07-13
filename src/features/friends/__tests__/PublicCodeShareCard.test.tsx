@@ -58,7 +58,7 @@ describe('PublicCodeShareCard', () => {
 function renderCard() {
   return render(
     <ThemeProvider preference="light">
-      <PublicCodeShareCard publicCode="Ab7kL2xP9Qm4" />
+      <PublicCodeShareCard onFindFriend={jest.fn()} publicCode="Ab7kL2xP9Qm4" />
     </ThemeProvider>,
   );
 }

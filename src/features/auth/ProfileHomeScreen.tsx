@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { FriendCodeSearchScreen } from '@/features/friends/FriendCodeSearchScreen';
 import { AnnualStatisticsScreen } from '@/features/statistics/AnnualStatisticsScreen';
 import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatisticsScreen';
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
@@ -43,6 +44,7 @@ type AppScreen =
   | 'routine-create'
   | 'routine-edit'
   | 'annual-statistics'
+  | 'friend-search'
   | 'monthly-statistics'
   | 'theme-selection'
   | 'weekly-statistics'
@@ -227,6 +229,13 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'friend-search') {
+    if (!supabaseClient) {
+      return null;
+    }
+
+    return <FriendCodeSearchScreen client={supabaseClient} onBack={() => setScreen('today')} />;
+  }
   if (screen === 'weekly-statistics') {
     if (!supabaseClient) {
       return null;
@@ -399,6 +408,7 @@ export function ProfileHomeScreen() {
         });
         setScreen('routine-edit');
       }}
+      onOpenFriendSearch={() => setScreen('friend-search')}
       onOpenPlans={() => setScreen('plan-list')}
       onOpenAnnualStatistics={() => setScreen('annual-statistics')}
       onOpenMonthlyStatistics={() => setScreen('monthly-statistics')}

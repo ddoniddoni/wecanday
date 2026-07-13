@@ -13,6 +13,17 @@ export type ProfileRow = {
   updated_at: string;
 };
 
+export type UserBlockRow = {
+  blocked_id: string;
+  blocker_id: string;
+  created_at: string;
+};
+
+export type FriendCodeLookupRow = Pick<
+  ProfileRow,
+  'avatar_seed' | 'display_name' | 'id'
+>;
+
 export type PlanRow = {
   created_at: string;
   description: string | null;
@@ -78,6 +89,12 @@ export type Database = {
             | 'theme_id'
           >
         >;
+        Relationships: [];
+      };
+      user_blocks: {
+        Row: UserBlockRow;
+        Insert: never;
+        Update: never;
         Relationships: [];
       };
       plans: {
@@ -184,6 +201,10 @@ export type Database = {
           p_source: 'offline_sync' | 'online';
         };
         Returns: undefined;
+      };
+      lookup_profile_by_public_code: {
+        Args: { p_public_code: string };
+        Returns: FriendCodeLookupRow[];
       };
     };
     Enums: Record<never, never>;

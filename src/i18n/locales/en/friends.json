@@ -9,5 +9,24 @@
     "error": "We couldn’t share your friend code. Please try again.",
     "shareTitle": "My WeCanDay friend code",
     "shareMessage": "My WeCanDay friend code is {{code}}"
+  },
+  "search": {
+    "open": "Find a friend by code",
+    "back": "Back",
+    "title": "Find a friend",
+    "description": "Enter the complete 12-character code your friend shared with you.",
+    "inputLabel": "Friend code",
+    "placeholder": "Ab7kL2xP9Qm4",
+    "submit": "Search code",
+    "searching": "Searching for friend",
+    "notFound": "We couldn’t find a friend with that code.",
+    "resultEyebrow": "Friend found",
+    "resultAccessibilityLabel": "Friend found: {{displayName}}.",
+    "avatarPreview": "Avatar preview: {{seed}}",
+    "errors": {
+      "INVALID_PUBLIC_CODE": "Enter the complete 12-character friend code.",
+      "FRIEND_CODE_RATE_LIMITED": "Too many code searches. Please wait a minute and try again.",
+      "FRIEND_SEARCH_FAILED": "We couldn’t search for that code. Please try again."
+    }
   }
 }
