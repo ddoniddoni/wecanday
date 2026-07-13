@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatisticsScreen';
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
 import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
 import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
@@ -40,6 +41,7 @@ type AppScreen =
   | 'plan-list'
   | 'routine-create'
   | 'routine-edit'
+  | 'monthly-statistics'
   | 'theme-selection'
   | 'weekly-statistics'
   | 'today';
@@ -240,6 +242,23 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'monthly-statistics') {
+    if (!supabaseClient) {
+      return null;
+    }
+
+    return (
+      <MonthlyStatisticsScreen
+        client={supabaseClient}
+        onBack={() => setScreen('today')}
+        routineDayConfig={{
+          dayStartMinute: auth.profile.day_start_minute,
+          timeZone: auth.profile.time_zone,
+        }}
+        userId={authenticatedUserId}
+      />
+    );
+  }
   if (screen === 'routine-edit' && selectedRoutine) {
     const returnScreen = selectedRoutine.returnTo === 'plans' ? 'plan-list' : 'today';
 
@@ -362,6 +381,7 @@ export function ProfileHomeScreen() {
         setScreen('routine-edit');
       }}
       onOpenPlans={() => setScreen('plan-list')}
+      onOpenMonthlyStatistics={() => setScreen('monthly-statistics')}
       onOpenThemes={() => setScreen('theme-selection')}
       onOpenWeeklyStatistics={() => setScreen('weekly-statistics')}
       onRoutineCompletionChanged={(routine, isCompleted) => {

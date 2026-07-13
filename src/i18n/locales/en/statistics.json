@@ -18,5 +18,31 @@
   "highestStreak": "Highest daily streak",
   "streakValue_one": "{{count}} day",
   "streakValue_other": "{{count}} days",
-  "accessibilitySummary": "Weekly completion rate: {{rate}}%. {{completed}} of {{scheduled}} scheduled routines complete. Current daily streak: {{currentStreak}}. Highest daily streak: {{highestStreak}}."
+  "accessibilitySummary": "Weekly completion rate: {{rate}}%. {{completed}} of {{scheduled}} scheduled routines complete. Current daily streak: {{currentStreak}}. Highest daily streak: {{highestStreak}}.",
+  "monthly": {
+    "eyebrow": "Your progress",
+    "title": "Monthly statistics",
+    "loading": "Loading monthly statistics…",
+    "error": "We couldn’t load your monthly statistics. Please try again.",
+    "emptyTitle": "No routines were scheduled in this month.",
+    "emptyDescription": "Your monthly progress will appear here once a routine is scheduled.",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "completionRate": "Monthly completion rate",
+    "completionCount": "{{completed}} of {{scheduled}} scheduled routines complete",
+    "previousUnavailable": "No scheduled routines in the previous month",
+    "changeFromPrevious": "{{count}} percentage points from last month",
+    "calendar": "Monthly calendar",
+    "weekdays": { "sun": "S", "mon": "M", "tue": "T", "wed": "W", "thu": "T", "fri": "F", "sat": "S" },
+    "restDay": "Rest day",
+    "dailyRate": "{{completed}}/{{scheduled}}",
+    "dayAccessibilityLabel": "{{date}}: {{value}}.",
+    "completedRoutineDays": "Fully completed routine days",
+    "completedRoutineDaysValue_one": "{{count}} day",
+    "completedRoutineDaysValue_other": "{{count}} days",
+    "planCompletion": "Completion by plan",
+    "planCount": "{{completed}} of {{scheduled}} complete",
+    "planAccessibilityLabel": "{{title}}: {{rate}}%. {{completed}} of {{scheduled}} scheduled routines complete.",
+    "accessibilitySummary": "Monthly completion rate: {{rate}}%. {{completed}} of {{scheduled}} scheduled routines complete. {{completedDays}} routine days were fully completed."
+  }
 }

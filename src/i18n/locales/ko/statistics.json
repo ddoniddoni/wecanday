@@ -17,5 +17,30 @@
   "currentStreak": "현재 데일리 스트릭",
   "highestStreak": "최고 데일리 스트릭",
   "streakValue": "{{count}}일",
-  "accessibilitySummary": "주간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 현재 데일리 스트릭: {{currentStreak}}일. 최고 데일리 스트릭: {{highestStreak}}일."
+  "accessibilitySummary": "주간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 현재 데일리 스트릭: {{currentStreak}}일. 최고 데일리 스트릭: {{highestStreak}}일.",
+  "monthly": {
+    "eyebrow": "나의 흐름",
+    "title": "월간 통계",
+    "loading": "월간 통계를 불러오는 중…",
+    "error": "월간 통계를 불러오지 못했어요. 다시 시도해 주세요.",
+    "emptyTitle": "이 달에 예정된 루틴이 없어요.",
+    "emptyDescription": "루틴이 예정되면 여기에서 월간 진행을 확인할 수 있어요.",
+    "previousMonth": "지난달",
+    "nextMonth": "다음 달",
+    "completionRate": "월간 완료율",
+    "completionCount": "예정된 {{scheduled}}개 중 {{completed}}개 완료",
+    "previousUnavailable": "지난달에는 예정된 루틴이 없어요",
+    "changeFromPrevious": "지난달보다 {{count}}%p",
+    "calendar": "월간 캘린더",
+    "weekdays": { "sun": "일", "mon": "월", "tue": "화", "wed": "수", "thu": "목", "fri": "금", "sat": "토" },
+    "restDay": "휴식일",
+    "dailyRate": "{{scheduled}}개 중 {{completed}}개",
+    "dayAccessibilityLabel": "{{date}}: {{value}}.",
+    "completedRoutineDays": "모두 완료한 루틴 데이",
+    "completedRoutineDaysValue": "{{count}}일",
+    "planCompletion": "계획별 완료율",
+    "planCount": "{{scheduled}}개 중 {{completed}}개 완료",
+    "planAccessibilityLabel": "{{title}}: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료.",
+    "accessibilitySummary": "월간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 루틴 데이 {{completedDays}}일을 모두 완료했어요."
+  }
 }

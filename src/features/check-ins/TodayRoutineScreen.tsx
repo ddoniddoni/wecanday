@@ -55,6 +55,7 @@ type TodayRoutineScreenProps = {
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
+  onOpenMonthlyStatistics: () => void;
   onOpenThemes: () => void;
   onOpenWeeklyStatistics: () => void;
   onRoutineCompletionChanged: (
@@ -74,6 +75,7 @@ export function TodayRoutineScreen({
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
+  onOpenMonthlyStatistics,
   onOpenThemes,
   onOpenWeeklyStatistics,
   onRoutineCompletionChanged,
@@ -336,22 +338,40 @@ export function TodayRoutineScreen({
           isDailyStreakLoading={isDailyStreakLoading}
           totalCount={items.length}
         />
-        <Pressable
-          accessibilityLabel={t('openWeeklyStatistics')}
-          accessibilityRole="button"
-          onPress={onOpenWeeklyStatistics}
-          style={({ pressed }) => [
-            styles.statisticsButton,
-            {
-              borderColor: theme.colors.border,
-              opacity: pressed ? 0.72 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-            {t('openWeeklyStatistics')}
-          </Text>
-        </Pressable>
+        <View style={styles.statisticsActions}>
+          <Pressable
+            accessibilityLabel={t('openWeeklyStatistics')}
+            accessibilityRole="button"
+            onPress={onOpenWeeklyStatistics}
+            style={({ pressed }) => [
+              styles.statisticsButton,
+              {
+                borderColor: theme.colors.border,
+                opacity: pressed ? 0.72 : 1,
+              },
+            ]}
+          >
+            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+              {t('openWeeklyStatistics')}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel={t('openMonthlyStatistics')}
+            accessibilityRole="button"
+            onPress={onOpenMonthlyStatistics}
+            style={({ pressed }) => [
+              styles.statisticsButton,
+              {
+                borderColor: theme.colors.border,
+                opacity: pressed ? 0.72 : 1,
+              },
+            ]}
+          >
+            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+              {t('openMonthlyStatistics')}
+            </Text>
+          </Pressable>
+        </View>
 
         {hasPlanCreationSuccess ? (
           <Text style={[styles.success, { color: theme.colors.primary }]}>
@@ -536,7 +556,8 @@ const styles = StyleSheet.create({
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   retryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
+  statisticsActions: { flexDirection: 'row', gap: spacing.sm },
+  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   statisticsButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   list: { gap: spacing.sm },
   routineItem: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 68, padding: spacing.md },
