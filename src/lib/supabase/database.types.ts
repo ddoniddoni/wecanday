@@ -55,6 +55,23 @@ export type FriendConnectionRow = Pick<
   'avatar_seed' | 'display_name' | 'id'
 >;
 
+export type ChallengeRow = {
+  created_at: string;
+  creator_id: string;
+  ends_on: string;
+  id: string;
+  schedule_weekdays: number[];
+  starts_on: string;
+  status: 'active' | 'cancelled' | 'completed' | 'invited';
+  title: string;
+  updated_at: string;
+};
+
+export type ChallengeInvitationRow = Pick<
+  ChallengeRow,
+  'ends_on' | 'id' | 'schedule_weekdays' | 'starts_on' | 'title'
+> & { creator_name: string };
+
 export type PlanRow = {
   created_at: string;
   description: string | null;
@@ -130,6 +147,12 @@ export type Database = {
       };
       friendships: {
         Row: FriendshipRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      challenges: {
+        Row: ChallengeRow;
         Insert: never;
         Update: never;
         Relationships: [];
@@ -278,6 +301,18 @@ export type Database = {
       list_blocked_users: {
         Args: Record<never, never>;
         Returns: FriendConnectionRow[];
+      };
+      create_one_to_one_challenge: {
+        Args: { p_ends_on: string; p_friend_id: string; p_schedule_weekdays: number[]; p_starts_on: string; p_title: string };
+        Returns: ChallengeRow;
+      };
+      respond_to_one_to_one_challenge: {
+        Args: { p_challenge_id: string; p_response: 'accepted' | 'declined' };
+        Returns: ChallengeRow;
+      };
+      list_challenge_invitations: {
+        Args: Record<never, never>;
+        Returns: ChallengeInvitationRow[];
       };
     };
     Enums: Record<never, never>;
