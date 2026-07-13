@@ -61,7 +61,12 @@
       "reactCompiler": true
     },
     "extra": {
-      "supportsRTL": true
-    }
+      "supportsRTL": true,
+      "router": {},
+      "eas": {
+        "projectId": "8917155a-50ac-4314-b773-03fb951eb47b"
+      }
+    },
+    "owner": "ddoni"
   }
 }
