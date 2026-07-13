@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
 import { cancelRoutineReminder, synchronizeRoutineReminder } from '@/features/notifications/services/routineReminderService';
+import { synchronizeActiveRoutineReminders } from '@/features/notifications/services/routineReminderSynchronizationService';
 import {
   markNotificationPermissionPrimerHandled,
   requestRoutineNotificationPermission,
@@ -25,6 +26,7 @@ import {
 import { getCurrentRoutineDayWindow } from '@/features/routine-day/domain/routineDay';
 import { RoutineDaySetupScreen } from '@/features/routine-day/RoutineDaySetupScreen';
 import { completeInitialRoutineDaySettings } from '@/features/routine-day/services/routineDaySettingsService';
+import { i18n } from '@/i18n';
 import { supabaseClient } from '@/lib/supabase/client';
 
 type AppScreen =
@@ -38,6 +40,8 @@ type PlanCreationReturnScreen = 'plan-list' | 'today';
 
 export function ProfileHomeScreen() {
   const auth = useAuth();
+  const profileForReminderSync = auth.status === 'signed_in' ? auth.profile : null;
+  const userIdForReminderSync = auth.status === 'signed_in' ? auth.userId : null;
   const [hasSignOutError, setHasSignOutError] = useState(false);
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
   const [screen, setScreen] = useState<AppScreen>('today');
@@ -52,6 +56,30 @@ export function ProfileHomeScreen() {
     status: 'active' | 'paused';
     title: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (!supabaseClient || !profileForReminderSync || !userIdForReminderSync) {
+      return;
+    }
+
+    const client = supabaseClient;
+    const synchronize = () => {
+      void synchronizeActiveRoutineReminders(client);
+    };
+
+    synchronize();
+    i18n.on('languageChanged', synchronize);
+
+    return () => {
+      i18n.off('languageChanged', synchronize);
+    };
+  }, [
+    profileForReminderSync?.day_start_minute,
+    profileForReminderSync?.locale,
+    profileForReminderSync?.time_zone,
+    profileForReminderSync,
+    userIdForReminderSync,
+  ]);
 
   if (auth.status !== 'signed_in') {
     return null;
