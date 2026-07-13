@@ -20,6 +20,7 @@ import {
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
 import { CompanionHero } from '@/features/companion/CompanionHero';
+import { PublicCodeShareCard } from '@/features/friends/PublicCodeShareCard';
 import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
 import { TodayStatsSummary } from '@/features/streaks/TodayStatsSummary';
 import { loadCurrentDailyStreak } from '@/features/streaks/services/dailyStreakService';
@@ -64,6 +65,7 @@ type TodayRoutineScreenProps = {
     isCompleted: boolean,
   ) => void;
   onSignOut: () => void;
+  publicCode: string;
   routineDayConfig: RoutineDayConfig;
   userId: string;
 };
@@ -82,6 +84,7 @@ export function TodayRoutineScreen({
   onOpenWeeklyStatistics,
   onRoutineCompletionChanged,
   onSignOut,
+  publicCode,
   routineDayConfig,
   userId,
 }: TodayRoutineScreenProps) {
@@ -340,6 +343,7 @@ export function TodayRoutineScreen({
           isDailyStreakLoading={isDailyStreakLoading}
           totalCount={items.length}
         />
+        <PublicCodeShareCard publicCode={publicCode} />
         <View style={styles.statisticsActions}>
           <Pressable
             accessibilityLabel={t('openWeeklyStatistics')}

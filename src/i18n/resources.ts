@@ -1,5 +1,6 @@
 import enAuth from '@/i18n/locales/en/auth.json';
 import enCommon from '@/i18n/locales/en/common.json';
+import enFriends from '@/i18n/locales/en/friends.json';
 import enOnboarding from '@/i18n/locales/en/onboarding.json';
 import enNotifications from '@/i18n/locales/en/notifications.json';
 import enPlans from '@/i18n/locales/en/plans.json';
@@ -9,6 +10,7 @@ import enStatistics from '@/i18n/locales/en/statistics.json';
 import enToday from '@/i18n/locales/en/today.json';
 import koAuth from '@/i18n/locales/ko/auth.json';
 import koCommon from '@/i18n/locales/ko/common.json';
+import koFriends from '@/i18n/locales/ko/friends.json';
 import koOnboarding from '@/i18n/locales/ko/onboarding.json';
 import koNotifications from '@/i18n/locales/ko/notifications.json';
 import koPlans from '@/i18n/locales/ko/plans.json';
@@ -21,6 +23,7 @@ export const resources = {
   en: {
     auth: enAuth,
     common: enCommon,
+    friends: enFriends,
     onboarding: enOnboarding,
     notifications: enNotifications,
     plans: enPlans,
@@ -32,6 +35,7 @@ export const resources = {
   ko: {
     auth: koAuth,
     common: koCommon,
+    friends: koFriends,
     onboarding: koOnboarding,
     notifications: koNotifications,
     plans: koPlans,

@@ -417,6 +417,7 @@ export function ProfileHomeScreen() {
         });
       }}
       onSignOut={() => void handleSignOut()}
+      publicCode={auth.profile.public_code}
       routineDayConfig={{
         dayStartMinute: auth.profile.day_start_minute,
         timeZone: auth.profile.time_zone,

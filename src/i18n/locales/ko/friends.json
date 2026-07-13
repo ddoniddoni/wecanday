@@ -1,0 +1,13 @@
+{
+  "publicCode": {
+    "title": "내 친구 코드",
+    "description": "신뢰하는 사람에게 이 12자리 코드를 정확히 공유해 주세요.",
+    "accessibilityLabel": "내 친구 코드: {{code}}.",
+    "copy": "코드 복사",
+    "share": "코드 공유",
+    "copied": "친구 코드를 복사했어요.",
+    "error": "친구 코드를 공유하지 못했어요. 다시 시도해 주세요.",
+    "shareTitle": "나의 WeCanDay 친구 코드",
+    "shareMessage": "나의 WeCanDay 친구 코드는 {{code}}"
+  }
+}

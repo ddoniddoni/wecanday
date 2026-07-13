@@ -1,0 +1,13 @@
+{
+  "publicCode": {
+    "title": "Your friend code",
+    "description": "Share this exact 12-character code with someone you trust.",
+    "accessibilityLabel": "Your friend code: {{code}}.",
+    "copy": "Copy code",
+    "share": "Share code",
+    "copied": "Friend code copied.",
+    "error": "We couldn’t share your friend code. Please try again.",
+    "shareTitle": "My WeCanDay friend code",
+    "shareMessage": "My WeCanDay friend code is {{code}}"
+  }
+}

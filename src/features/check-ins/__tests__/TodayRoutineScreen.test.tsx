@@ -75,6 +75,7 @@ describe('TodayRoutineScreen', () => {
           onOpenWeeklyStatistics={jest.fn()}
           onRoutineCompletionChanged={onRoutineCompletionChanged}
           onSignOut={jest.fn()}
+          publicCode="Ab7kL2xP9Qm4"
           routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
           userId="user-1"
         />
@@ -127,6 +128,7 @@ describe('TodayRoutineScreen', () => {
           onOpenWeeklyStatistics={jest.fn()}
           onRoutineCompletionChanged={jest.fn()}
           onSignOut={jest.fn()}
+          publicCode="Ab7kL2xP9Qm4"
           routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
           userId="user-1"
         />
