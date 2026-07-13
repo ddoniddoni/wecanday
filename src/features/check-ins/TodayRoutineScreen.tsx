@@ -55,6 +55,7 @@ type TodayRoutineScreenProps = {
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
+  onOpenAnnualStatistics: () => void;
   onOpenMonthlyStatistics: () => void;
   onOpenThemes: () => void;
   onOpenWeeklyStatistics: () => void;
@@ -75,6 +76,7 @@ export function TodayRoutineScreen({
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
+  onOpenAnnualStatistics,
   onOpenMonthlyStatistics,
   onOpenThemes,
   onOpenWeeklyStatistics,
@@ -356,6 +358,19 @@ export function TodayRoutineScreen({
             </Text>
           </Pressable>
           <Pressable
+            accessibilityLabel={t('openAnnualStatistics')}
+            accessibilityRole="button"
+            onPress={onOpenAnnualStatistics}
+            style={({ pressed }) => [
+              styles.statisticsButton,
+              { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+            ]}
+          >
+            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+              {t('openAnnualStatistics')}
+            </Text>
+          </Pressable>
+          <Pressable
             accessibilityLabel={t('openMonthlyStatistics')}
             accessibilityRole="button"
             onPress={onOpenMonthlyStatistics}
@@ -556,8 +571,8 @@ const styles = StyleSheet.create({
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   retryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  statisticsActions: { flexDirection: 'row', gap: spacing.sm },
-  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
+  statisticsActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexGrow: 1, justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: 140, paddingHorizontal: spacing.lg },
   statisticsButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   list: { gap: spacing.sm },
   routineItem: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 68, padding: spacing.md },
