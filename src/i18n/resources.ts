@@ -5,6 +5,7 @@ import enNotifications from '@/i18n/locales/en/notifications.json';
 import enPlans from '@/i18n/locales/en/plans.json';
 import enRoutineDay from '@/i18n/locales/en/routineDay.json';
 import enSettings from '@/i18n/locales/en/settings.json';
+import enStatistics from '@/i18n/locales/en/statistics.json';
 import enToday from '@/i18n/locales/en/today.json';
 import koAuth from '@/i18n/locales/ko/auth.json';
 import koCommon from '@/i18n/locales/ko/common.json';
@@ -13,6 +14,7 @@ import koNotifications from '@/i18n/locales/ko/notifications.json';
 import koPlans from '@/i18n/locales/ko/plans.json';
 import koRoutineDay from '@/i18n/locales/ko/routineDay.json';
 import koSettings from '@/i18n/locales/ko/settings.json';
+import koStatistics from '@/i18n/locales/ko/statistics.json';
 import koToday from '@/i18n/locales/ko/today.json';
 
 export const resources = {
@@ -24,6 +26,7 @@ export const resources = {
     plans: enPlans,
     routineDay: enRoutineDay,
     settings: enSettings,
+    statistics: enStatistics,
     today: enToday,
   },
   ko: {
@@ -34,6 +37,7 @@ export const resources = {
     plans: koPlans,
     routineDay: koRoutineDay,
     settings: koSettings,
+    statistics: koStatistics,
     today: koToday,
   },
 } as const;

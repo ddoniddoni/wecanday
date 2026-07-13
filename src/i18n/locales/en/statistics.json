@@ -1,0 +1,22 @@
+{
+  "eyebrow": "Your progress",
+  "title": "Weekly statistics",
+  "back": "Back",
+  "loading": "Loading weekly statistics…",
+  "error": "We couldn’t load your weekly statistics. Please try again.",
+  "retry": "Try again",
+  "emptyTitle": "No routines were scheduled in the last seven routine days.",
+  "emptyDescription": "Your completion rate will appear here once a routine is scheduled.",
+  "completionRate": "Weekly completion rate",
+  "rateValue": "{{count}}%",
+  "completionCount": "{{completed}} of {{scheduled}} scheduled routines complete",
+  "dailyProgress": "Daily progress",
+  "dailyRate": "{{completed}}/{{scheduled}}",
+  "restDay": "Rest day",
+  "dailyAccessibilityLabel": "{{date}}: {{value}}.",
+  "currentStreak": "Current daily streak",
+  "highestStreak": "Highest daily streak",
+  "streakValue_one": "{{count}} day",
+  "streakValue_other": "{{count}} days",
+  "accessibilitySummary": "Weekly completion rate: {{rate}}%. {{completed}} of {{scheduled}} scheduled routines complete. Current daily streak: {{currentStreak}}. Highest daily streak: {{highestStreak}}."
+}
