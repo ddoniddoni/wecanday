@@ -4,7 +4,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { AuthProvider, useAuth } from '@/features/auth/AuthProvider';
+import { configureNotificationPresentation } from '@/features/notifications/services/notificationPresentationService';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
+
+configureNotificationPresentation();
 
 function RootNavigator() {
   const auth = useAuth();

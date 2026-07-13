@@ -19,11 +19,15 @@ jest.mock('react-native-reanimated', () => {
 
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { DEFAULT: 3 },
+  SchedulableTriggerInputTypes: { WEEKLY: 'weekly' },
+  cancelScheduledNotificationAsync: jest.fn(() => Promise.resolve()),
   getPermissionsAsync: jest.fn(() =>
     Promise.resolve({ canAskAgain: true, granted: false }),
   ),
   requestPermissionsAsync: jest.fn(() =>
     Promise.resolve({ canAskAgain: true, granted: false }),
   ),
+  scheduleNotificationAsync: jest.fn(() => Promise.resolve('notification-id')),
   setNotificationChannelAsync: jest.fn(() => Promise.resolve()),
+  setNotificationHandler: jest.fn(),
 }));

@@ -1,5 +1,7 @@
 import * as Notifications from 'expo-notifications';
 
+import { i18n } from '@/i18n';
+
 const ROUTINE_REMINDERS_CHANNEL_ID = 'routine-reminders';
 
 export type RoutineReminder = {
@@ -9,7 +11,7 @@ export type RoutineReminder = {
 };
 
 export async function synchronizeRoutineReminder(reminder: RoutineReminder): Promise<void> {
-  await cancelRoutineReminder(reminder.routineId, reminder.scheduleWeekdays);
+  await cancelRoutineReminder(reminder.routineId);
 
   if (reminder.reminderMinute === null) return;
 
@@ -20,14 +22,18 @@ export async function synchronizeRoutineReminder(reminder: RoutineReminder): Pro
   const minute = reminder.reminderMinute % 60;
   await Promise.all(reminder.scheduleWeekdays.map((weekday) =>
     Notifications.scheduleNotificationAsync({
-      content: { data: { routineId: reminder.routineId }, title: 'WeCanDay' },
+      content: {
+        body: i18n.t('notifications:routine.body'),
+        data: { route: '/(app)', routineId: reminder.routineId },
+        title: i18n.t('notifications:routine.title'),
+      },
       identifier: getReminderIdentifier(reminder.routineId, weekday),
       trigger: { channelId: ROUTINE_REMINDERS_CHANNEL_ID, hour, minute, type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: weekday + 1 },
     }),
   ));
 }
 
-export async function cancelRoutineReminder(routineId: string, weekdays: readonly number[]): Promise<void> {
+export async function cancelRoutineReminder(routineId: string): Promise<void> {
   await Promise.all([0, 1, 2, 3, 4, 5, 6].map((weekday) =>
     Notifications.cancelScheduledNotificationAsync(getReminderIdentifier(routineId, weekday)),
   ));

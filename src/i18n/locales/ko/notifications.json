@@ -1,4 +1,5 @@
 {
+  "channelName": "루틴 알림",
   "primer": {
     "eyebrow": "좋은 흐름을 이어가요",
     "title": "루틴 알림을 받을까요?",
@@ -6,6 +7,10 @@
     "allow": "알림 허용",
     "notNow": "나중에",
     "requesting": "알림 권한을 요청하고 있어요"
+  },
+  "routine": {
+    "title": "위캔데이",
+    "body": "준비되었을 때 오늘의 루틴을 시작해 보세요."
   },
   "result": {
     "granted": {

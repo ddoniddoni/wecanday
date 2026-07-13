@@ -46,6 +46,7 @@ export function ProfileHomeScreen() {
   const [selectedPlan, setSelectedPlan] = useState<PlanListItem | null>(null);
   const [selectedRoutine, setSelectedRoutine] = useState<{
     id: string;
+    reminder_minute: number | null;
     returnTo: 'plans' | 'today';
     schedule_weekdays: number[];
     status: 'active' | 'paused';
@@ -166,6 +167,7 @@ export function ProfileHomeScreen() {
     return (
       <RoutineCreateScreen
         initialRoutineTitle={selectedRoutine.title}
+        initialReminderMinute={selectedRoutine.reminder_minute}
         initialScheduleWeekdays={selectedRoutine.schedule_weekdays}
         mode="edit"
         onArchive={async () => {
@@ -174,7 +176,7 @@ export function ProfileHomeScreen() {
           }
 
           await archiveRoutineItem(supabaseClient, selectedRoutine.id);
-          await cancelRoutineReminder(selectedRoutine.id, selectedRoutine.schedule_weekdays);
+          await cancelRoutineReminder(selectedRoutine.id);
         }}
         onBack={() => setScreen(returnScreen)}
         onChangeStatus={async (status) => {
@@ -183,7 +185,16 @@ export function ProfileHomeScreen() {
           }
 
           await setRoutineItemStatus(supabaseClient, selectedRoutine.id, status);
-          if (status === 'paused') await cancelRoutineReminder(selectedRoutine.id, selectedRoutine.schedule_weekdays);
+          if (status === 'paused') {
+            await cancelRoutineReminder(selectedRoutine.id);
+            return;
+          }
+
+          await synchronizeRoutineReminder({
+            reminderMinute: selectedRoutine.reminder_minute,
+            routineId: selectedRoutine.id,
+            scheduleWeekdays: selectedRoutine.schedule_weekdays,
+          });
         }}
         onComplete={() => setScreen(returnScreen)}
         onSave={async (input) => {
@@ -244,6 +255,7 @@ export function ProfileHomeScreen() {
 
           setSelectedRoutine({
             id: routine.id,
+            reminder_minute: routine.reminder_minute,
             returnTo: 'plans',
             schedule_weekdays: routine.schedule_weekdays,
             status: routineStatus,
@@ -271,8 +283,17 @@ export function ProfileHomeScreen() {
         setScreen('routine-edit');
       }}
       onOpenPlans={() => setScreen('plan-list')}
-      onRoutineCompleted={(routine) => {
-        void cancelRoutineReminder(routine.id, routine.schedule_weekdays);
+      onRoutineCompletionChanged={(routine, isCompleted) => {
+        if (isCompleted) {
+          void cancelRoutineReminder(routine.id);
+          return;
+        }
+
+        void synchronizeRoutineReminder({
+          reminderMinute: routine.reminder_minute,
+          routineId: routine.id,
+          scheduleWeekdays: routine.schedule_weekdays,
+        });
       }}
       onSignOut={() => void handleSignOut()}
       routineDayConfig={{

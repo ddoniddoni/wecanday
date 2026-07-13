@@ -30,6 +30,7 @@ describe('PlanListScreen', () => {
         routineItems: [
           {
             id: 'routine-active',
+            reminder_minute: null,
             schedule_weekdays: [1, 2, 3],
             status: 'active',
             title: 'Read one chapter',
@@ -46,6 +47,7 @@ describe('PlanListScreen', () => {
         routineItems: [
           {
             id: 'routine-paused',
+            reminder_minute: 540,
             schedule_weekdays: [4],
             status: 'paused',
             title: 'Practice scales',

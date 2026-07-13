@@ -74,7 +74,7 @@ export function RoutineCreateScreen({
     setScheduleWeekdays((selectedWeekdays) =>
       selectedWeekdays.includes(weekday)
         ? selectedWeekdays.filter((value) => value !== weekday)
-        : [...selectedWeekdays, weekday].toSorted((left, right) => left - right),
+        : [...selectedWeekdays, weekday].sort((left, right) => left - right),
     );
   }
 

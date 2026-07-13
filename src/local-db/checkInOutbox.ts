@@ -65,7 +65,7 @@ export async function loadPendingCheckInOperations(
       (operation) =>
         operation.userId === userId && operation.routineDay === routineDay,
     )
-    .toSorted((left, right) => left.createdAt.localeCompare(right.createdAt));
+    .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
 }
 
 export async function loadDueCheckInOperations(
@@ -77,7 +77,7 @@ export async function loadDueCheckInOperations(
       (operation) =>
         operation.userId === userId && operation.nextAttemptAt <= now,
     )
-    .toSorted((left, right) => left.createdAt.localeCompare(right.createdAt));
+    .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
 }
 
 export async function removeCheckInOperation(

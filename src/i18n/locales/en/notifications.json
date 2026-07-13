@@ -1,4 +1,5 @@
 {
+  "channelName": "Routine reminders",
   "primer": {
     "eyebrow": "Keep your rhythm",
     "title": "Would you like routine reminders?",
@@ -6,6 +7,10 @@
     "allow": "Allow reminders",
     "notNow": "Not now",
     "requesting": "Requesting notification permission"
+  },
+  "routine": {
+    "title": "WeCanDay",
+    "body": "Your planned routine is ready when you are."
   },
   "result": {
     "granted": {

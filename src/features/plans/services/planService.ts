@@ -31,7 +31,7 @@ export type AddRoutineItemInput = {
 
 export type PlanRoutineItem = Omit<Pick<
   RoutineItemRow,
-  'id' | 'schedule_weekdays' | 'status' | 'title'
+  'id' | 'reminder_minute' | 'schedule_weekdays' | 'status' | 'title'
 >, 'status'> & {
   status: 'active' | 'archived' | 'paused';
 };
@@ -53,7 +53,7 @@ export async function loadPlans(
       .order('updated_at', { ascending: false }),
     client
       .from('routine_items')
-      .select('id, plan_id, schedule_weekdays, status, title')
+      .select('id, plan_id, reminder_minute, schedule_weekdays, status, title')
       .order('created_at', { ascending: true }),
   ]);
 
@@ -82,6 +82,7 @@ export async function loadPlans(
 
     routineItems.push({
       id: routine.id,
+      reminder_minute: routine.reminder_minute,
       schedule_weekdays: routine.schedule_weekdays,
       status: routine.status,
       title: routine.title,

@@ -58,6 +58,7 @@ describe('TodayRoutineScreen', () => {
 
   it('optimistically completes a routine item and sends its idempotency key', async () => {
     await i18n.changeLanguage('en');
+    const onRoutineCompletionChanged = jest.fn();
     const screen = await render(
       <ThemeProvider preference="light">
         <TodayRoutineScreen
@@ -68,7 +69,7 @@ describe('TodayRoutineScreen', () => {
           onCreatePlan={jest.fn()}
           onEditRoutine={jest.fn()}
           onOpenPlans={jest.fn()}
-          onRoutineCompleted={jest.fn()}
+          onRoutineCompletionChanged={onRoutineCompletionChanged}
           onSignOut={jest.fn()}
           routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
           userId="user-1"
@@ -93,6 +94,10 @@ describe('TodayRoutineScreen', () => {
           source: 'online',
         }),
       );
+      expect(onRoutineCompletionChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'routine-1' }),
+        true,
+      );
     });
   });
 
@@ -112,7 +117,7 @@ describe('TodayRoutineScreen', () => {
           onCreatePlan={jest.fn()}
           onEditRoutine={jest.fn()}
           onOpenPlans={jest.fn()}
-          onRoutineCompleted={jest.fn()}
+          onRoutineCompletionChanged={jest.fn()}
           onSignOut={jest.fn()}
           routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
           userId="user-1"

@@ -24,8 +24,8 @@ describe('today routine domain', () => {
     expect(
       createTodayRoutineItems(
         [
-          { id: 'routine-1', schedule_weekdays: [0], title: 'Walk' },
-          { id: 'routine-2', schedule_weekdays: [1], title: 'Read' },
+          { id: 'routine-1', reminder_minute: 540, schedule_weekdays: [0], title: 'Walk' },
+          { id: 'routine-2', reminder_minute: null, schedule_weekdays: [1], title: 'Read' },
         ],
         '2026-07-12',
         new Map([['routine-1', '2026-07-12T01:00:00.000Z']]),
@@ -34,6 +34,7 @@ describe('today routine domain', () => {
         {
           completedAt: '2026-07-12T01:00:00.000Z',
           id: 'routine-1',
+          reminder_minute: 540,
           schedule_weekdays: [0],
         syncStatus: null,
         title: 'Walk',
@@ -48,6 +49,7 @@ describe('today routine domain', () => {
           {
             completedAt: '2026-07-12T01:00:00.000Z',
             id: 'routine-1',
+            reminder_minute: 540,
             schedule_weekdays: [0],
             syncStatus: null,
             title: 'Walk',
@@ -70,6 +72,7 @@ describe('today routine domain', () => {
       {
         completedAt: null,
         id: 'routine-1',
+        reminder_minute: 540,
         schedule_weekdays: [0],
         syncStatus: 'queued',
         title: 'Walk',

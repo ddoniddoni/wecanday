@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import { i18n } from '@/i18n';
+
 const NOTIFICATION_PERMISSION_PROMPT_KEY_PREFIX =
   'wecanday:notification-permission-prompt:';
 const ROUTINE_REMINDERS_CHANNEL_ID = 'routine-reminders';
@@ -34,7 +36,7 @@ export async function requestRoutineNotificationPermission(): Promise<Notificati
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(ROUTINE_REMINDERS_CHANNEL_ID, {
       importance: Notifications.AndroidImportance.DEFAULT,
-      name: 'Routine reminders',
+      name: i18n.t('notifications:channelName'),
     });
   }
 

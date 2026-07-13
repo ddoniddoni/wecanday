@@ -53,9 +53,12 @@ type TodayRoutineScreenProps = {
   hasPlanCreationSuccess: boolean;
   hasSignOutError: boolean;
   onCreatePlan: () => void;
-  onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'schedule_weekdays' | 'title'>) => void;
+  onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
-  onRoutineCompleted: (item: Pick<TodayRoutineItem, 'id' | 'schedule_weekdays'>) => void;
+  onRoutineCompletionChanged: (
+    item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays'>,
+    isCompleted: boolean,
+  ) => void;
   onSignOut: () => void;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -69,7 +72,7 @@ export function TodayRoutineScreen({
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
-  onRoutineCompleted,
+  onRoutineCompletionChanged,
   onSignOut,
   routineDayConfig,
   userId,
@@ -201,6 +204,7 @@ export function TodayRoutineScreen({
         previousStreak === null ? null : Math.max(0, previousStreak - 1),
       );
     }
+    onRoutineCompletionChanged(item, !isComplete);
 
     try {
       const mutation = {
@@ -213,7 +217,6 @@ export function TodayRoutineScreen({
 
       if (operation.kind === 'complete') {
         await completeCheckIn(client, mutation);
-        onRoutineCompleted(item);
       } else {
         await undoCheckIn(client, mutation);
       }

@@ -27,7 +27,7 @@ export async function loadTodayRoutineItems(
     await Promise.all([
       client
         .from('routine_items')
-        .select('id, schedule_weekdays, title')
+        .select('id, reminder_minute, schedule_weekdays, title')
         .eq('user_id', userId)
         .eq('status', 'active')
         .lte('starts_on', routineDay)
