@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { FriendCodeSearchScreen } from '@/features/friends/FriendCodeSearchScreen';
+import { FriendRequestsScreen } from '@/features/friends/FriendRequestsScreen';
 import { AnnualStatisticsScreen } from '@/features/statistics/AnnualStatisticsScreen';
 import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatisticsScreen';
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
@@ -45,6 +46,7 @@ type AppScreen =
   | 'routine-edit'
   | 'annual-statistics'
   | 'friend-search'
+  | 'friend-requests'
   | 'monthly-statistics'
   | 'theme-selection'
   | 'weekly-statistics'
@@ -234,7 +236,20 @@ export function ProfileHomeScreen() {
       return null;
     }
 
-    return <FriendCodeSearchScreen client={supabaseClient} onBack={() => setScreen('today')} />;
+    return (
+      <FriendCodeSearchScreen
+        client={supabaseClient}
+        onBack={() => setScreen('today')}
+        onOpenRequests={() => setScreen('friend-requests')}
+      />
+    );
+  }
+  if (screen === 'friend-requests') {
+    if (!supabaseClient) {
+      return null;
+    }
+
+    return <FriendRequestsScreen client={supabaseClient} onBack={() => setScreen('friend-search')} />;
   }
   if (screen === 'weekly-statistics') {
     if (!supabaseClient) {

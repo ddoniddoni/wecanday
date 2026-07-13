@@ -24,6 +24,32 @@ export type FriendCodeLookupRow = Pick<
   'avatar_seed' | 'display_name' | 'id'
 >;
 
+export type FriendshipStatus =
+  | 'accepted'
+  | 'cancelled'
+  | 'declined'
+  | 'pending'
+  | 'removed';
+
+export type FriendshipRow = {
+  addressee_id: string;
+  created_at: string;
+  id: string;
+  requester_id: string;
+  responded_at: string | null;
+  status: FriendshipStatus;
+  updated_at: string;
+  user_high_id: string;
+  user_low_id: string;
+};
+
+export type PendingFriendRequestRow = {
+  avatar_seed: string;
+  direction: 'incoming' | 'outgoing';
+  display_name: string;
+  id: string;
+};
+
 export type PlanRow = {
   created_at: string;
   description: string | null;
@@ -93,6 +119,12 @@ export type Database = {
       };
       user_blocks: {
         Row: UserBlockRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      friendships: {
+        Row: FriendshipRow;
         Insert: never;
         Update: never;
         Relationships: [];
@@ -205,6 +237,22 @@ export type Database = {
       lookup_profile_by_public_code: {
         Args: { p_public_code: string };
         Returns: FriendCodeLookupRow[];
+      };
+      create_friend_request: {
+        Args: { p_recipient_id: string };
+        Returns: FriendshipRow;
+      };
+      respond_to_friend_request: {
+        Args: { p_friendship_id: string; p_response: 'accepted' | 'declined' };
+        Returns: FriendshipRow;
+      };
+      cancel_friend_request: {
+        Args: { p_friendship_id: string };
+        Returns: undefined;
+      };
+      list_pending_friend_requests: {
+        Args: Record<never, never>;
+        Returns: PendingFriendRequestRow[];
       };
     };
     Enums: Record<never, never>;

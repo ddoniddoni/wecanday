@@ -23,10 +23,37 @@
     "resultEyebrow": "Friend found",
     "resultAccessibilityLabel": "Friend found: {{displayName}}.",
     "avatarPreview": "Avatar preview: {{seed}}",
+    "sendRequest": "Send friend request",
+    "sendingRequest": "Sending friend request",
+    "requestStatus": {
+      "pending": "Friend request sent.",
+      "accepted": "You’re friends now."
+    },
     "errors": {
       "INVALID_PUBLIC_CODE": "Enter the complete 12-character friend code.",
       "FRIEND_CODE_RATE_LIMITED": "Too many code searches. Please wait a minute and try again.",
       "FRIEND_SEARCH_FAILED": "We couldn’t search for that code. Please try again."
+    }
+  },
+  "requests": {
+    "open": "View requests",
+    "back": "Back to code search",
+    "title": "Friend requests",
+    "description": "Accept, decline, or cancel pending friend requests.",
+    "loading": "Loading friend requests",
+    "empty": "No pending friend requests right now.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "cancel": "Cancel request",
+    "direction": {
+      "incoming": "Wants to be friends · Avatar: {{seed}}",
+      "outgoing": "Friend request sent · Avatar: {{seed}}"
+    },
+    "errors": {
+      "CANNOT_REQUEST_SELF": "You can’t send a friend request to yourself.",
+      "FRIEND_REQUEST_NOT_FOUND": "This friend request is no longer available.",
+      "USER_BLOCKED": "You can’t send a request to this user.",
+      "FRIEND_REQUEST_FAILED": "We couldn’t update that friend request. Please try again."
     }
   }
 }

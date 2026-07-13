@@ -23,10 +23,37 @@
     "resultEyebrow": "친구를 찾았어요",
     "resultAccessibilityLabel": "찾은 친구: {{displayName}}.",
     "avatarPreview": "아바타 미리보기: {{seed}}",
+    "sendRequest": "친구 요청 보내기",
+    "sendingRequest": "친구 요청 보내는 중",
+    "requestStatus": {
+      "pending": "친구 요청을 보냈어요.",
+      "accepted": "이제 친구예요."
+    },
     "errors": {
       "INVALID_PUBLIC_CODE": "12자리 전체 친구 코드를 입력하세요.",
       "FRIEND_CODE_RATE_LIMITED": "코드 검색이 너무 많아요. 1분 뒤에 다시 시도하세요.",
       "FRIEND_SEARCH_FAILED": "코드를 검색하지 못했어요. 다시 시도하세요."
+    }
+  },
+  "requests": {
+    "open": "요청 보기",
+    "back": "코드 검색으로 돌아가기",
+    "title": "친구 요청",
+    "description": "대기 중인 친구 요청을 수락, 거절하거나 취소할 수 있어요.",
+    "loading": "친구 요청 불러오는 중",
+    "empty": "대기 중인 친구 요청이 없어요.",
+    "accept": "수락",
+    "decline": "거절",
+    "cancel": "요청 취소",
+    "direction": {
+      "incoming": "친구가 되고 싶어 해요 · 아바타: {{seed}}",
+      "outgoing": "친구 요청을 보냈어요 · 아바타: {{seed}}"
+    },
+    "errors": {
+      "CANNOT_REQUEST_SELF": "나 자신에게 친구 요청을 보낼 수 없어요.",
+      "FRIEND_REQUEST_NOT_FOUND": "이 친구 요청은 더 이상 사용할 수 없어요.",
+      "USER_BLOCKED": "이 사용자에게 친구 요청을 보낼 수 없어요.",
+      "FRIEND_REQUEST_FAILED": "친구 요청을 처리하지 못했어요. 다시 시도하세요."
     }
   }
 }

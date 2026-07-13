@@ -16,7 +16,12 @@ import {
   isPublicCode,
   type FriendSearchErrorCode,
 } from '@/features/friends/domain/friendSearch';
+import {
+  getFriendRequestErrorCode,
+  type FriendRequestErrorCode,
+} from '@/features/friends/domain/friendRequests';
 import { lookupFriendByPublicCode } from '@/features/friends/services/friendSearchService';
+import { createFriendRequest } from '@/features/friends/services/friendRequestService';
 import type { Database, FriendCodeLookupRow } from '@/lib/supabase/database.types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
@@ -24,11 +29,13 @@ import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 type FriendCodeSearchScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  onOpenRequests: () => void;
 };
 
 export function FriendCodeSearchScreen({
   client,
   onBack,
+  onOpenRequests,
 }: FriendCodeSearchScreenProps) {
   const { t } = useTranslation('friends');
   const { theme } = useTheme();
@@ -36,10 +43,15 @@ export function FriendCodeSearchScreen({
   const [result, setResult] = useState<FriendCodeLookupRow | null | undefined>();
   const [errorCode, setErrorCode] = useState<FriendSearchErrorCode | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
+  const [requestErrorCode, setRequestErrorCode] = useState<FriendRequestErrorCode | null>(null);
+  const [requestStatus, setRequestStatus] = useState<'accepted' | 'pending' | null>(null);
 
   async function search() {
     setResult(undefined);
     setErrorCode(null);
+    setRequestErrorCode(null);
+    setRequestStatus(null);
 
     if (!isPublicCode(publicCode)) {
       setErrorCode('INVALID_PUBLIC_CODE');
@@ -53,6 +65,26 @@ export function FriendCodeSearchScreen({
       setErrorCode(getFriendSearchErrorCode(error));
     } finally {
       setIsSearching(false);
+    }
+  }
+
+  async function sendFriendRequest() {
+    if (!result) {
+      return;
+    }
+
+    setIsSendingRequest(true);
+    setRequestErrorCode(null);
+    try {
+      const friendship = await createFriendRequest(client, result.id);
+
+      setRequestStatus(
+        friendship.status === 'accepted' ? 'accepted' : 'pending',
+      );
+    } catch (error) {
+      setRequestErrorCode(getFriendRequestErrorCode(error));
+    } finally {
+      setIsSendingRequest(false);
     }
   }
 
@@ -76,6 +108,19 @@ export function FriendCodeSearchScreen({
         >
           <Text style={[styles.backLabel, { color: theme.colors.text }]}>
             {t('search.back')}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel={t('requests.open')}
+          accessibilityRole="button"
+          onPress={onOpenRequests}
+          style={({ pressed }) => [
+            styles.backButton,
+            { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+          ]}
+        >
+          <Text style={[styles.backLabel, { color: theme.colors.text }]}>
+            {t('requests.open')}
           </Text>
         </Pressable>
         <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
@@ -149,6 +194,39 @@ export function FriendCodeSearchScreen({
             <Text style={[styles.resultAvatar, { color: theme.colors.textMuted }]}>
               {t('search.avatarPreview', { seed: result.avatar_seed })}
             </Text>
+            {requestStatus ? (
+              <Text style={[styles.status, { color: theme.colors.primary }]}>
+                {t(`search.requestStatus.${requestStatus}`)}
+              </Text>
+            ) : (
+              <Pressable
+                accessibilityLabel={t('search.sendRequest')}
+                accessibilityRole="button"
+                accessibilityState={{ busy: isSendingRequest }}
+                disabled={isSendingRequest}
+                onPress={() => void sendFriendRequest()}
+                style={({ pressed }) => [
+                  styles.requestButton,
+                  {
+                    backgroundColor: theme.colors.primary,
+                    opacity: pressed || isSendingRequest ? 0.72 : 1,
+                  },
+                ]}
+              >
+                {isSendingRequest ? (
+                  <ActivityIndicator accessibilityLabel={t('search.sendingRequest')} color={theme.colors.onPrimary} />
+                ) : (
+                  <Text style={[styles.submitLabel, { color: theme.colors.onPrimary }]}>
+                    {t('search.sendRequest')}
+                  </Text>
+                )}
+              </Pressable>
+            )}
+            {requestErrorCode ? (
+              <Text accessibilityRole="alert" style={[styles.status, { color: theme.colors.text }]}>
+                {t(`requests.errors.${requestErrorCode}`)}
+              </Text>
+            ) : null}
           </View>
         ) : null}
       </View>
@@ -166,6 +244,7 @@ const styles = StyleSheet.create({
   resultAvatar: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   resultEyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textTransform: 'uppercase' },
   resultName: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  requestButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   screen: { flex: 1 },
   status: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   submitButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },

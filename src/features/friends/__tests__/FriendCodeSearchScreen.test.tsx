@@ -50,7 +50,7 @@ describe('FriendCodeSearchScreen', () => {
 async function renderSearchScreen() {
   return render(
     <ThemeProvider preference="light">
-      <FriendCodeSearchScreen client={client} onBack={jest.fn()} />
+      <FriendCodeSearchScreen client={client} onBack={jest.fn()} onOpenRequests={jest.fn()} />
     </ThemeProvider>,
   );
 }
