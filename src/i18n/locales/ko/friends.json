@@ -25,6 +25,9 @@
     "avatarPreview": "아바타 미리보기: {{seed}}",
     "sendRequest": "친구 요청 보내기",
     "sendingRequest": "친구 요청 보내는 중",
+    "block": "사용자 차단",
+    "blocking": "사용자 차단 중",
+    "blocked": "이 사용자를 차단했어요.",
     "requestStatus": {
       "pending": "친구 요청을 보냈어요.",
       "accepted": "이제 친구예요."
@@ -54,6 +57,26 @@
       "FRIEND_REQUEST_NOT_FOUND": "이 친구 요청은 더 이상 사용할 수 없어요.",
       "USER_BLOCKED": "이 사용자에게 친구 요청을 보낼 수 없어요.",
       "FRIEND_REQUEST_FAILED": "친구 요청을 처리하지 못했어요. 다시 시도하세요."
+    }
+  },
+  "connections": {
+    "open": "친구 관리",
+    "back": "코드 검색으로 돌아가기",
+    "title": "친구와 차단 사용자",
+    "loading": "친구와 차단 사용자 불러오는 중",
+    "friendsHeading": "친구",
+    "blockedHeading": "차단한 사용자",
+    "emptyFriends": "아직 친구가 없어요.",
+    "emptyBlocked": "차단한 사용자가 없어요.",
+    "avatarPreview": "아바타: {{seed}}",
+    "remove": "친구 삭제",
+    "block": "차단",
+    "unblock": "차단 해제",
+    "errors": {
+      "BLOCK_NOT_FOUND": "이 차단 정보는 더 이상 사용할 수 없어요.",
+      "CANNOT_BLOCK_SELF": "나 자신을 차단할 수 없어요.",
+      "FRIEND_NOT_FOUND": "이 친구 관계는 더 이상 사용할 수 없어요.",
+      "FRIEND_CONNECTION_FAILED": "이 관계를 처리하지 못했어요. 다시 시도하세요."
     }
   }
 }

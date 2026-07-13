@@ -50,6 +50,11 @@ export type PendingFriendRequestRow = {
   id: string;
 };
 
+export type FriendConnectionRow = Pick<
+  ProfileRow,
+  'avatar_seed' | 'display_name' | 'id'
+>;
+
 export type PlanRow = {
   created_at: string;
   description: string | null;
@@ -253,6 +258,26 @@ export type Database = {
       list_pending_friend_requests: {
         Args: Record<never, never>;
         Returns: PendingFriendRequestRow[];
+      };
+      remove_friend: {
+        Args: { p_friend_id: string };
+        Returns: undefined;
+      };
+      block_user: {
+        Args: { p_target_user_id: string };
+        Returns: undefined;
+      };
+      unblock_user: {
+        Args: { p_target_user_id: string };
+        Returns: undefined;
+      };
+      list_friends: {
+        Args: Record<never, never>;
+        Returns: FriendConnectionRow[];
+      };
+      list_blocked_users: {
+        Args: Record<never, never>;
+        Returns: FriendConnectionRow[];
       };
     };
     Enums: Record<never, never>;

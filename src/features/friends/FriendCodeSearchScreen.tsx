@@ -20,8 +20,13 @@ import {
   getFriendRequestErrorCode,
   type FriendRequestErrorCode,
 } from '@/features/friends/domain/friendRequests';
+import {
+  getFriendConnectionErrorCode,
+  type FriendConnectionErrorCode,
+} from '@/features/friends/domain/friendConnections';
 import { lookupFriendByPublicCode } from '@/features/friends/services/friendSearchService';
 import { createFriendRequest } from '@/features/friends/services/friendRequestService';
+import { blockUser } from '@/features/friends/services/friendConnectionService';
 import type { Database, FriendCodeLookupRow } from '@/lib/supabase/database.types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
@@ -29,12 +34,14 @@ import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 type FriendCodeSearchScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  onOpenConnections: () => void;
   onOpenRequests: () => void;
 };
 
 export function FriendCodeSearchScreen({
   client,
   onBack,
+  onOpenConnections,
   onOpenRequests,
 }: FriendCodeSearchScreenProps) {
   const { t } = useTranslation('friends');
@@ -46,12 +53,17 @@ export function FriendCodeSearchScreen({
   const [isSendingRequest, setIsSendingRequest] = useState(false);
   const [requestErrorCode, setRequestErrorCode] = useState<FriendRequestErrorCode | null>(null);
   const [requestStatus, setRequestStatus] = useState<'accepted' | 'pending' | null>(null);
+  const [blockErrorCode, setBlockErrorCode] = useState<FriendConnectionErrorCode | null>(null);
+  const [hasBlockedResult, setHasBlockedResult] = useState(false);
+  const [isBlockingResult, setIsBlockingResult] = useState(false);
 
   async function search() {
     setResult(undefined);
     setErrorCode(null);
     setRequestErrorCode(null);
     setRequestStatus(null);
+    setBlockErrorCode(null);
+    setHasBlockedResult(false);
 
     if (!isPublicCode(publicCode)) {
       setErrorCode('INVALID_PUBLIC_CODE');
@@ -65,6 +77,24 @@ export function FriendCodeSearchScreen({
       setErrorCode(getFriendSearchErrorCode(error));
     } finally {
       setIsSearching(false);
+    }
+  }
+
+  async function blockSearchResult() {
+    if (!result) {
+      return;
+    }
+
+    setIsBlockingResult(true);
+    setBlockErrorCode(null);
+    try {
+      await blockUser(client, result.id);
+      setHasBlockedResult(true);
+      setRequestStatus(null);
+    } catch (error) {
+      setBlockErrorCode(getFriendConnectionErrorCode(error));
+    } finally {
+      setIsBlockingResult(false);
     }
   }
 
@@ -108,6 +138,19 @@ export function FriendCodeSearchScreen({
         >
           <Text style={[styles.backLabel, { color: theme.colors.text }]}>
             {t('search.back')}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel={t('connections.open')}
+          accessibilityRole="button"
+          onPress={onOpenConnections}
+          style={({ pressed }) => [
+            styles.backButton,
+            { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+          ]}
+        >
+          <Text style={[styles.backLabel, { color: theme.colors.text }]}>
+            {t('connections.open')}
           </Text>
         </Pressable>
         <Pressable
@@ -194,7 +237,11 @@ export function FriendCodeSearchScreen({
             <Text style={[styles.resultAvatar, { color: theme.colors.textMuted }]}>
               {t('search.avatarPreview', { seed: result.avatar_seed })}
             </Text>
-            {requestStatus ? (
+            {hasBlockedResult ? (
+              <Text style={[styles.status, { color: theme.colors.primary }]}>
+                {t('search.blocked')}
+              </Text>
+            ) : requestStatus ? (
               <Text style={[styles.status, { color: theme.colors.primary }]}>
                 {t(`search.requestStatus.${requestStatus}`)}
               </Text>
@@ -222,9 +269,38 @@ export function FriendCodeSearchScreen({
                 )}
               </Pressable>
             )}
+            {!hasBlockedResult ? (
+              <Pressable
+                accessibilityLabel={t('search.block')}
+                accessibilityRole="button"
+                accessibilityState={{ busy: isBlockingResult }}
+                disabled={isBlockingResult || isSendingRequest}
+                onPress={() => void blockSearchResult()}
+                style={({ pressed }) => [
+                  styles.blockButton,
+                  {
+                    borderColor: theme.colors.border,
+                    opacity: pressed || isBlockingResult || isSendingRequest ? 0.72 : 1,
+                  },
+                ]}
+              >
+                {isBlockingResult ? (
+                  <ActivityIndicator accessibilityLabel={t('search.blocking')} color={theme.colors.text} />
+                ) : (
+                  <Text style={[styles.submitLabel, { color: theme.colors.text }]}>
+                    {t('search.block')}
+                  </Text>
+                )}
+              </Pressable>
+            ) : null}
             {requestErrorCode ? (
               <Text accessibilityRole="alert" style={[styles.status, { color: theme.colors.text }]}>
                 {t(`requests.errors.${requestErrorCode}`)}
+              </Text>
+            ) : null}
+            {blockErrorCode ? (
+              <Text accessibilityRole="alert" style={[styles.status, { color: theme.colors.text }]}>
+                {t(`connections.errors.${blockErrorCode}`)}
               </Text>
             ) : null}
           </View>
@@ -237,6 +313,7 @@ export function FriendCodeSearchScreen({
 const styles = StyleSheet.create({
   backButton: { alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   backLabel: { fontSize: typography.size.body, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.body },
+  blockButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   content: { flex: 1, gap: spacing.md, padding: spacing.md },
   description: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   input: { borderRadius: radii.md, borderWidth: 1, fontSize: typography.size.body, letterSpacing: 1.25, minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
