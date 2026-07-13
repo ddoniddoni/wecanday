@@ -64,7 +64,12 @@ describe('FriendConnectionsScreen', () => {
 function renderScreen() {
   return render(
     <ThemeProvider preference="light">
-      <FriendConnectionsScreen client={client} onBack={jest.fn()} />
+      <FriendConnectionsScreen
+        client={client}
+        onBack={jest.fn()}
+        onCreateChallenge={jest.fn()}
+        onOpenChallengeInvitations={jest.fn()}
+      />
     </ThemeProvider>,
   );
 }

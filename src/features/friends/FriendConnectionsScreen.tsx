@@ -28,9 +28,16 @@ import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 type FriendConnectionsScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  onCreateChallenge: () => void;
+  onOpenChallengeInvitations: () => void;
 };
 
-export function FriendConnectionsScreen({ client, onBack }: FriendConnectionsScreenProps) {
+export function FriendConnectionsScreen({
+  client,
+  onBack,
+  onCreateChallenge,
+  onOpenChallengeInvitations,
+}: FriendConnectionsScreenProps) {
   const { t } = useTranslation('friends');
   const { theme } = useTheme();
   const [friends, setFriends] = useState<FriendConnectionRow[]>([]);
@@ -101,6 +108,10 @@ export function FriendConnectionsScreen({ client, onBack }: FriendConnectionsScr
         <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
           {t('connections.title')}
         </Text>
+        <View style={styles.challengeActions}>
+          <ConnectionAction label={t('connections.createChallenge')} onPress={onCreateChallenge} />
+          <ConnectionAction label={t('connections.openChallengeInvitations')} onPress={onOpenChallengeInvitations} />
+        </View>
         {isLoading ? (
           <ActivityIndicator accessibilityLabel={t('connections.loading')} color={theme.colors.primary} />
         ) : (
@@ -184,12 +195,12 @@ function ConnectionSection({
 }
 
 function ConnectionAction({
-  disabled,
+  disabled = false,
   label,
   onPress,
   primary = false,
 }: {
-  disabled: boolean;
+  disabled?: boolean;
   label: string;
   onPress: () => void;
   primary?: boolean;
@@ -223,6 +234,7 @@ const styles = StyleSheet.create({
   backButton: { alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   backLabel: { fontSize: typography.size.body, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.body },
   card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
+  challengeActions: { flexDirection: 'row', gap: spacing.sm },
   content: { gap: spacing.md, padding: spacing.md },
   empty: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   error: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },

@@ -1,0 +1,47 @@
+{
+  "create": {
+    "back": "Back to friends",
+    "title": "Create a challenge",
+    "description": "Choose a friend, a period, and the days you will work on this goal together.",
+    "friendLabel": "Friend",
+    "loadingFriends": "Loading friends",
+    "emptyFriends": "Add a friend before creating a challenge.",
+    "selectFriendAccessibilityLabel": "Select {{displayName}} for this challenge",
+    "titleLabel": "Challenge title",
+    "startsOnLabel": "Start date",
+    "endsOnLabel": "End date",
+    "dateHint": "Enter dates as YYYY-MM-DD.",
+    "scheduleLabel": "Schedule",
+    "submit": "Send challenge invitation",
+    "saving": "Sending challenge invitation"
+  },
+  "invitations": {
+    "back": "Back to friends",
+    "title": "Challenge invitations",
+    "description": "Accepting creates this routine in your own plan.",
+    "loading": "Loading challenge invitations",
+    "empty": "You don’t have any challenge invitations right now.",
+    "from": "From {{creatorName}}",
+    "dates": "{{startsOn}} to {{endsOn}}",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "weekdays": {
+    "sunday": "Sun",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat"
+  },
+  "errors": {
+    "CHALLENGE_CREATE_FAILED": "We couldn’t create this challenge. Please try again.",
+    "CHALLENGE_INVITATION_NOT_FOUND": "This challenge invitation is no longer available.",
+    "CHALLENGE_LOAD_FAILED": "We couldn’t load challenges. Please try again.",
+    "INVALID_CHALLENGE_INPUT": "Choose a friend, enter a title, valid dates, and at least one day.",
+    "INVALID_CHALLENGE_RESPONSE": "Choose whether to accept or decline this invitation.",
+    "ROUTINE_LIMIT_REACHED": "You already have the maximum number of active routines. Archive or pause one before accepting.",
+    "USER_BLOCKED": "This challenge is no longer available because one of you has blocked the other."
+  }
+}

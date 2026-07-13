@@ -61,6 +61,8 @@
   },
   "connections": {
     "open": "Manage friends",
+    "createChallenge": "Create challenge",
+    "openChallengeInvitations": "Challenge invitations",
     "back": "Back to code search",
     "title": "Friends and blocked users",
     "loading": "Loading friends and blocked users",

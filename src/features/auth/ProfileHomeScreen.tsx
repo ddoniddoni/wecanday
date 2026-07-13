@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
+import { ChallengeInvitationsScreen } from '@/features/challenges/ChallengeInvitationsScreen';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { FriendCodeSearchScreen } from '@/features/friends/FriendCodeSearchScreen';
 import { FriendConnectionsScreen } from '@/features/friends/FriendConnectionsScreen';
@@ -40,6 +42,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { isThemePreference } from '@/theme/types';
 
 type AppScreen =
+  | 'challenge-create'
+  | 'challenge-invitations'
   | 'notification-permission'
   | 'plan-create'
   | 'plan-list'
@@ -259,7 +263,40 @@ export function ProfileHomeScreen() {
       return null;
     }
 
-    return <FriendConnectionsScreen client={supabaseClient} onBack={() => setScreen('friend-search')} />;
+    return (
+      <FriendConnectionsScreen
+        client={supabaseClient}
+        onBack={() => setScreen('friend-search')}
+        onCreateChallenge={() => setScreen('challenge-create')}
+        onOpenChallengeInvitations={() => setScreen('challenge-invitations')}
+      />
+    );
+  }
+  if (screen === 'challenge-create') {
+    if (!supabaseClient) {
+      return null;
+    }
+
+    const initialStartsOn = getCurrentRoutineDayWindow({
+      dayStartMinute: auth.profile.day_start_minute,
+      timeZone: auth.profile.time_zone,
+    }).key;
+
+    return (
+      <ChallengeCreateScreen
+        client={supabaseClient}
+        initialStartsOn={initialStartsOn}
+        onBack={() => setScreen('friend-connections')}
+        onComplete={() => setScreen('friend-connections')}
+      />
+    );
+  }
+  if (screen === 'challenge-invitations') {
+    if (!supabaseClient) {
+      return null;
+    }
+
+    return <ChallengeInvitationsScreen client={supabaseClient} onBack={() => setScreen('friend-connections')} />;
   }
   if (screen === 'weekly-statistics') {
     if (!supabaseClient) {

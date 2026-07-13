@@ -61,6 +61,8 @@
   },
   "connections": {
     "open": "친구 관리",
+    "createChallenge": "챌린지 만들기",
+    "openChallengeInvitations": "챌린지 초대 보기",
     "back": "코드 검색으로 돌아가기",
     "title": "친구와 차단 사용자",
     "loading": "친구와 차단 사용자 불러오는 중",

@@ -1,0 +1,47 @@
+{
+  "create": {
+    "back": "친구로 돌아가기",
+    "title": "챌린지 만들기",
+    "description": "친구, 기간, 함께 실천할 요일을 선택하세요.",
+    "friendLabel": "친구",
+    "loadingFriends": "친구 불러오는 중",
+    "emptyFriends": "챌린지를 만들기 전에 친구를 추가하세요.",
+    "selectFriendAccessibilityLabel": "{{displayName}}님을 챌린지 친구로 선택",
+    "titleLabel": "챌린지 제목",
+    "startsOnLabel": "시작일",
+    "endsOnLabel": "종료일",
+    "dateHint": "날짜는 YYYY-MM-DD 형식으로 입력하세요.",
+    "scheduleLabel": "수행 요일",
+    "submit": "챌린지 초대 보내기",
+    "saving": "챌린지 초대 보내는 중"
+  },
+  "invitations": {
+    "back": "친구로 돌아가기",
+    "title": "챌린지 초대",
+    "description": "수락하면 내 계획에 이 루틴이 생성돼요.",
+    "loading": "챌린지 초대 불러오는 중",
+    "empty": "받은 챌린지 초대가 없어요.",
+    "from": "{{creatorName}}님의 초대",
+    "dates": "{{startsOn}} ~ {{endsOn}}",
+    "accept": "수락",
+    "decline": "거절"
+  },
+  "weekdays": {
+    "sunday": "일",
+    "monday": "월",
+    "tuesday": "화",
+    "wednesday": "수",
+    "thursday": "목",
+    "friday": "금",
+    "saturday": "토"
+  },
+  "errors": {
+    "CHALLENGE_CREATE_FAILED": "챌린지를 만들지 못했어요. 다시 시도하세요.",
+    "CHALLENGE_INVITATION_NOT_FOUND": "이 챌린지 초대는 더 이상 사용할 수 없어요.",
+    "CHALLENGE_LOAD_FAILED": "챌린지를 불러오지 못했어요. 다시 시도하세요.",
+    "INVALID_CHALLENGE_INPUT": "친구, 제목, 올바른 날짜와 하나 이상의 요일을 선택하세요.",
+    "INVALID_CHALLENGE_RESPONSE": "이 초대를 수락하거나 거절할지 선택하세요.",
+    "ROUTINE_LIMIT_REACHED": "활성 루틴이 최대 개수에 도달했어요. 하나를 보관하거나 일시정지한 뒤 수락하세요.",
+    "USER_BLOCKED": "두 사용자 중 한 명이 차단하여 이 챌린지는 더 이상 사용할 수 없어요."
+  }
+}
