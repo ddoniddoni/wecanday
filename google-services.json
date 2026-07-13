@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "780005027353",
+    "project_id": "wecanday-d2996",
+    "storage_bucket": "wecanday-d2996.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780005027353:android:fa1ad0bc158bf9c81a8488",
+        "android_client_info": {
+          "package_name": "com.wecanday.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4MOIBQM10QqT0XRu9BNp7eQeDA7NYOw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
