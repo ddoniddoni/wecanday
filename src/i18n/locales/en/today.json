@@ -1,6 +1,18 @@
 {
   "eyebrow": "{{name}}’s routine day",
-  "title": "Today’s small steps",
+  "title": "Today",
+  "dateSelector": {
+    "accessibilityLabel": "Seven-day date selector",
+    "selectDay": "Select {{date}}{{today}}",
+    "todaySuffix": ", today"
+  },
+  "progressSummary": {
+    "accessibilityLabel": "Today’s progress: {{completed}} of {{total}} complete. Current streak: {{streak}}.",
+    "eyebrow": "Today’s progress",
+    "noScheduled": "No routines today",
+    "companionImageLabel": "Today’s WeCanDay companion",
+    "streak": "{{streak}} in a row"
+  },
   "routines": {
     "title": "Your routine",
     "count": "{{count}} planned"
@@ -86,12 +98,24 @@
   "retry": "Try again",
   "emptyTitle": "Nothing is scheduled for this routine day.",
   "emptyDescription": "Create a plan and add one small action to get started.",
+  "emptyHistoryTitle": "Nothing was scheduled for this day.",
+  "emptyHistoryDescription": "Choose another day to review its routine history.",
   "createPlan": "Create a plan",
   "addRoutine": "Add a routine",
   "edit": "Edit",
   "editItem": "Edit {{title}}",
   "completeItem": "Complete {{title}}",
+  "startItem": "Start {{title}}",
   "undoItem": "Undo {{title}}",
+  "reviewItem": "Review {{title}}",
+  "nextRoutine": "Next",
+  "timeGroups": {
+    "count": "{{count}} items",
+    "morning": { "title": "Morning" },
+    "daytime": { "title": "Daytime" },
+    "evening": { "title": "Evening" },
+    "anytime": { "title": "Anytime", "unscheduled": "Any time" }
+  },
   "sync": {
     "queued": "Saved on this device. Waiting to sync.",
     "syncing": "Saving…",

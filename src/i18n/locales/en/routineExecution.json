@@ -1,0 +1,23 @@
+{
+  "back": "Back to today",
+  "progress": "Routine {{current}} of {{total}}",
+  "progressAccessibilityLabel": "{{completed}} of {{total}} routines complete",
+  "currentLabel": "DO THIS NOW",
+  "timerLabel": "Focus session",
+  "timerAccessibilityLabel": "{{time}} remaining in this focus session",
+  "timerDescription": "This timer stays on this screen and does not change your routine record.",
+  "pause": "Pause",
+  "resume": "Resume",
+  "nextLabel": "UP NEXT",
+  "nextEmpty": "This is your last routine for today.",
+  "skip": "Skip for now",
+  "skipAccessibilityLabel": "Move {{title}} to later and view the next routine",
+  "complete": "Complete routine",
+  "completeAccessibilityLabel": "Complete {{title}}",
+  "allComplete": {
+    "title": "Everything is complete",
+    "description": "You finished every routine scheduled for today.",
+    "back": "Back to today",
+    "backLabel": "Return to today’s routines"
+  }
+}

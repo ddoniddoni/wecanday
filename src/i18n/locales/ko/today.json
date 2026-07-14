@@ -1,6 +1,18 @@
 {
   "eyebrow": "{{name}}님의 루틴 데이",
-  "title": "오늘의 작은 걸음",
+  "title": "오늘",
+  "dateSelector": {
+    "accessibilityLabel": "7일 날짜 선택",
+    "selectDay": "{{date}}{{today}} 선택",
+    "todaySuffix": ", 오늘"
+  },
+  "progressSummary": {
+    "accessibilityLabel": "오늘 진행: {{total}}개 중 {{completed}}개 완료. 연속 실천: {{streak}}.",
+    "eyebrow": "오늘 진행",
+    "noScheduled": "오늘 예정된 루틴이 없어요",
+    "companionImageLabel": "오늘의 위캔데이 동반자",
+    "streak": "연속 실천 {{streak}}"
+  },
   "routines": {
     "title": "오늘의 루틴",
     "count": "{{count}}개 예정"
@@ -84,12 +96,24 @@
   "retry": "다시 시도",
   "emptyTitle": "이 루틴 데이에 예정된 항목이 없어요.",
   "emptyDescription": "계획을 만들고 작은 행동 하나를 추가해 보세요.",
+  "emptyHistoryTitle": "이 날짜에 예정된 항목이 없어요.",
+  "emptyHistoryDescription": "다른 날짜를 선택해 기록을 확인해 보세요.",
   "createPlan": "계획 만들기",
   "addRoutine": "루틴 추가",
   "edit": "수정",
   "editItem": "{{title}} 수정",
   "completeItem": "{{title}} 완료",
+  "startItem": "{{title}} 시작",
   "undoItem": "{{title}} 완료 취소",
+  "reviewItem": "{{title}} 기록 보기",
+  "nextRoutine": "다음",
+  "timeGroups": {
+    "count": "{{count}}개",
+    "morning": { "title": "아침" },
+    "daytime": { "title": "낮" },
+    "evening": { "title": "저녁" },
+    "anytime": { "title": "언제든", "unscheduled": "시간 미정" }
+  },
   "sync": {
     "queued": "이 기기에 저장했어요. 동기화를 기다리는 중이에요.",
     "syncing": "저장 중…",

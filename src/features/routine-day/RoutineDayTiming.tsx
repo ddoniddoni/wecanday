@@ -16,11 +16,13 @@ import { radii, spacing, typography } from '@/theme/tokens';
 type RoutineDayTimingProps = {
   clock?: Clock;
   config: RoutineDayConfig;
+  variant?: 'card' | 'inline';
 };
 
 export function RoutineDayTiming({
   clock = systemClock,
   config,
+  variant = 'card',
 }: RoutineDayTimingProps) {
   const { i18n, t } = useTranslation('today');
   const { theme } = useTheme();
@@ -52,6 +54,23 @@ export function RoutineDayTiming({
       }
     };
   }, [clock]);
+
+  if (variant === 'inline') {
+    return (
+      <View accessibilityLabel={t('routineTiming.accessibilityLabel', {
+        endTime,
+        hours: timing.remainingHours,
+        minutes: timing.remainingMinutes,
+      })} style={styles.inline}>
+        <Text style={[styles.inlineLabel, { color: theme.colors.textMuted }]}>
+          {t('routineTiming.remaining', {
+            hours: timing.remainingHours,
+            minutes: timing.remainingMinutes,
+          })}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -102,6 +121,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.body,
   },
+  inline: { flex: 1 },
+  inlineLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
   remaining: {
     fontSize: typography.size.body,
     fontWeight: typography.weight.bold,

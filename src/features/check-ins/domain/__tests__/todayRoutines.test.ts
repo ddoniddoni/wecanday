@@ -1,6 +1,9 @@
 import {
   applyPendingCheckInOperations,
   createTodayRoutineItems,
+  getRoutineDayRange,
+  getRoutineTimeOfDay,
+  groupTodayRoutineItems,
   isRoutineScheduledForDay,
 } from '@/features/check-ins/domain/todayRoutines';
 
@@ -24,8 +27,8 @@ describe('today routine domain', () => {
     expect(
       createTodayRoutineItems(
         [
-          { id: 'routine-1', reminder_minute: 540, schedule_weekdays: [0], title: 'Walk' },
-          { id: 'routine-2', reminder_minute: null, schedule_weekdays: [1], title: 'Read' },
+          { id: 'routine-1', reminder_minute: 540, schedule_weekdays: [0], sort_order: 0, title: 'Walk' },
+          { id: 'routine-2', reminder_minute: null, schedule_weekdays: [1], sort_order: 1, title: 'Read' },
         ],
         '2026-07-12',
         new Map([['routine-1', '2026-07-12T01:00:00.000Z']]),
@@ -36,6 +39,7 @@ describe('today routine domain', () => {
           id: 'routine-1',
           reminder_minute: 540,
           schedule_weekdays: [0],
+          sort_order: 0,
         syncStatus: null,
         title: 'Walk',
       },
@@ -51,6 +55,7 @@ describe('today routine domain', () => {
             id: 'routine-1',
             reminder_minute: 540,
             schedule_weekdays: [0],
+            sort_order: 0,
             syncStatus: null,
             title: 'Walk',
           },
@@ -74,9 +79,53 @@ describe('today routine domain', () => {
         id: 'routine-1',
         reminder_minute: 540,
         schedule_weekdays: [0],
+        sort_order: 0,
         syncStatus: 'queued',
         title: 'Walk',
       },
+    ]);
+  });
+
+  it('groups routines by time of day and orders each group by scheduled time', () => {
+    expect(
+      groupTodayRoutineItems([
+        { completedAt: null, id: 'anytime', reminder_minute: null, schedule_weekdays: [0], sort_order: 0, syncStatus: null, title: 'Journal' },
+        { completedAt: null, id: 'evening', reminder_minute: 1140, schedule_weekdays: [0], sort_order: 0, syncStatus: null, title: 'Stretch' },
+        { completedAt: null, id: 'morning-late', reminder_minute: 540, schedule_weekdays: [0], sort_order: 1, syncStatus: null, title: 'Read' },
+        { completedAt: null, id: 'morning-early', reminder_minute: 420, schedule_weekdays: [0], sort_order: 0, syncStatus: null, title: 'Walk' },
+        { completedAt: null, id: 'daytime', reminder_minute: 780, schedule_weekdays: [0], sort_order: 0, syncStatus: null, title: 'Lunch walk' },
+      ]),
+    ).toEqual([
+      expect.objectContaining({ key: 'morning', items: [expect.objectContaining({ id: 'morning-early' }), expect.objectContaining({ id: 'morning-late' })] }),
+      expect.objectContaining({ key: 'daytime', items: [expect.objectContaining({ id: 'daytime' })] }),
+      expect.objectContaining({ key: 'evening', items: [expect.objectContaining({ id: 'evening' })] }),
+      expect.objectContaining({ key: 'anytime', items: [expect.objectContaining({ id: 'anytime' })] }),
+    ]);
+    expect(getRoutineTimeOfDay(30)).toBe('evening');
+  });
+
+  it('orders grouped routines without mutating the original routine list', () => {
+    const routines = [
+      { completedAt: null, id: 'later', reminder_minute: 540, schedule_weekdays: [0], sort_order: 1, syncStatus: null, title: 'Later' },
+      { completedAt: null, id: 'earlier', reminder_minute: 480, schedule_weekdays: [0], sort_order: 0, syncStatus: null, title: 'Earlier' },
+    ];
+
+    expect(groupTodayRoutineItems(routines)[0]?.items.map((item) => item.id)).toEqual([
+      'earlier',
+      'later',
+    ]);
+    expect(routines.map((item) => item.id)).toEqual(['later', 'earlier']);
+  });
+
+  it('builds a seven-day range across month boundaries without using the device time zone', () => {
+    expect(getRoutineDayRange('2026-08-01')).toEqual([
+      '2026-07-29',
+      '2026-07-30',
+      '2026-07-31',
+      '2026-08-01',
+      '2026-08-02',
+      '2026-08-03',
+      '2026-08-04',
     ]);
   });
 });

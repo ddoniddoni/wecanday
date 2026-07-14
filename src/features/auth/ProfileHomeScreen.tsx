@@ -670,7 +670,6 @@ export function ProfileHomeScreen() {
     <TodayRoutineScreen
       client={supabaseClient}
       companionId={selectedCompanionId}
-      displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
       isHapticsEnabled={auth.profile.haptics_enabled !== false}
       isMotionReduced={auth.profile.reduce_motion === true}

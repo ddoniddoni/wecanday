@@ -16,21 +16,21 @@ import {
 } from '@/features/check-ins/domain/checkInErrors';
 import {
   applyPendingCheckInOperations,
+  groupTodayRoutineItems,
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
 import { AppTabScreen } from '@/components/AppTabScreen';
 import { CompletionFeedback } from '@/features/check-ins/CompletionFeedback';
-import { MicroGoalCard } from '@/features/check-ins/MicroGoalCard';
 import {
   EXPERIENCE_PER_ROUTINE_COMPLETION,
   getCompanionProgressForExperience,
-  type CompanionProgress,
 } from '@/features/companion/domain/progression';
-import { CompanionHero } from '@/features/companion/CompanionHero';
 import type { CompanionId } from '@/features/companion/domain/companions';
-import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
+import { TodayDateStrip } from '@/features/check-ins/TodayDateStrip';
+import { TodayProgressSummary } from '@/features/check-ins/TodayProgressSummary';
+import { TodayRoutineGroups } from '@/features/check-ins/TodayRoutineGroups';
+import { RoutineExecutionScreen } from '@/features/check-ins/RoutineExecutionScreen';
 import { StreakMomentCard } from '@/features/streaks/StreakMomentCard';
-import { TodayStatsSummary } from '@/features/streaks/TodayStatsSummary';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
   completeCheckIn,
@@ -59,6 +59,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 
 const SYNC_INTERVAL_MS = 30_000;
 const COMPLETION_FEEDBACK_DURATION_MS = 2_000;
+const selectedDateFormattersByLocale = new Map<string, Intl.DateTimeFormat>();
 
 type CompletionFeedbackState = {
   completedCount: number;
@@ -72,7 +73,6 @@ type CompletionFeedbackState = {
 type TodayRoutineScreenProps = {
   client: SupabaseClient<Database>;
   companionId: CompanionId;
-  displayName: string;
   hasPlanCreationSuccess: boolean;
   isHapticsEnabled: boolean;
   isMotionReduced: boolean;
@@ -92,7 +92,6 @@ type TodayRoutineScreenProps = {
 export function TodayRoutineScreen({
   client,
   companionId,
-  displayName,
   hasPlanCreationSuccess,
   isHapticsEnabled,
   isMotionReduced,
@@ -105,38 +104,37 @@ export function TodayRoutineScreen({
   routineDayConfig,
   userId,
 }: TodayRoutineScreenProps) {
-  const { t } = useTranslation('today');
+  const { i18n, t } = useTranslation('today');
   const { theme } = useTheme();
   const shouldReduceMotion = useReducedMotion() || isMotionReduced;
   const [routineDayWindow, setRoutineDayWindow] = useState<RoutineDayWindow>(() =>
     getCurrentRoutineDayWindow(routineDayConfig),
   );
   const [items, setItems] = useState<TodayRoutineItem[]>([]);
+  const [selectedRoutineDay, setSelectedRoutineDay] = useState(routineDayWindow.key);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [mutatingRoutineIds, setMutatingRoutineIds] = useState<ReadonlySet<string>>(
     new Set(),
   );
   const [errorCode, setErrorCode] = useState<CheckInErrorCode | null>(null);
-  const [companionReactionId, setCompanionReactionId] = useState(0);
   const initialCompanionProgress = getCompanionProgressForExperience(0);
-  const [companionProgress, setCompanionProgress] = useState<CompanionProgress>(
-    initialCompanionProgress,
-  );
   const companionProgressRef = useRef(initialCompanionProgress);
   const [completionFeedback, setCompletionFeedback] =
     useState<CompletionFeedbackState | null>(null);
   const completionFeedbackIdRef = useRef(0);
-  const routineListOffsetRef = useRef(0);
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [highlightedRoutineId, setHighlightedRoutineId] = useState<string | null>(null);
   const [dailyStreak, setDailyStreak] = useState<number | null>(null);
   const dailyStreakRef = useRef<number | null>(null);
   const [isDailyStreakLoading, setIsDailyStreakLoading] = useState(true);
+  const [executionRoutineId, setExecutionRoutineId] = useState<string | null>(null);
+  const latestRefreshIdRef = useRef(0);
 
   const refresh = useCallback(
     async (showLoading: boolean) => {
+      const refreshId = latestRefreshIdRef.current + 1;
+      latestRefreshIdRef.current = refreshId;
       const nextRoutineDayWindow = getCurrentRoutineDayWindow(routineDayConfig);
+      const isCurrentRoutineDay = selectedRoutineDay === nextRoutineDayWindow.key;
 
       setRoutineDayWindow(nextRoutineDayWindow);
       setErrorCode(null);
@@ -149,8 +147,10 @@ export function TodayRoutineScreen({
       try {
         await synchronizePendingCheckIns(client, userId, systemClock.now());
         const [loadedItems, pendingOperations, loadedCompanionProgress, loadedDailyStreak] = await Promise.all([
-          loadTodayRoutineItems(client, userId, nextRoutineDayWindow.key),
-          loadPendingCheckInOperations(userId, nextRoutineDayWindow.key),
+          loadTodayRoutineItems(client, userId, selectedRoutineDay),
+          isCurrentRoutineDay
+            ? loadPendingCheckInOperations(userId, selectedRoutineDay)
+            : Promise.resolve([]),
           loadCompanionProgress(client).catch(() => null),
           loadCurrentDailyStreak(
             client,
@@ -159,6 +159,10 @@ export function TodayRoutineScreen({
             routineDayConfig,
           ).catch(() => null),
         ]);
+
+        if (latestRefreshIdRef.current !== refreshId) {
+          return;
+        }
 
         setItems(
           applyPendingCheckInOperations(
@@ -172,20 +176,23 @@ export function TodayRoutineScreen({
         );
         if (loadedCompanionProgress) {
           companionProgressRef.current = loadedCompanionProgress;
-          setCompanionProgress(loadedCompanionProgress);
         }
         dailyStreakRef.current = loadedDailyStreak;
         setDailyStreak(loadedDailyStreak);
 
       } catch (error) {
-        setErrorCode(getCheckInErrorCode(error));
+        if (latestRefreshIdRef.current === refreshId) {
+          setErrorCode(getCheckInErrorCode(error));
+        }
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-        setIsDailyStreakLoading(false);
+        if (latestRefreshIdRef.current === refreshId) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+          setIsDailyStreakLoading(false);
+        }
       }
     },
-    [client, routineDayConfig, userId],
+    [client, routineDayConfig, selectedRoutineDay, userId],
   );
 
   useEffect(() => {
@@ -217,7 +224,24 @@ export function TodayRoutineScreen({
     return () => clearTimeout(timeout);
   }, [completionFeedback]);
 
+  function handleSelectRoutineDay(nextRoutineDay: string) {
+    if (nextRoutineDay === selectedRoutineDay) {
+      return;
+    }
+
+    setSelectedRoutineDay(nextRoutineDay);
+    setItems([]);
+    setCompletionFeedback(null);
+    setErrorCode(null);
+    setIsLoading(true);
+    setIsRefreshing(false);
+  }
+
   async function handleToggle(item: TodayRoutineItem) {
+    if (selectedRoutineDay !== routineDayWindow.key) {
+      return;
+    }
+
     const isComplete = item.completedAt !== null;
     const isCompletingRoutineDay =
       !isComplete &&
@@ -229,15 +253,12 @@ export function TodayRoutineScreen({
     const operation = createCheckInOutboxOperation({
       kind: isComplete ? 'undo' : 'complete',
       occurredAt,
-      routineDay: routineDayWindow.key,
+      routineDay: selectedRoutineDay,
       routineItemId: item.id,
       userId,
     });
 
     setErrorCode(null);
-    if (highlightedRoutineId === item.id) {
-      setHighlightedRoutineId(null);
-    }
     setMutatingRoutineIds((previousIds) => new Set(previousIds).add(item.id));
     setItems((previousItems) =>
       previousItems.map((candidate) =>
@@ -258,9 +279,7 @@ export function TodayRoutineScreen({
       );
 
       completionFeedbackIdRef.current = feedbackId;
-      setCompanionReactionId(feedbackId);
       companionProgressRef.current = nextCompanionProgress;
-      setCompanionProgress(nextCompanionProgress);
       setCompletionFeedback({
         completedCount: items.filter((candidate) => candidate.completedAt !== null).length + 1,
         experienceGained: EXPERIENCE_PER_ROUTINE_COMPLETION,
@@ -279,7 +298,6 @@ export function TodayRoutineScreen({
       );
 
       companionProgressRef.current = nextCompanionProgress;
-      setCompanionProgress(nextCompanionProgress);
     }
     if (isCompletingRoutineDay && dailyStreakRef.current !== null) {
       const nextDailyStreak = dailyStreakRef.current + 1;
@@ -310,7 +328,7 @@ export function TodayRoutineScreen({
         await undoCheckIn(client, mutation);
       }
 
-      await removeCheckInOperationsForRoutine(userId, item.id, routineDayWindow.key);
+      await removeCheckInOperationsForRoutine(userId, item.id, selectedRoutineDay);
       setItems((previousItems) =>
         previousItems.map((candidate) =>
           candidate.id === item.id
@@ -339,18 +357,26 @@ export function TodayRoutineScreen({
 
   const completedCount = items.filter((item) => item.completedAt !== null).length;
   const isAllComplete = items.length > 0 && completedCount === items.length;
-  const microGoalItem = items.find((item) => item.completedAt === null) ?? null;
+  const isCurrentRoutineDay = selectedRoutineDay === routineDayWindow.key;
+  const nextRoutineId = isCurrentRoutineDay
+    ? groupTodayRoutineItems(items)
+      .flatMap((group) => group.items)
+      .find((item) => item.completedAt === null)?.id ?? null
+    : null;
+  const selectedDateLabel = getSelectedDateFormatter(i18n.language).format(
+    toUtcDate(selectedRoutineDay),
+  );
 
-  function openMicroGoal() {
-    if (!microGoalItem) {
-      return;
-    }
-
-    setHighlightedRoutineId(microGoalItem.id);
-    scrollViewRef.current?.scrollTo({
-      animated: !shouldReduceMotion,
-      y: Math.max(0, routineListOffsetRef.current - spacing.lg),
-    });
+  if (executionRoutineId && isCurrentRoutineDay) {
+    return (
+      <RoutineExecutionScreen
+        initialRoutineId={executionRoutineId}
+        items={items}
+        mutatingRoutineIds={mutatingRoutineIds}
+        onBack={() => setExecutionRoutineId(null)}
+        onCompleteRoutine={handleToggle}
+      />
+    );
   }
 
   return (
@@ -363,30 +389,28 @@ export function TodayRoutineScreen({
         onOpenToday: () => undefined,
       }}
     >
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <View style={styles.headerCopy}>
-            <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-              {t('eyebrow', { name: displayName })}
-            </Text>
-            <Text
-              accessibilityRole="header"
-              style={[styles.title, { color: theme.colors.text }]}
-            >
-              {t('title')}
-            </Text>
-          </View>
+          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
+            {t('title')}
+          </Text>
+          <Text style={[styles.date, { color: theme.colors.textMuted }]}>{selectedDateLabel}</Text>
         </View>
-
-        <CompanionHero
-          companionId={companionId}
-          completedCount={completedCount}
-          progress={companionProgress}
-          reactionId={companionReactionId}
-          reduceMotion={shouldReduceMotion}
-          routineDay={routineDayWindow.key}
-          totalCount={items.length}
+        <TodayDateStrip
+          onSelectRoutineDay={handleSelectRoutineDay}
+          routineDay={selectedRoutineDay}
+          todayRoutineDay={routineDayWindow.key}
         />
+        {!isLoading && !errorCode && isCurrentRoutineDay ? (
+          <TodayProgressSummary
+            companionId={companionId}
+            completedCount={completedCount}
+            dailyStreak={dailyStreak}
+            isDailyStreakLoading={isDailyStreakLoading}
+            routineDayConfig={routineDayConfig}
+            totalCount={items.length}
+          />
+        ) : null}
         {completionFeedback ? (
           <CompletionFeedback
             completedCount={completionFeedback.completedCount}
@@ -398,7 +422,6 @@ export function TodayRoutineScreen({
             totalCount={completionFeedback.totalCount}
           />
         ) : null}
-        <RoutineDayTiming config={routineDayConfig} />
 
         {hasPlanCreationSuccess ? (
           <Text style={[styles.success, { color: theme.colors.primary }]}>
@@ -440,11 +463,12 @@ export function TodayRoutineScreen({
         {!isLoading && !errorCode && items.length === 0 ? (
           <View style={styles.stateContainer}>
             <Text style={[styles.stateText, { color: theme.colors.text }]}>
-              {t('emptyTitle')}
+              {isCurrentRoutineDay ? t('emptyTitle') : t('emptyHistoryTitle')}
             </Text>
             <Text style={[styles.description, { color: theme.colors.textMuted }]}>
-              {t('emptyDescription')}
+              {isCurrentRoutineDay ? t('emptyDescription') : t('emptyHistoryDescription')}
             </Text>
+            {isCurrentRoutineDay ? (
             <Pressable
               accessibilityRole="button"
               onPress={onCreatePlan}
@@ -460,28 +484,13 @@ export function TodayRoutineScreen({
                 {t('createPlan')}
               </Text>
             </Pressable>
+            ) : null}
           </View>
         ) : null}
 
         {!isLoading && !errorCode && items.length > 0 ? (
           <>
-            <TodayStatsSummary
-              completedCount={completedCount}
-              dailyStreak={dailyStreak}
-              isDailyStreakLoading={isDailyStreakLoading}
-              totalCount={items.length}
-            />
-            <StreakMomentCard
-              dailyStreak={dailyStreak}
-              isAllComplete={isAllComplete}
-            />
-            <MicroGoalCard item={microGoalItem} onOpenRoutine={openMicroGoal} />
-            <View
-              onLayout={(event) => {
-                routineListOffsetRef.current = event.nativeEvent.layout.y;
-              }}
-              style={styles.list}
-            >
+            <View style={styles.list}>
             <View style={styles.sectionHeader}>
               <Text
                 accessibilityRole="header"
@@ -493,89 +502,22 @@ export function TodayRoutineScreen({
                 {t('routines.count', { count: items.length })}
               </Text>
             </View>
-            {items.map((item) => {
-              const isComplete = item.completedAt !== null;
-              const isMutating = mutatingRoutineIds.has(item.id);
-              const actionLabel = isComplete
-                ? t('undoItem', { title: item.title })
-                : t('completeItem', { title: item.title });
-
-              return (
-                <View
-                  key={item.id}
-                  style={[
-                styles.routineItem,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor:
-                    isComplete || highlightedRoutineId === item.id
-                      ? theme.colors.primary
-                      : theme.colors.border,
-                      opacity: isMutating ? 0.72 : 1,
-                    },
-                  ]}
-                >
-                  <Pressable
-                    accessibilityLabel={actionLabel}
-                    accessibilityRole="button"
-                    accessibilityState={{ busy: isMutating, checked: isComplete }}
-                    disabled={isMutating}
-                    onPress={() => void handleToggle(item)}
-                    style={styles.toggleArea}
-                  >
-                    <View
-                      style={[
-                        styles.checkmark,
-                        {
-                          backgroundColor: isComplete
-                            ? theme.colors.primary
-                            : theme.colors.background,
-                          borderColor: isComplete ? theme.colors.primary : theme.colors.border,
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.checkmarkLabel,
-                          { color: isComplete ? theme.colors.onPrimary : theme.colors.textMuted },
-                        ]}
-                      >
-                        {isComplete ? '✓' : ''}
-                      </Text>
-                    </View>
-                    <View style={styles.itemCopy}>
-                      <Text
-                        style={[
-                          styles.itemTitle,
-                          {
-                            color: theme.colors.text,
-                            textDecorationLine: isComplete ? 'line-through' : 'none',
-                          },
-                        ]}
-                      >
-                        {item.title}
-                      </Text>
-                      {item.syncStatus ? (
-                        <Text style={[styles.syncLabel, { color: theme.colors.textMuted }]}>
-                          {t(`sync.${item.syncStatus}`)}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </Pressable>
-                  <Pressable
-                    accessibilityLabel={t('editItem', { title: item.title })}
-                    accessibilityRole="button"
-                    onPress={() => onEditRoutine(item)}
-                    style={[styles.editButton, { borderColor: theme.colors.border }]}
-                  >
-                    <Text style={[styles.editButtonLabel, { color: theme.colors.text }]}>
-                      {t('edit')}
-                    </Text>
-                  </Pressable>
-                </View>
-              );
-            })}
-            <Pressable
+              <TodayRoutineGroups
+                groups={groupTodayRoutineItems(items)}
+                isReadOnly={!isCurrentRoutineDay}
+                mutatingRoutineIds={mutatingRoutineIds}
+                nextRoutineId={nextRoutineId}
+                onEditRoutine={onEditRoutine}
+                onStartRoutine={(item) => setExecutionRoutineId(item.id)}
+                onToggleRoutine={(item) => void handleToggle(item)}
+              />
+            {isCurrentRoutineDay ? (
+              <>
+                <StreakMomentCard
+                  dailyStreak={dailyStreak}
+                  isAllComplete={isAllComplete}
+                />
+                <Pressable
               accessibilityRole="button"
               onPress={onCreatePlan}
               style={({ pressed }) => [
@@ -587,6 +529,8 @@ export function TodayRoutineScreen({
                 {t('addRoutine')}
               </Text>
             </Pressable>
+              </>
+            ) : null}
             </View>
           </>
         ) : null}
@@ -598,9 +542,8 @@ export function TodayRoutineScreen({
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
-  header: { gap: spacing.md },
-  headerCopy: { gap: spacing.xs },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.4, lineHeight: typography.lineHeight.caption },
+  date: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
+  header: { gap: spacing.xs },
   title: { flexShrink: 1, fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: -0.4, lineHeight: typography.lineHeight.title },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
@@ -615,15 +558,30 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   sectionMeta: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
   list: { gap: spacing.sm },
-  routineItem: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 80, padding: spacing.md },
-  toggleArea: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: spacing.md },
-  checkmark: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
-  checkmarkLabel: { fontSize: typography.size.body, includeFontPadding: false, lineHeight: typography.size.body, textAlign: 'center' },
-  itemCopy: { flex: 1, gap: spacing.xs },
-  itemTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  syncLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  editButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  editButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   addButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   addButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });
+
+function toUtcDate(routineDay: string): Date {
+  const [year, month, day] = routineDay.split('-').map(Number);
+
+  return new Date(Date.UTC(year, month - 1, day, 12));
+}
+
+function getSelectedDateFormatter(locale: string): Intl.DateTimeFormat {
+  const cachedFormatter = selectedDateFormattersByLocale.get(locale);
+
+  if (cachedFormatter) {
+    return cachedFormatter;
+  }
+
+  const formatter = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+    weekday: 'long',
+  });
+
+  selectedDateFormattersByLocale.set(locale, formatter);
+  return formatter;
+}

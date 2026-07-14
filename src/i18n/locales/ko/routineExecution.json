@@ -1,0 +1,23 @@
+{
+  "back": "오늘로 돌아가기",
+  "progress": "전체 {{total}}개 중 {{current}}번째",
+  "progressAccessibilityLabel": "전체 {{total}}개 중 {{completed}}개 완료",
+  "currentLabel": "지금 할 일",
+  "timerLabel": "집중 시간",
+  "timerAccessibilityLabel": "집중 시간 {{time}} 남음",
+  "timerDescription": "이 타이머는 이 화면에서만 작동하며 루틴 기록을 바꾸지 않아요.",
+  "pause": "잠시 멈춤",
+  "resume": "다시 시작",
+  "nextLabel": "다음 루틴",
+  "nextEmpty": "오늘의 마지막 루틴이에요.",
+  "skip": "나중에 하기",
+  "skipAccessibilityLabel": "{{title}}은 나중에 하고 다음 루틴 보기",
+  "complete": "완료하기",
+  "completeAccessibilityLabel": "{{title}} 완료하기",
+  "allComplete": {
+    "title": "오늘 루틴을 모두 마쳤어요",
+    "description": "오늘 예정된 루틴을 전부 완료했어요.",
+    "back": "오늘로 돌아가기",
+    "backLabel": "오늘 루틴으로 돌아가기"
+  }
+}
