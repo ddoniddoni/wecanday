@@ -12,6 +12,7 @@
   "completionCount": "{{completed}} of {{scheduled}} scheduled routines complete",
   "dailyProgress": "Daily progress",
   "dailyRate": "{{completed}}/{{scheduled}}",
+  "dailyCompactRate": "{{completed}}/{{scheduled}}",
   "restDay": "Rest day",
   "dailyAccessibilityLabel": "{{date}}: {{value}}.",
   "currentStreak": "Current daily streak",

@@ -188,13 +188,16 @@ function WeeklyDayRow({
   theme: AppTheme;
 }) {
   const isRestDay = day.scheduledCount === 0;
-  const value = isRestDay
+  const accessibilityValue = isRestDay
     ? t('restDay')
     : t('dailyRate', { completed: day.completedCount, scheduled: day.scheduledCount });
+  const value = isRestDay
+    ? accessibilityValue
+    : t('dailyCompactRate', { completed: day.completedCount, scheduled: day.scheduledCount });
 
   return (
     <View
-      accessibilityLabel={t('dailyAccessibilityLabel', { date: day.routineDay, value })}
+      accessibilityLabel={t('dailyAccessibilityLabel', { date: day.routineDay, value: accessibilityValue })}
       style={styles.dayRow}
     >
       <Text style={[styles.dayKey, { color: theme.colors.textMuted }]}>{day.routineDay}</Text>
@@ -209,7 +212,7 @@ function WeeklyDayRow({
           ]}
         />
       </View>
-      <Text style={[styles.dayValue, { color: theme.colors.text }]}>{value}</Text>
+      <Text numberOfLines={1} style={[styles.dayValue, { color: theme.colors.text }]}>{value}</Text>
     </View>
   );
 }
@@ -256,7 +259,7 @@ const styles = StyleSheet.create({
   dayKey: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, width: 80 },
   progressTrack: { borderRadius: radii.pill, flex: 1, height: 8, overflow: 'hidden' },
   progressFill: { borderRadius: radii.pill, height: '100%' },
-  dayValue: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right', width: 54 },
+  dayValue: { flexShrink: 0, fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right' },
   streakRow: { flexDirection: 'row', gap: spacing.md },
   streakCard: { borderRadius: radii.md, borderWidth: 1, flex: 1, gap: spacing.xs, padding: spacing.md },
   streakValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },

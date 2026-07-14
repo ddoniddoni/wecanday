@@ -12,6 +12,7 @@
   "completionCount": "예정된 {{scheduled}}개 중 {{completed}}개 완료",
   "dailyProgress": "일별 진행",
   "dailyRate": "{{scheduled}}개 중 {{completed}}개",
+  "dailyCompactRate": "{{completed}}/{{scheduled}}",
   "restDay": "휴식일",
   "dailyAccessibilityLabel": "{{date}}: {{value}}.",
   "currentStreak": "현재 연속 실천",

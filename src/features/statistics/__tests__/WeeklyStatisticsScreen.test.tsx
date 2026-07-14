@@ -38,6 +38,8 @@ describe('WeeklyStatisticsScreen', () => {
 
     expect(await screen.findByText('100%')).toBeTruthy();
     expect(screen.getByText('3 of 3 scheduled routines complete')).toBeTruthy();
+    expect(screen.getByText('1/1').props.numberOfLines).toBe(1);
+    expect(screen.getByText('2/2').props.numberOfLines).toBe(1);
     expect(screen.getByText('Rest day')).toBeTruthy();
     expect(screen.getByText('2 days')).toBeTruthy();
     expect(screen.getByText('4 days')).toBeTruthy();
