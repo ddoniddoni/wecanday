@@ -1,5 +1,11 @@
 {
   "appName": "위캔데이",
   "foundationReady": "앱 기반 준비가 완료됐어요.",
+  "navigation": {
+    "today": "오늘",
+    "plans": "계획",
+    "statistics": "통계",
+    "profile": "내 공간"
+  },
   "safeFallback": "콘텐츠를 표시할 수 없어요."
 }

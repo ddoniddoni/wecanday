@@ -5,6 +5,7 @@ import enFriends from '@/i18n/locales/en/friends.json';
 import enOnboarding from '@/i18n/locales/en/onboarding.json';
 import enNotifications from '@/i18n/locales/en/notifications.json';
 import enPlans from '@/i18n/locales/en/plans.json';
+import enProfile from '@/i18n/locales/en/profile.json';
 import enRoutineDay from '@/i18n/locales/en/routineDay.json';
 import enSettings from '@/i18n/locales/en/settings.json';
 import enStatistics from '@/i18n/locales/en/statistics.json';
@@ -16,6 +17,7 @@ import koFriends from '@/i18n/locales/ko/friends.json';
 import koOnboarding from '@/i18n/locales/ko/onboarding.json';
 import koNotifications from '@/i18n/locales/ko/notifications.json';
 import koPlans from '@/i18n/locales/ko/plans.json';
+import koProfile from '@/i18n/locales/ko/profile.json';
 import koRoutineDay from '@/i18n/locales/ko/routineDay.json';
 import koSettings from '@/i18n/locales/ko/settings.json';
 import koStatistics from '@/i18n/locales/ko/statistics.json';
@@ -30,6 +32,7 @@ export const resources = {
     onboarding: enOnboarding,
     notifications: enNotifications,
     plans: enPlans,
+    profile: enProfile,
     routineDay: enRoutineDay,
     settings: enSettings,
     statistics: enStatistics,
@@ -43,6 +46,7 @@ export const resources = {
     onboarding: koOnboarding,
     notifications: koNotifications,
     plans: koPlans,
+    profile: koProfile,
     routineDay: koRoutineDay,
     settings: koSettings,
     statistics: koStatistics,

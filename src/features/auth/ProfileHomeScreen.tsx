@@ -27,6 +27,7 @@ import {
 import { PlanCreateScreen } from '@/features/plans/PlanCreateScreen';
 import { PlanListScreen } from '@/features/plans/PlanListScreen';
 import { RoutineCreateScreen } from '@/features/plans/RoutineCreateScreen';
+import { ProfileOverviewScreen } from '@/features/profile/ProfileOverviewScreen';
 import { PlanDomainError } from '@/features/plans/domain/planErrors';
 import {
   addRoutineItem,
@@ -59,6 +60,7 @@ type AppScreen =
   | 'friend-requests'
   | 'friend-connections'
   | 'monthly-statistics'
+  | 'profile'
   | 'theme-selection'
   | 'weekly-statistics'
   | 'today';
@@ -272,7 +274,7 @@ export function ProfileHomeScreen() {
   if (screen === 'theme-selection') {
     return (
       <ThemeSelectionScreen
-        onBack={() => setScreen('today')}
+        onBack={() => setScreen('profile')}
         onSave={async (preference) => {
           if (!supabaseClient) {
             throw new Error('THEME_PREFERENCE_SAVE_FAILED');
@@ -292,7 +294,7 @@ export function ProfileHomeScreen() {
   if (screen === 'account-settings') {
     return (
       <AccountSettingsScreen
-        onBack={() => setScreen('today')}
+        onBack={() => setScreen('profile')}
         onDeleteAccount={auth.deleteAccount}
         onSignOut={auth.signOut}
       />
@@ -309,6 +311,20 @@ export function ProfileHomeScreen() {
         onBack={() => setScreen('today')}
         onOpenConnections={() => setScreen('friend-connections')}
         onOpenRequests={() => setScreen('friend-requests')}
+      />
+    );
+  }
+  if (screen === 'profile') {
+    return (
+      <ProfileOverviewScreen
+        displayName={auth.profile.display_name}
+        onOpenAccountSettings={() => setScreen('account-settings')}
+        onOpenFriendSearch={() => setScreen('friend-search')}
+        onOpenPlans={() => setScreen('plan-list')}
+        onOpenStatistics={() => setScreen('weekly-statistics')}
+        onOpenThemes={() => setScreen('theme-selection')}
+        onOpenToday={() => setScreen('today')}
+        publicCode={auth.profile.public_code}
       />
     );
   }
@@ -520,13 +536,9 @@ export function ProfileHomeScreen() {
         });
         setScreen('routine-edit');
       }}
-      onOpenFriendSearch={() => setScreen('friend-search')}
       onOpenPlans={() => setScreen('plan-list')}
-      onOpenAnnualStatistics={() => setScreen('annual-statistics')}
-      onOpenAccountSettings={() => setScreen('account-settings')}
-      onOpenMonthlyStatistics={() => setScreen('monthly-statistics')}
-      onOpenThemes={() => setScreen('theme-selection')}
-      onOpenWeeklyStatistics={() => setScreen('weekly-statistics')}
+      onOpenProfile={() => setScreen('profile')}
+      onOpenStatistics={() => setScreen('weekly-statistics')}
       onRoutineCompletionChanged={(routine, isCompleted) => {
         if (isCompleted) {
           void cancelRoutineReminder(routine.id);
@@ -539,7 +551,6 @@ export function ProfileHomeScreen() {
           scheduleWeekdays: routine.schedule_weekdays,
         });
       }}
-      publicCode={auth.profile.public_code}
       routineDayConfig={{
         dayStartMinute: auth.profile.day_start_minute,
         timeZone: auth.profile.time_zone,

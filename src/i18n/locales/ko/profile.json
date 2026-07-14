@@ -1,0 +1,15 @@
+{
+  "eyebrow": "나의 공간",
+  "title": "{{name}}님의 공간",
+  "description": "루틴, 친구, 설정을 한곳에서 관리하세요.",
+  "appearance": {
+    "title": "화면 모양",
+    "description": "오늘의 기분에 맞는 테마를 골라보세요.",
+    "action": "테마 변경"
+  },
+  "account": {
+    "title": "계정 및 개인정보",
+    "description": "계정, 개인정보, 로그인 설정을 관리하세요.",
+    "action": "설정 열기"
+  }
+}

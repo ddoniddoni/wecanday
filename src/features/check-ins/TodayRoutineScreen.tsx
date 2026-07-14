@@ -19,11 +19,9 @@ import {
   applyPendingCheckInOperations,
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
+import { PrimaryNavigation } from '@/components/PrimaryNavigation';
 import { CompanionHero } from '@/features/companion/CompanionHero';
-import { PublicCodeShareCard } from '@/features/friends/PublicCodeShareCard';
 import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
-import { TodayStatsSummary } from '@/features/streaks/TodayStatsSummary';
-import { loadCurrentDailyStreak } from '@/features/streaks/services/dailyStreakService';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
   completeCheckIn,
@@ -54,18 +52,13 @@ type TodayRoutineScreenProps = {
   hasPlanCreationSuccess: boolean;
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
-  onOpenFriendSearch: () => void;
   onOpenPlans: () => void;
-  onOpenAnnualStatistics: () => void;
-  onOpenAccountSettings: () => void;
-  onOpenMonthlyStatistics: () => void;
-  onOpenThemes: () => void;
-  onOpenWeeklyStatistics: () => void;
+  onOpenProfile: () => void;
+  onOpenStatistics: () => void;
   onRoutineCompletionChanged: (
     item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays'>,
     isCompleted: boolean,
   ) => void;
-  publicCode: string;
   routineDayConfig: RoutineDayConfig;
   userId: string;
 };
@@ -76,15 +69,10 @@ export function TodayRoutineScreen({
   hasPlanCreationSuccess,
   onCreatePlan,
   onEditRoutine,
-  onOpenFriendSearch,
   onOpenPlans,
-  onOpenAnnualStatistics,
-  onOpenAccountSettings,
-  onOpenMonthlyStatistics,
-  onOpenThemes,
-  onOpenWeeklyStatistics,
+  onOpenProfile,
+  onOpenStatistics,
   onRoutineCompletionChanged,
-  publicCode,
   routineDayConfig,
   userId,
 }: TodayRoutineScreenProps) {
@@ -101,8 +89,6 @@ export function TodayRoutineScreen({
   );
   const [errorCode, setErrorCode] = useState<CheckInErrorCode | null>(null);
   const [companionReactionId, setCompanionReactionId] = useState(0);
-  const [dailyStreak, setDailyStreak] = useState<number | null>(null);
-  const [isDailyStreakLoading, setIsDailyStreakLoading] = useState(true);
 
   const refresh = useCallback(
     async (showLoading: boolean) => {
@@ -115,7 +101,6 @@ export function TodayRoutineScreen({
       } else {
         setIsRefreshing(true);
       }
-      setIsDailyStreakLoading(true);
 
       try {
         await synchronizePendingCheckIns(client, userId, systemClock.now());
@@ -135,24 +120,11 @@ export function TodayRoutineScreen({
           ),
         );
 
-        try {
-          const loadedDailyStreak = await loadCurrentDailyStreak(
-            client,
-            userId,
-            nextRoutineDayWindow.key,
-            routineDayConfig,
-          );
-
-          setDailyStreak(loadedDailyStreak);
-        } catch {
-          setDailyStreak(null);
-        }
       } catch (error) {
         setErrorCode(getCheckInErrorCode(error));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
-        setIsDailyStreakLoading(false);
       }
     },
     [client, routineDayConfig, userId],
@@ -175,11 +147,6 @@ export function TodayRoutineScreen({
 
   async function handleToggle(item: TodayRoutineItem) {
     const isComplete = item.completedAt !== null;
-    const completedCountBeforeToggle = items.filter(
-      (candidate) => candidate.completedAt !== null,
-    ).length;
-    const isDailyStreakCompleteBeforeToggle =
-      items.length > 0 && completedCountBeforeToggle === items.length;
     const occurredAt = systemClock.now().toISOString();
     const operation = createCheckInOutboxOperation({
       kind: isComplete ? 'undo' : 'complete',
@@ -204,16 +171,6 @@ export function TodayRoutineScreen({
     );
     if (!isComplete) {
       setCompanionReactionId((previousReactionId) => previousReactionId + 1);
-    }
-    if (!isComplete && completedCountBeforeToggle + 1 === items.length) {
-      setDailyStreak((previousStreak) =>
-        previousStreak === null ? null : previousStreak + 1,
-      );
-    }
-    if (isComplete && isDailyStreakCompleteBeforeToggle) {
-      setDailyStreak((previousStreak) =>
-        previousStreak === null ? null : Math.max(0, previousStreak - 1),
-      );
     }
     onRoutineCompletionChanged(item, !isComplete);
 
@@ -271,64 +228,12 @@ export function TodayRoutineScreen({
             <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
               {t('eyebrow', { name: displayName })}
             </Text>
-            <View style={styles.titleRow}>
-              <Text
-                accessibilityRole="header"
-                style={[styles.title, { color: theme.colors.text }]}
-              >
-                {t('title')}
-              </Text>
-              <Pressable
-                accessibilityLabel={t('openAccountSettings')}
-                accessibilityRole="button"
-                onPress={onOpenAccountSettings}
-                style={({ pressed }) => [
-                  styles.accountButton,
-                  {
-                    borderColor: theme.colors.border,
-                    opacity: pressed ? 0.72 : 1,
-                  },
-                ]}
-              >
-                <Text style={[styles.accountButtonLabel, { color: theme.colors.text }]}>
-                  •••
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-          <View style={styles.headerActions}>
-            <Pressable
-              accessibilityLabel={t('openPlans')}
-              accessibilityRole="button"
-              onPress={onOpenPlans}
-              style={({ pressed }) => [
-                styles.primaryUtilityButton,
-                {
-                  backgroundColor: theme.colors.primary,
-                  opacity: pressed ? 0.72 : 1,
-                },
-              ]}
+            <Text
+              accessibilityRole="header"
+              style={[styles.title, { color: theme.colors.text }]}
             >
-              <Text style={[styles.utilityButtonLabel, { color: theme.colors.onPrimary }]}>
-                {t('openPlans')}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityLabel={t('openThemes')}
-              accessibilityRole="button"
-              onPress={onOpenThemes}
-              style={({ pressed }) => [
-                styles.utilityButton,
-                {
-                  borderColor: theme.colors.border,
-                  opacity: pressed ? 0.72 : 1,
-                },
-              ]}
-            >
-              <Text style={[styles.utilityButtonLabel, { color: theme.colors.text }]}>
-                {t('openThemes')}
-              </Text>
-            </Pressable>
+              {t('title')}
+            </Text>
           </View>
         </View>
 
@@ -339,12 +244,6 @@ export function TodayRoutineScreen({
           totalCount={items.length}
         />
         <RoutineDayTiming config={routineDayConfig} />
-        <TodayStatsSummary
-          completedCount={completedCount}
-          dailyStreak={dailyStreak}
-          isDailyStreakLoading={isDailyStreakLoading}
-          totalCount={items.length}
-        />
 
         {hasPlanCreationSuccess ? (
           <Text style={[styles.success, { color: theme.colors.primary }]}>
@@ -515,67 +414,14 @@ export function TodayRoutineScreen({
             </Pressable>
           </View>
         ) : null}
-
-        <View style={styles.secondarySection}>
-          <Text
-            accessibilityRole="header"
-            style={[styles.sectionTitle, { color: theme.colors.text }]}
-          >
-            {t('sections.insights')}
-          </Text>
-          <View style={styles.statisticsActions}>
-            <Pressable
-              accessibilityLabel={t('openWeeklyStatistics')}
-              accessibilityRole="button"
-              onPress={onOpenWeeklyStatistics}
-              style={({ pressed }) => [
-                styles.statisticsButton,
-                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-              ]}
-            >
-              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-                {t('openWeeklyStatistics')}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityLabel={t('openMonthlyStatistics')}
-              accessibilityRole="button"
-              onPress={onOpenMonthlyStatistics}
-              style={({ pressed }) => [
-                styles.statisticsButton,
-                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-              ]}
-            >
-              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-                {t('openMonthlyStatistics')}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityLabel={t('openAnnualStatistics')}
-              accessibilityRole="button"
-              onPress={onOpenAnnualStatistics}
-              style={({ pressed }) => [
-                styles.statisticsButton,
-                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-              ]}
-            >
-              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-                {t('openAnnualStatistics')}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View style={styles.secondarySection}>
-          <Text
-            accessibilityRole="header"
-            style={[styles.sectionTitle, { color: theme.colors.text }]}
-          >
-            {t('sections.friends')}
-          </Text>
-          <PublicCodeShareCard onFindFriend={onOpenFriendSearch} publicCode={publicCode} />
-        </View>
       </ScrollView>
+      <PrimaryNavigation
+        activeTab="today"
+        onOpenPlans={onOpenPlans}
+        onOpenProfile={onOpenProfile}
+        onOpenStatistics={onOpenStatistics}
+        onOpenToday={() => undefined}
+      />
     </SafeAreaView>
   );
 }
@@ -585,15 +431,8 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
   header: { gap: spacing.md },
   headerCopy: { gap: spacing.xs },
-  titleRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
-  headerActions: { flexDirection: 'row', gap: spacing.sm },
   eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.4, lineHeight: typography.lineHeight.caption },
   title: { flexShrink: 1, fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: -0.4, lineHeight: typography.lineHeight.title },
-  accountButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
-  accountButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, includeFontPadding: false, letterSpacing: 1, lineHeight: typography.size.body },
-  utilityButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  primaryUtilityButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  utilityButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
@@ -603,10 +442,6 @@ const styles = StyleSheet.create({
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   retryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  statisticsActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexGrow: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  statisticsButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  secondarySection: { gap: spacing.md },
   sectionHeader: { alignItems: 'baseline', flexDirection: 'row', justifyContent: 'space-between' },
   sectionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   sectionMeta: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },

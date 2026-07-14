@@ -3,7 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { completeCheckIn } from '@/features/check-ins/services/checkInService';
-import { loadCurrentDailyStreak } from '@/features/streaks/services/dailyStreakService';
 import { i18n } from '@/i18n';
 import type { Database } from '@/lib/supabase/database.types';
 import { ThemeProvider } from '@/theme/ThemeProvider';
@@ -43,19 +42,7 @@ jest.mock('@/local-db/checkInOutbox', () => ({
   removeCheckInOperationsForRoutine: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('@/features/streaks/services/dailyStreakService', () => ({
-  loadCurrentDailyStreak: jest.fn(() => Promise.resolve(2)),
-}));
-
-const mockedLoadCurrentDailyStreak = loadCurrentDailyStreak as jest.MockedFunction<
-  typeof loadCurrentDailyStreak
->;
-
 describe('TodayRoutineScreen', () => {
-  beforeEach(() => {
-    mockedLoadCurrentDailyStreak.mockClear();
-  });
-
   it('optimistically completes a routine item and sends its idempotency key', async () => {
     await i18n.changeLanguage('en');
     const onRoutineCompletionChanged = jest.fn();
@@ -67,15 +54,10 @@ describe('TodayRoutineScreen', () => {
           hasPlanCreationSuccess={false}
           onCreatePlan={jest.fn()}
           onEditRoutine={jest.fn()}
-          onOpenFriendSearch={jest.fn()}
           onOpenPlans={jest.fn()}
-          onOpenAnnualStatistics={jest.fn()}
-          onOpenAccountSettings={jest.fn()}
-          onOpenMonthlyStatistics={jest.fn()}
-          onOpenThemes={jest.fn()}
-          onOpenWeeklyStatistics={jest.fn()}
+          onOpenProfile={jest.fn()}
+          onOpenStatistics={jest.fn()}
           onRoutineCompletionChanged={onRoutineCompletionChanged}
-          publicCode="Ab7kL2xP9Qm4"
           routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
           userId="user-1"
         />
@@ -88,8 +70,7 @@ describe('TodayRoutineScreen', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('1 / 1')).toBeTruthy();
-      expect(screen.getByText('3 days')).toBeTruthy();
+      expect(screen.getByText('1 of 1 complete')).toBeTruthy();
       expect(screen.getByText('Everything for today is complete!')).toBeTruthy();
       expect(completeCheckIn).toHaveBeenCalledWith(
         expect.anything(),
@@ -106,43 +87,4 @@ describe('TodayRoutineScreen', () => {
     });
   });
 
-  it('keeps today routines available when the daily streak summary cannot load', async () => {
-    await i18n.changeLanguage('en');
-    mockedLoadCurrentDailyStreak.mockRejectedValueOnce(
-      new Error('DAILY_STREAK_LOAD_FAILED'),
-    );
-
-    const screen = await render(
-      <ThemeProvider preference="light">
-        <TodayRoutineScreen
-          client={{} as SupabaseClient<Database>}
-          displayName="Jamie"
-          hasPlanCreationSuccess={false}
-          onCreatePlan={jest.fn()}
-          onEditRoutine={jest.fn()}
-          onOpenFriendSearch={jest.fn()}
-          onOpenPlans={jest.fn()}
-          onOpenAnnualStatistics={jest.fn()}
-          onOpenAccountSettings={jest.fn()}
-          onOpenMonthlyStatistics={jest.fn()}
-          onOpenThemes={jest.fn()}
-          onOpenWeeklyStatistics={jest.fn()}
-          onRoutineCompletionChanged={jest.fn()}
-          publicCode="Ab7kL2xP9Qm4"
-          routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
-          userId="user-1"
-        />
-      </ThemeProvider>,
-    );
-
-    expect(
-      await screen.findByRole('button', { name: 'Complete Morning walk' }),
-    ).toBeTruthy();
-    expect(screen.getByText('Unavailable')).toBeTruthy();
-    expect(
-      screen.queryByText(
-        'We couldn’t load or save your routine right now. Please try again.',
-      ),
-    ).toBeNull();
-  });
 });

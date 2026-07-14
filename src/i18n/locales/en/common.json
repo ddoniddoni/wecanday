@@ -1,5 +1,11 @@
 {
   "appName": "WeCanDay",
   "foundationReady": "The app foundation is ready.",
+  "navigation": {
+    "today": "Today",
+    "plans": "Plans",
+    "statistics": "Statistics",
+    "profile": "My space"
+  },
   "safeFallback": "Content is unavailable."
 }

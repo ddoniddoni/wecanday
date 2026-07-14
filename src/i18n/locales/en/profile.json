@@ -1,0 +1,15 @@
+{
+  "eyebrow": "YOUR SPACE",
+  "title": "{{name}}'s space",
+  "description": "Your routines, friends, and preferences live here.",
+  "appearance": {
+    "title": "Appearance",
+    "description": "Choose the mood that fits your day.",
+    "action": "Change theme"
+  },
+  "account": {
+    "title": "Account & privacy",
+    "description": "Manage your account, privacy, and sign-in.",
+    "action": "Open settings"
+  }
+}
