@@ -116,11 +116,11 @@ export function PublicCodeShareCard({
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
+  card: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.md, padding: spacing.lg },
   copy: { gap: spacing.xs },
   title: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  code: { fontSize: typography.size.body, fontWeight: typography.weight.bold, letterSpacing: 1.5, lineHeight: typography.lineHeight.body },
+  code: { fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: 2, lineHeight: typography.lineHeight.title },
   findFriendButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   actions: { flexDirection: 'row', gap: spacing.sm },
   button: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },

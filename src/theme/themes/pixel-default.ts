@@ -5,14 +5,14 @@ export const pixelDefaultTheme: AppTheme = {
   id: 'pixel-default',
   isDark: false,
   colors: {
-    background: palette.pixelSky,
+    background: palette.cream,
     surface: palette.paper,
     text: palette.ink,
     textMuted: palette.moss,
-    primary: palette.pixelGround,
+    primary: palette.moss,
     onPrimary: palette.paper,
     accent: palette.sun,
-    border: palette.ink,
-    focus: palette.ink,
+    border: palette.borderLight,
+    focus: palette.moss,
   },
 };

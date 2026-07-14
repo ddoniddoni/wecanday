@@ -30,6 +30,7 @@ export const radii = {
   sm: 8,
   md: 16,
   lg: 24,
+  xl: 32,
   pill: 999,
 } as const;
 
@@ -37,11 +38,13 @@ export const typography = {
   size: {
     body: 16,
     title: 30,
+    display: 38,
     caption: 13,
   },
   lineHeight: {
     body: 24,
     title: 38,
+    display: 46,
     caption: 18,
   },
   weight: {

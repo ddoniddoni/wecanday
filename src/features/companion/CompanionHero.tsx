@@ -62,23 +62,20 @@ export function CompanionHero({
       })}
       style={[
         styles.hero,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+        { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
       ]}
     >
       <View style={styles.copy}>
-        <Text style={[styles.routineDayLabel, { color: theme.colors.textMuted }]}>
-          {t('routineDayLabel')}
+        <Text style={[styles.routineDayLabel, { color: theme.colors.onPrimary }]}>
+          {t('companion.eyebrow')}
         </Text>
-        <Text style={[styles.routineDayValue, { color: theme.colors.text }]}>
-          {routineDay}
-        </Text>
-        <Text style={[styles.status, { color: theme.colors.primary }]}>{statusLabel}</Text>
+        <Text style={[styles.status, { color: theme.colors.onPrimary }]}>{statusLabel}</Text>
         <View
           accessibilityLabel={t('progress', {
             completed: completedCount,
             total: totalCount,
           })}
-          style={[styles.progressTrack, { backgroundColor: theme.colors.background }]}
+          style={[styles.progressTrack, { backgroundColor: theme.colors.surface }]}
         >
           <View
             style={[
@@ -87,10 +84,14 @@ export function CompanionHero({
             ]}
           />
         </View>
-        <Text style={[styles.progressLabel, { color: theme.colors.textMuted }]}>
+        <Text style={[styles.progressLabel, { color: theme.colors.onPrimary }]}>
           {t('progress', { completed: completedCount, total: totalCount })}
         </Text>
       </View>
+      <View
+        pointerEvents="none"
+        style={[styles.imageHalo, { backgroundColor: theme.colors.surface }]}
+      />
       <Animated.Image
         accessibilityLabel={t('companion.imageLabel', { status: statusLabel })}
         accessibilityRole="image"
@@ -105,20 +106,20 @@ export function CompanionHero({
 const styles = StyleSheet.create({
   hero: {
     alignItems: 'center',
-    borderRadius: radii.lg,
+    borderRadius: radii.xl,
     borderWidth: 1,
     flexDirection: 'row',
-    minHeight: 172,
+    minHeight: 206,
     overflow: 'hidden',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
   },
-  copy: { flex: 1, gap: spacing.xs, paddingVertical: spacing.sm },
-  routineDayLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  routineDayValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  status: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, marginTop: spacing.xs },
-  progressTrack: { borderRadius: radii.pill, height: 8, marginTop: spacing.sm, overflow: 'hidden', width: '100%' },
+  copy: { flex: 1, gap: spacing.sm, paddingRight: spacing.xl, zIndex: 1 },
+  routineDayLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 1, lineHeight: typography.lineHeight.caption },
+  status: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, marginTop: spacing.xs },
+  progressTrack: { borderRadius: radii.pill, height: 10, marginTop: spacing.sm, overflow: 'hidden', width: '100%' },
   progressFill: { borderRadius: radii.pill, height: '100%' },
-  progressLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  image: { height: 150, marginRight: -spacing.md, width: 134 },
+  progressLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  imageHalo: { borderRadius: radii.pill, bottom: -72, height: 244, opacity: 0.2, position: 'absolute', right: -78, width: 244 },
+  image: { bottom: -spacing.lg, height: 202, position: 'absolute', right: -spacing.md, width: 180 },
 });

@@ -40,7 +40,7 @@ describe('TodayStatsSummary', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByText('2 of 3 complete')).toBeTruthy();
+    expect(screen.getByText('2 / 3')).toBeTruthy();
     expect(screen.getByText('7 days')).toBeTruthy();
     expect(
       screen.getByLabelText(

@@ -84,13 +84,13 @@ export function RoutineDayTiming({
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 64,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    minHeight: 72,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   copy: { gap: spacing.xs },
   label: {

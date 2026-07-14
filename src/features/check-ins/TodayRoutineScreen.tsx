@@ -267,64 +267,66 @@ export function TodayRoutineScreen({
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <View style={styles.headerCopy}>
-            <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-              {t('eyebrow', { name: displayName })}
-            </Text>
-            <Text
-              accessibilityRole="header"
-              style={[styles.title, { color: theme.colors.text }]}
-            >
-              {t('title')}
-            </Text>
-          </View>
-          <View style={styles.headerActions}>
-            <Pressable
-              accessibilityLabel={t('openThemes')}
-              accessibilityRole="button"
-              onPress={onOpenThemes}
-              style={({ pressed }) => [
-                styles.signOutButton,
-                {
-                  borderColor: theme.colors.border,
-                  opacity: pressed ? 0.72 : 1,
-                },
-              ]}
-            >
-              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-                {t('openThemes')}
+          <View style={styles.headerTopRow}>
+            <View style={styles.headerCopy}>
+              <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+                {t('eyebrow', { name: displayName })}
               </Text>
-            </Pressable>
-            <Pressable
-              accessibilityLabel={t('openPlans')}
-              accessibilityRole="button"
-              onPress={onOpenPlans}
-              style={({ pressed }) => [
-                styles.signOutButton,
-                {
-                  borderColor: theme.colors.border,
-                  opacity: pressed ? 0.72 : 1,
-                },
-              ]}
-            >
-              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-                {t('openPlans')}
+              <Text
+                accessibilityRole="header"
+                style={[styles.title, { color: theme.colors.text }]}
+              >
+                {t('title')}
               </Text>
-            </Pressable>
+            </View>
             <Pressable
               accessibilityLabel={t('openAccountSettings')}
               accessibilityRole="button"
               onPress={onOpenAccountSettings}
               style={({ pressed }) => [
-                styles.signOutButton,
+                styles.accountButton,
                 {
                   borderColor: theme.colors.border,
                   opacity: pressed ? 0.72 : 1,
                 },
               ]}
             >
-              <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-                {t('openAccountSettings')}
+              <Text style={[styles.accountButtonLabel, { color: theme.colors.text }]}>
+                •••
+              </Text>
+            </Pressable>
+          </View>
+          <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={t('openPlans')}
+              accessibilityRole="button"
+              onPress={onOpenPlans}
+              style={({ pressed }) => [
+                styles.primaryUtilityButton,
+                {
+                  backgroundColor: theme.colors.primary,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.utilityButtonLabel, { color: theme.colors.onPrimary }]}>
+                {t('openPlans')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('openThemes')}
+              accessibilityRole="button"
+              onPress={onOpenThemes}
+              style={({ pressed }) => [
+                styles.utilityButton,
+                {
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.utilityButtonLabel, { color: theme.colors.text }]}>
+                {t('openThemes')}
               </Text>
             </Pressable>
           </View>
@@ -343,54 +345,6 @@ export function TodayRoutineScreen({
           isDailyStreakLoading={isDailyStreakLoading}
           totalCount={items.length}
         />
-        <PublicCodeShareCard onFindFriend={onOpenFriendSearch} publicCode={publicCode} />
-        <View style={styles.statisticsActions}>
-          <Pressable
-            accessibilityLabel={t('openWeeklyStatistics')}
-            accessibilityRole="button"
-            onPress={onOpenWeeklyStatistics}
-            style={({ pressed }) => [
-              styles.statisticsButton,
-              {
-                borderColor: theme.colors.border,
-                opacity: pressed ? 0.72 : 1,
-              },
-            ]}
-          >
-            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-              {t('openWeeklyStatistics')}
-            </Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel={t('openAnnualStatistics')}
-            accessibilityRole="button"
-            onPress={onOpenAnnualStatistics}
-            style={({ pressed }) => [
-              styles.statisticsButton,
-              { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-            ]}
-          >
-            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-              {t('openAnnualStatistics')}
-            </Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel={t('openMonthlyStatistics')}
-            accessibilityRole="button"
-            onPress={onOpenMonthlyStatistics}
-            style={({ pressed }) => [
-              styles.statisticsButton,
-              {
-                borderColor: theme.colors.border,
-                opacity: pressed ? 0.72 : 1,
-              },
-            ]}
-          >
-            <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
-              {t('openMonthlyStatistics')}
-            </Text>
-          </Pressable>
-        </View>
 
         {hasPlanCreationSuccess ? (
           <Text style={[styles.success, { color: theme.colors.primary }]}>
@@ -457,6 +411,17 @@ export function TodayRoutineScreen({
 
         {!isLoading && !errorCode && items.length > 0 ? (
           <View style={styles.list}>
+            <View style={styles.sectionHeader}>
+              <Text
+                accessibilityRole="header"
+                style={[styles.sectionTitle, { color: theme.colors.text }]}
+              >
+                {t('routines.title')}
+              </Text>
+              <Text style={[styles.sectionMeta, { color: theme.colors.textMuted }]}>
+                {t('routines.count', { count: items.length })}
+              </Text>
+            </View>
             {items.map((item) => {
               const isComplete = item.completedAt !== null;
               const isMutating = mutatingRoutineIds.has(item.id);
@@ -545,6 +510,66 @@ export function TodayRoutineScreen({
             </Pressable>
           </View>
         ) : null}
+
+        <View style={styles.secondarySection}>
+          <Text
+            accessibilityRole="header"
+            style={[styles.sectionTitle, { color: theme.colors.text }]}
+          >
+            {t('sections.insights')}
+          </Text>
+          <View style={styles.statisticsActions}>
+            <Pressable
+              accessibilityLabel={t('openWeeklyStatistics')}
+              accessibilityRole="button"
+              onPress={onOpenWeeklyStatistics}
+              style={({ pressed }) => [
+                styles.statisticsButton,
+                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+              ]}
+            >
+              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+                {t('openWeeklyStatistics')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('openMonthlyStatistics')}
+              accessibilityRole="button"
+              onPress={onOpenMonthlyStatistics}
+              style={({ pressed }) => [
+                styles.statisticsButton,
+                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+              ]}
+            >
+              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+                {t('openMonthlyStatistics')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityLabel={t('openAnnualStatistics')}
+              accessibilityRole="button"
+              onPress={onOpenAnnualStatistics}
+              style={({ pressed }) => [
+                styles.statisticsButton,
+                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+              ]}
+            >
+              <Text style={[styles.statisticsButtonLabel, { color: theme.colors.text }]}>
+                {t('openAnnualStatistics')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.secondarySection}>
+          <Text
+            accessibilityRole="header"
+            style={[styles.sectionTitle, { color: theme.colors.text }]}
+          >
+            {t('sections.friends')}
+          </Text>
+          <PublicCodeShareCard onFindFriend={onOpenFriendSearch} publicCode={publicCode} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -552,14 +577,18 @@ export function TodayRoutineScreen({
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
-  header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
+  content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
+  header: { gap: spacing.md },
+  headerTopRow: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   headerCopy: { flex: 1, gap: spacing.xs },
-  headerActions: { flexDirection: 'row', gap: spacing.xs },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
-  signOutButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  signOutLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  headerActions: { flexDirection: 'row', gap: spacing.sm },
+  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.4, lineHeight: typography.lineHeight.caption },
+  title: { fontSize: typography.size.display, fontWeight: typography.weight.bold, letterSpacing: -0.8, lineHeight: typography.lineHeight.display },
+  accountButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
+  accountButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, letterSpacing: 1, lineHeight: typography.lineHeight.body, marginTop: -spacing.sm },
+  utilityButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  primaryUtilityButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  utilityButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
@@ -570,16 +599,20 @@ const styles = StyleSheet.create({
   retryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   statisticsActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexGrow: 1, justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: 140, paddingHorizontal: spacing.lg },
-  statisticsButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  statisticsButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexGrow: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  statisticsButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  secondarySection: { gap: spacing.md },
+  sectionHeader: { alignItems: 'baseline', flexDirection: 'row', justifyContent: 'space-between' },
+  sectionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  sectionMeta: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
   list: { gap: spacing.sm },
-  routineItem: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 68, padding: spacing.md },
+  routineItem: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 80, padding: spacing.md },
   toggleArea: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: spacing.md },
   checkmark: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
   itemCopy: { flex: 1, gap: spacing.xs },
-  itemTitle: { fontSize: typography.size.body, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.body },
+  itemTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   syncLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  editButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.sm },
+  editButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   editButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   addButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   addButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },

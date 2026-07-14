@@ -1,6 +1,14 @@
 {
   "eyebrow": "{{name}}님의 루틴 데이",
   "title": "오늘의 작은 걸음",
+  "routines": {
+    "title": "오늘의 루틴",
+    "count": "{{count}}개 예정"
+  },
+  "sections": {
+    "insights": "나의 흐름",
+    "friends": "함께하는 사람들"
+  },
   "openAccountSettings": "계정",
   "openPlans": "내 계획",
   "openThemes": "테마",
@@ -19,6 +27,7 @@
   "stats": {
     "accessibilityLabel": "오늘 진행률: {{progress}}. 데일리 스트릭: {{streak}}.",
     "progressLabel": "오늘 진행률",
+    "progressValue": "{{completed}} / {{total}}",
     "noScheduled": "예정된 루틴 없음",
     "streakLabel": "데일리 스트릭",
     "streakLoading": "계산 중…",
@@ -26,6 +35,7 @@
     "streakValue": "{{count}}일"
   },
   "companion": {
+    "eyebrow": "TODAY'S RHYTHM",
     "accessibilityLabel": "루틴 데이 {{routineDay}}. 동반자 상태: {{status}}.",
     "imageLabel": "위캔데이 동반자, {{status}}",
     "states": {

@@ -1,6 +1,14 @@
 {
   "eyebrow": "{{name}}’s routine day",
   "title": "Today’s small steps",
+  "routines": {
+    "title": "Your routine",
+    "count": "{{count}} planned"
+  },
+  "sections": {
+    "insights": "Your progress",
+    "friends": "Your circle"
+  },
   "openAccountSettings": "Account",
   "openPlans": "My plans",
   "openThemes": "Themes",
@@ -19,6 +27,7 @@
   "stats": {
     "accessibilityLabel": "Today’s progress: {{progress}}. Daily streak: {{streak}}.",
     "progressLabel": "Today’s progress",
+    "progressValue": "{{completed}} / {{total}}",
     "noScheduled": "No routines scheduled",
     "streakLabel": "Daily streak",
     "streakLoading": "Calculating…",
@@ -27,6 +36,7 @@
     "streakValue_other": "{{count}} days"
   },
   "companion": {
+    "eyebrow": "TODAY'S RHYTHM",
     "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}.",
     "imageLabel": "WeCanDay companion, {{status}}",
     "states": {

@@ -88,7 +88,7 @@ describe('TodayRoutineScreen', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getAllByText('1 of 1 complete')).not.toHaveLength(0);
+      expect(screen.getByText('1 / 1')).toBeTruthy();
       expect(screen.getByText('3 days')).toBeTruthy();
       expect(screen.getByText('Everything for today is complete!')).toBeTruthy();
       expect(completeCheckIn).toHaveBeenCalledWith(

@@ -22,6 +22,9 @@ export function TodayStatsSummary({
   const progressLabel = totalCount === 0
     ? t('stats.noScheduled')
     : t('progress', { completed: completedCount, total: totalCount });
+  const progressValue = totalCount === 0
+    ? t('stats.noScheduled')
+    : t('stats.progressValue', { completed: completedCount, total: totalCount });
   const streakLabel = isDailyStreakLoading
     ? t('stats.streakLoading')
     : dailyStreak === null
@@ -39,13 +42,13 @@ export function TodayStatsSummary({
         { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
       ]}
     >
-      <View style={styles.stat}>
+      <View style={[styles.stat, { backgroundColor: theme.colors.background }]}>
         <Text style={[styles.label, { color: theme.colors.textMuted }]}>
           {t('stats.progressLabel')}
         </Text>
-        <Text style={[styles.value, { color: theme.colors.text }]}>{progressLabel}</Text>
+        <Text style={[styles.value, { color: theme.colors.text }]}>{progressValue}</Text>
       </View>
-      <View style={styles.stat}>
+      <View style={[styles.stat, { backgroundColor: theme.colors.background }]}>
         <Text style={[styles.label, { color: theme.colors.textMuted }]}>
           {t('stats.streakLabel')}
         </Text>
@@ -57,20 +60,20 @@ export function TodayStatsSummary({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: spacing.md,
-    padding: spacing.md,
+    gap: spacing.sm,
+    padding: spacing.sm,
   },
-  stat: { flex: 1, gap: spacing.xs },
+  stat: { borderRadius: radii.md, flex: 1, gap: spacing.xs, minHeight: 88, padding: spacing.md },
   label: {
     fontSize: typography.size.caption,
     lineHeight: typography.lineHeight.caption,
   },
   value: {
-    fontSize: typography.size.body,
+    fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.body,
+    lineHeight: typography.lineHeight.title,
   },
 });
