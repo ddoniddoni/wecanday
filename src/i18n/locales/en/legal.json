@@ -1,0 +1,36 @@
+{
+  "back": "Back",
+  "updated": "Last updated: July 14, 2026",
+  "privacy": {
+    "title": "Privacy policy",
+    "intro": "This policy explains how WeCanDay handles your information when you use the app.",
+    "collectionTitle": "Information we collect",
+    "collectionBody": "We collect the account details supplied by Google sign-in, your display name, country and language preferences, time-zone and routine-day settings, routine plans and check-ins, companion and theme choices, friend codes and friend or challenge relationships, and device push tokens when you enable notifications. We do not request your contacts, location, or payment-card details.",
+    "useTitle": "How we use information",
+    "useBody": "We use this information to operate your account, show your routine day and statistics, deliver requested reminders and social notifications, prevent abuse of friend-code search, and provide account support. We do not use routine titles, notes, email addresses, or friend codes for advertising.",
+    "sharingTitle": "When information is shared",
+    "sharingBody": "Friends only receive the limited profile and progress information that the product permits. Your email address, routine titles, notes, country details, and subscription status are not shared with friends. We use Supabase to provide authentication and database services, Google for sign-in, and Expo to deliver push notifications when enabled.",
+    "retentionTitle": "Retention and security",
+    "retentionBody": "We keep account information while your account is active and use access controls to limit it to the people and systems that need it to operate WeCanDay. No system can guarantee absolute security, but we do not place authentication tokens or full friend codes in analytics or diagnostic logs.",
+    "deletionTitle": "Your choices and deletion",
+    "deletionBody": "You can start permanent account deletion in Account settings. Deletion removes your profile, public code, routines, check-ins, friend relationships, created challenges, and push tokens. It also revokes your refresh sessions. This action cannot be undone.",
+    "contactTitle": "Questions",
+    "contactBody": "For privacy questions, use the support contact published on the WeCanDay Google Play listing. The release owner must keep that contact and this policy current before publishing an update."
+  },
+  "terms": {
+    "title": "Terms of service",
+    "intro": "These terms describe the basic rules for using WeCanDay.",
+    "eligibilityTitle": "Eligibility",
+    "eligibilityBody": "WeCanDay is intended for people aged 13 or older. Do not use the service where you are not legally allowed to do so. The release owner must review local age requirements before each country launch.",
+    "accountTitle": "Your account",
+    "accountBody": "Keep access to your Google account secure and provide accurate account information. You are responsible for activity that occurs through your account. Do not share another person's private information or attempt to access an account that is not yours.",
+    "acceptableUseTitle": "Acceptable use",
+    "acceptableUseBody": "Do not abuse friend-code search, send unwanted requests, bypass limits or security controls, interfere with the service, or use WeCanDay for unlawful or harmful activity. We may limit access to protect people and the service.",
+    "subscriptionsTitle": "Subscriptions",
+    "subscriptionsBody": "If Premium subscriptions are offered, purchases are processed through Google Play and are subject to its purchase terms. Prices and renewal details are shown by Google Play before purchase. Cancelling a subscription does not delete your existing routine history.",
+    "availabilityTitle": "Service changes",
+    "availabilityBody": "We may change, suspend, or discontinue features when needed to operate, secure, or improve WeCanDay. We will not intentionally delete your active account data except through the account-deletion flow or where required by law.",
+    "contactTitle": "Questions",
+    "contactBody": "For questions about these terms, use the support contact published on the WeCanDay Google Play listing. Material changes must be reflected here before they take effect."
+  }
+}

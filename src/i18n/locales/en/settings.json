@@ -10,7 +10,7 @@
       "system": { "label": "System", "description": "Match your device appearance." },
       "light": { "label": "Light", "description": "A bright, calm workspace." },
       "dark": { "label": "Dark", "description": "A low-light workspace." },
-      "pixel-default": { "label": "Pixel", "description": "A playful pixel-inspired theme." }
+      "pixel-default": { "label": "Pixel day", "description": "A limited sky, navy, coral, and gold palette with crisp square details.", "previewLabel": "Pixel day palette preview" }
     }
   }
 }

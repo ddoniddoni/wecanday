@@ -8,6 +8,7 @@ export function isThemePreference(value: string): value is ThemePreference {
 export type AppTheme = {
   id: ThemeId;
   isDark: boolean;
+  isPixel: boolean;
   colors: {
     background: string;
     surface: string;

@@ -9,4 +9,10 @@ describe('theme contracts', () => {
     expect(Object.keys(darkTheme.colors).sort()).toEqual(expectedRoles);
     expect(Object.keys(pixelDefaultTheme.colors).sort()).toEqual(expectedRoles);
   });
+
+  it('keeps the pixel theme visually distinct from the light theme', () => {
+    expect(pixelDefaultTheme.isPixel).toBe(true);
+    expect(pixelDefaultTheme.colors).not.toEqual(lightTheme.colors);
+    expect(pixelDefaultTheme.colors.primary).not.toBe(lightTheme.colors.primary);
+  });
 });

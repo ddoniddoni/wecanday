@@ -3,8 +3,9 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppTabScreen } from '@/components/AppTabScreen';
+import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
 import { getCurrentRoutineDayWindow, type RoutineDayConfig } from '@/features/routine-day/domain/routineDay';
 import { getAdjacentYear, type AnnualMonthlyTrend, type AnnualStatisticDay, type AnnualStatistics } from '@/features/statistics/domain/annualStatistics';
 import { loadAnnualStatistics } from '@/features/statistics/services/annualStatisticsService';
@@ -13,9 +14,9 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 import type { AppTheme } from '@/theme/types';
 
-type AnnualStatisticsScreenProps = { client: SupabaseClient<Database>; onBack: () => void; routineDayConfig: RoutineDayConfig; userId: string };
+type AnnualStatisticsScreenProps = { client: SupabaseClient<Database>; onBack: () => void; primaryNavigation?: PrimaryNavigationActions; routineDayConfig: RoutineDayConfig; userId: string };
 
-export function AnnualStatisticsScreen({ client, onBack, routineDayConfig, userId }: AnnualStatisticsScreenProps) {
+export function AnnualStatisticsScreen({ client, onBack, primaryNavigation, routineDayConfig, userId }: AnnualStatisticsScreenProps) {
   const { t } = useTranslation('statistics');
   const { theme } = useTheme();
   const currentYear = getCurrentRoutineDayWindow(routineDayConfig).key.slice(0, 4);
@@ -46,16 +47,19 @@ export function AnnualStatisticsScreen({ client, onBack, routineDayConfig, userI
     : null;
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <AppTabScreen
+      activeTab={primaryNavigation ? 'statistics' : undefined}
+      navigation={primaryNavigation}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('annual.eyebrow')}</Text>
             <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>{t('annual.title')}</Text>
           </View>
-          <Pressable accessibilityLabel={t('back')} accessibilityRole="button" onPress={onBack} style={({ pressed }) => [styles.outlineButton, { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 }]}>
+          {!primaryNavigation ? <Pressable accessibilityLabel={t('back')} accessibilityRole="button" onPress={onBack} style={({ pressed }) => [styles.outlineButton, { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 }]}>
             <Text style={[styles.outlineButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
-          </Pressable>
+          </Pressable> : null}
         </View>
         <YearNavigation canGoForward={year < currentYear} onNext={() => setYear((value) => getAdjacentYear(value, 1))} onPrevious={() => setYear((value) => getAdjacentYear(value, -1))} t={t} theme={theme} year={year} />
         {isLoading ? <LoadingState label={t('annual.loading')} theme={theme} /> : null}
@@ -77,7 +81,7 @@ export function AnnualStatisticsScreen({ client, onBack, routineDayConfig, userI
           </View>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 
@@ -105,4 +109,4 @@ function AnnualMonthGrid({ days, month, t, theme }: { days: readonly AnnualStati
 function MonthlyTrendList({ t, theme, trends }: { t: TFunction<'statistics'>; theme: AppTheme; trends: readonly AnnualMonthlyTrend[] }) { return <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}><Text style={[styles.cardTitle, { color: theme.colors.text }]}>{t('annual.monthlyTrend')}</Text>{trends.map((trend) => <View key={trend.monthKey} style={styles.trendRow}><Text style={[styles.trendMonth, { color: theme.colors.textMuted }]}>{trend.monthKey.slice(5)}</Text><View style={[styles.trendTrack, { backgroundColor: theme.colors.background }]}><View style={[styles.trendFill, { backgroundColor: theme.colors.primary, width: `${trend.completionRate ?? 0}%` }]} /></View><Text style={[styles.trendValue, { color: theme.colors.text }]}>{trend.completionRate === null ? t('annual.restMonth') : t('rateValue', { count: trend.completionRate })}</Text></View>)}</View>; }
 function createMonthValue(days: readonly AnnualStatisticDay[], t: TFunction<'statistics'>): string { const scheduled = days.reduce((sum, day) => sum + day.scheduledCount, 0); const completed = days.reduce((sum, day) => sum + day.completedCount, 0); return scheduled === 0 ? t('annual.restMonth') : t('rateValue', { count: Math.round((completed / scheduled) * 100) }); }
 
-const styles = StyleSheet.create({ screen: { flex: 1 }, content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg }, header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' }, headerCopy: { flex: 1, gap: spacing.xs }, eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption }, title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title }, outlineButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md }, outlineButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, navigation: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.sm }, navigationButton: { alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum }, navigationButtonLabel: { fontSize: typography.size.title, lineHeight: typography.lineHeight.title }, yearLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, state: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 220, padding: spacing.lg }, stateText: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' }, description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' }, statistics: { gap: spacing.md }, rateCard: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, gap: spacing.xs, padding: spacing.lg }, label: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption }, rate: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title }, summaryRow: { flexDirection: 'row', gap: spacing.md }, summaryCard: { borderRadius: radii.md, borderWidth: 1, flex: 1, gap: spacing.xs, padding: spacing.md }, summaryValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, cardTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, heatmap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }, monthGrid: { gap: 2, width: '30%' }, monthGridLabel: { fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 12 }, monthCells: { flexDirection: 'row', flexWrap: 'wrap', gap: 2 }, monthCell: { borderRadius: 2, height: 8, width: 8 }, trendRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, minHeight: touchTarget.minimum }, trendMonth: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, width: 20 }, trendTrack: { borderRadius: radii.pill, flex: 1, height: 8, overflow: 'hidden' }, trendFill: { borderRadius: radii.pill, height: '100%' }, trendValue: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right', width: 58 } });
+const styles = StyleSheet.create({ content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg }, header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' }, headerCopy: { flex: 1, gap: spacing.xs }, eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption }, title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title }, outlineButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md }, outlineButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, navigation: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.sm }, navigationButton: { alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum }, navigationButtonLabel: { fontSize: typography.size.title, lineHeight: typography.lineHeight.title }, yearLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, state: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 220, padding: spacing.lg }, stateText: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' }, description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' }, statistics: { gap: spacing.md }, rateCard: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, gap: spacing.xs, padding: spacing.lg }, label: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption }, rate: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title }, summaryRow: { flexDirection: 'row', gap: spacing.md }, summaryCard: { borderRadius: radii.md, borderWidth: 1, flex: 1, gap: spacing.xs, padding: spacing.md }, summaryValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, cardTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body }, heatmap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }, monthGrid: { gap: 2, width: '30%' }, monthGridLabel: { fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 12 }, monthCells: { flexDirection: 'row', flexWrap: 'wrap', gap: 2 }, monthCell: { borderRadius: 2, height: 8, width: 8 }, trendRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, minHeight: touchTarget.minimum }, trendMonth: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, width: 20 }, trendTrack: { borderRadius: radii.pill, flex: 1, height: 8, overflow: 'hidden' }, trendFill: { borderRadius: radii.pill, height: '100%' }, trendValue: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right', width: 58 } });

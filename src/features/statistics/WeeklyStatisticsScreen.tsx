@@ -10,8 +10,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppTabScreen } from '@/components/AppTabScreen';
+import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
 import { getCurrentRoutineDayWindow, type RoutineDayConfig } from '@/features/routine-day/domain/routineDay';
 import type { WeeklyStatisticDay, WeeklyStatistics } from '@/features/statistics/domain/weeklyStatistics';
 import { loadWeeklyStatistics } from '@/features/statistics/services/weeklyStatisticsService';
@@ -23,6 +24,7 @@ import type { AppTheme } from '@/theme/types';
 type WeeklyStatisticsScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  primaryNavigation?: PrimaryNavigationActions;
   routineDayConfig: RoutineDayConfig;
   userId: string;
 };
@@ -30,6 +32,7 @@ type WeeklyStatisticsScreenProps = {
 export function WeeklyStatisticsScreen({
   client,
   onBack,
+  primaryNavigation,
   routineDayConfig,
   userId,
 }: WeeklyStatisticsScreenProps) {
@@ -81,7 +84,10 @@ export function WeeklyStatisticsScreen({
     : undefined;
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <AppTabScreen
+      activeTab={primaryNavigation ? 'statistics' : undefined}
+      navigation={primaryNavigation}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.headerCopy}>
@@ -92,7 +98,7 @@ export function WeeklyStatisticsScreen({
               {t('title')}
             </Text>
           </View>
-          <Pressable
+          {!primaryNavigation ? <Pressable
             accessibilityLabel={t('back')}
             accessibilityRole="button"
             onPress={onBack}
@@ -102,7 +108,7 @@ export function WeeklyStatisticsScreen({
             ]}
           >
             <Text style={[styles.backButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
-          </Pressable>
+          </Pressable> : null}
         </View>
 
         {isLoading ? (
@@ -168,7 +174,7 @@ export function WeeklyStatisticsScreen({
           </View>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 
@@ -230,7 +236,6 @@ function StreakCard({
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
   header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   headerCopy: { flex: 1, gap: spacing.xs },

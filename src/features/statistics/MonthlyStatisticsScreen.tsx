@@ -10,8 +10,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppTabScreen } from '@/components/AppTabScreen';
+import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
 import { getCurrentRoutineDayWindow, type RoutineDayConfig } from '@/features/routine-day/domain/routineDay';
 import {
   getAdjacentMonthKey,
@@ -28,6 +29,7 @@ import type { AppTheme } from '@/theme/types';
 type MonthlyStatisticsScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  primaryNavigation?: PrimaryNavigationActions;
   routineDayConfig: RoutineDayConfig;
   userId: string;
 };
@@ -37,6 +39,7 @@ const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 export function MonthlyStatisticsScreen({
   client,
   onBack,
+  primaryNavigation,
   routineDayConfig,
   userId,
 }: MonthlyStatisticsScreenProps) {
@@ -85,7 +88,10 @@ export function MonthlyStatisticsScreen({
     : completionRate - previousRate;
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <AppTabScreen
+      activeTab={primaryNavigation ? 'statistics' : undefined}
+      navigation={primaryNavigation}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.headerCopy}>
@@ -94,7 +100,7 @@ export function MonthlyStatisticsScreen({
               {t('monthly.title')}
             </Text>
           </View>
-          <Pressable
+          {!primaryNavigation ? <Pressable
             accessibilityLabel={t('back')}
             accessibilityRole="button"
             onPress={onBack}
@@ -104,7 +110,7 @@ export function MonthlyStatisticsScreen({
             ]}
           >
             <Text style={[styles.outlineButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
-          </Pressable>
+          </Pressable> : null}
         </View>
 
         <MonthNavigation
@@ -196,7 +202,7 @@ export function MonthlyStatisticsScreen({
           </View>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 
@@ -348,7 +354,6 @@ function formatMonthLabel(monthKey: string, locale: string): string {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
   header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   headerCopy: { flex: 1, gap: spacing.xs },

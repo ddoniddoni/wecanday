@@ -9,8 +9,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppTabScreen } from '@/components/AppTabScreen';
+import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
 import {
   getPlanErrorCode,
   getPlanListErrorCode,
@@ -33,6 +34,7 @@ type PlanListScreenProps = {
   onCreatePlan: () => void;
   onEditRoutine: (plan: PlanListItem, routine: PlanRoutineItem) => void;
   onArchivePlan: (planId: string) => Promise<void>;
+  primaryNavigation?: PrimaryNavigationActions;
 };
 
 function PlanListItemCard({
@@ -241,6 +243,7 @@ export function PlanListScreen({
   onCreatePlan,
   onEditRoutine,
   onArchivePlan,
+  primaryNavigation,
 }: PlanListScreenProps) {
   const { t } = useTranslation('plans');
   const { theme } = useTheme();
@@ -295,22 +298,27 @@ export function PlanListScreen({
   }, [refresh]);
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <AppTabScreen
+      activeTab={primaryNavigation ? 'plans' : undefined}
+      navigation={primaryNavigation}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityLabel={t('list.back')}
-            accessibilityRole="button"
-            onPress={onBack}
-            style={({ pressed }) => [
-              styles.backButton,
-              { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-            ]}
-          >
-            <Text style={[styles.backButtonLabel, { color: theme.colors.text }]}>
-              {t('list.back')}
-            </Text>
-          </Pressable>
+          {!primaryNavigation ? (
+            <Pressable
+              accessibilityLabel={t('list.back')}
+              accessibilityRole="button"
+              onPress={onBack}
+              style={({ pressed }) => [
+                styles.backButton,
+                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
+              ]}
+            >
+              <Text style={[styles.backButtonLabel, { color: theme.colors.text }]}>
+                {t('list.back')}
+              </Text>
+            </Pressable>
+          ) : null}
           <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('list.title')}
           </Text>
@@ -404,12 +412,11 @@ export function PlanListScreen({
           </View>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
   header: { gap: spacing.sm },
   backButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },

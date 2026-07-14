@@ -28,6 +28,7 @@ const WEEKDAYS = [
 const ALL_WEEKDAYS = WEEKDAYS.map(({ value }) => value);
 
 type PlanCreateScreenProps = {
+  onBack?: () => void;
   onComplete: () => void;
   onSave: (input: {
     planTitle: string;
@@ -36,7 +37,7 @@ type PlanCreateScreenProps = {
   }) => Promise<void>;
 };
 
-export function PlanCreateScreen({ onComplete, onSave }: PlanCreateScreenProps) {
+export function PlanCreateScreen({ onBack, onComplete, onSave }: PlanCreateScreenProps) {
   const { t } = useTranslation('plans');
   const { theme } = useTheme();
   const [planTitle, setPlanTitle] = useState('');
@@ -87,6 +88,20 @@ export function PlanCreateScreen({ onComplete, onSave }: PlanCreateScreenProps) 
       style={[styles.screen, { backgroundColor: theme.colors.background }]}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        {onBack ? (
+          <Pressable
+            accessibilityLabel={t('back')}
+            accessibilityRole="button"
+            disabled={isSaving}
+            onPress={onBack}
+            style={({ pressed }) => [
+              styles.backButton,
+              { borderColor: theme.colors.border, opacity: pressed || isSaving ? 0.72 : 1 },
+            ]}
+          >
+            <Text style={[styles.backButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
+          </Pressable>
+        ) : null}
         <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
           {t('eyebrow')}
         </Text>
@@ -226,6 +241,8 @@ export function PlanCreateScreen({ onComplete, onSave }: PlanCreateScreenProps) 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
+  backButton: { alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  backButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   eyebrow: {
     fontSize: typography.size.caption,
     fontWeight: typography.weight.bold,

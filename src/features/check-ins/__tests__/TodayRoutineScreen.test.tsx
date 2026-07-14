@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { completeCheckIn } from '@/features/check-ins/services/checkInService';
+import { playRoutineCompletionHaptic } from '@/features/check-ins/services/completionHaptics';
 import { i18n } from '@/i18n';
 import type { Database } from '@/lib/supabase/database.types';
 import { ThemeProvider } from '@/theme/ThemeProvider';
@@ -24,6 +25,25 @@ jest.mock('@/features/check-ins/services/checkInService', () => ({
     ]),
   ),
   undoCheckIn: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@/features/check-ins/services/completionHaptics', () => ({
+  playRoutineCompletionHaptic: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@/features/companion/services/companionProgressService', () => ({
+  loadCompanionProgress: jest.fn(() =>
+    Promise.resolve({
+      experience: 0,
+      experienceInLevel: 0,
+      experienceToNextLevel: 50,
+      level: 1,
+    }),
+  ),
+}));
+
+jest.mock('@/features/streaks/services/dailyStreakService', () => ({
+  loadCurrentDailyStreak: jest.fn(() => Promise.resolve(0)),
 }));
 
 jest.mock('@/local-db/checkInOutbox', () => ({
@@ -53,6 +73,7 @@ describe('TodayRoutineScreen', () => {
           companionId="sprout"
           displayName="Jamie"
           hasPlanCreationSuccess={false}
+          isHapticsEnabled
           onCreatePlan={jest.fn()}
           onEditRoutine={jest.fn()}
           onOpenPlans={jest.fn()}
@@ -73,6 +94,13 @@ describe('TodayRoutineScreen', () => {
     await waitFor(() => {
       expect(screen.getByText('1 of 1 complete')).toBeTruthy();
       expect(screen.getByText('Everything for today is complete!')).toBeTruthy();
+      expect(screen.getByText('Nice work! You did it.')).toBeTruthy();
+      expect(screen.getByText('+10 XP')).toBeTruthy();
+      expect(screen.getByText('1 day in a row!')).toBeTruthy();
+      expect(playRoutineCompletionHaptic).toHaveBeenCalledWith({
+        isEnabled: true,
+        shouldReduceMotion: false,
+      });
       expect(completeCheckIn).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({

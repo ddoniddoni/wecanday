@@ -44,4 +44,23 @@ describe('OAuthCallbackScreen', () => {
 
     expect(onReturnToSignIn).toHaveBeenCalledTimes(1);
   });
+
+  it('does not update or complete after the callback screen unmounts', async () => {
+    let rejectExchange: (reason?: unknown) => void = () => undefined;
+    const exchangeCode = jest.fn(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          rejectExchange = reject;
+        }),
+    );
+    const onComplete = jest.fn();
+    const screen = await renderScreen({ exchangeCode, onComplete });
+
+    screen.unmount();
+    rejectExchange(new Error('exchange failed'));
+
+    await Promise.resolve();
+
+    expect(onComplete).not.toHaveBeenCalled();
+  });
 });

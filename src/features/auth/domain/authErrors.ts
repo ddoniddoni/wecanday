@@ -4,7 +4,8 @@ export type AuthErrorCode =
   | 'AUTH_PROVIDER_CANCELLED'
   | 'AUTH_PROVIDER_FAILED'
   | 'AUTH_TOKEN_MISSING'
-  | 'AUTH_PROFILE_UNAVAILABLE';
+  | 'AUTH_PROFILE_UNAVAILABLE'
+  | 'INVALID_DISPLAY_NAME';
 
 export class AuthDomainError extends Error {
   constructor(public readonly code: AuthErrorCode) {

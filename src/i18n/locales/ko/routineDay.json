@@ -1,7 +1,7 @@
 {
   "eyebrow": "나의 하루 리듬",
   "title": "하루는 언제 시작되나요?",
-  "description": "루틴, 스트릭, 알림은 이 설정을 기준으로 동작해요.",
+  "description": "루틴, 연속 실천, 알림은 이 설정을 기준으로 동작해요.",
   "timeZoneLabel": "시간대",
   "timeZoneInputAccessibilityLabel": "시간대",
   "timeZonePlaceholder": "예: Asia/Seoul",

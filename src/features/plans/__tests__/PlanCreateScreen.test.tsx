@@ -5,6 +5,20 @@ import { i18n } from '@/i18n';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 describe('PlanCreateScreen', () => {
+  it('returns to the screen that opened plan creation', async () => {
+    await i18n.changeLanguage('en');
+    const onBack = jest.fn();
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <PlanCreateScreen onBack={onBack} onComplete={jest.fn()} onSave={jest.fn(() => Promise.resolve())} />
+      </ThemeProvider>,
+    );
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+
+    expect(onBack).toHaveBeenCalledTimes(1);
+  });
+
   it('creates a plan and routine with the selected weekdays', async () => {
     await i18n.changeLanguage('en');
     const onComplete = jest.fn();

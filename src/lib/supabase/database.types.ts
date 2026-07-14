@@ -5,6 +5,7 @@ export type ProfileRow = {
   created_at: string;
   day_start_minute: number | null;
   display_name: string;
+  haptics_enabled: boolean;
   id: string;
   locale: string | null;
   public_code: string;
@@ -148,6 +149,7 @@ export type Database = {
             | 'companion_id'
             | 'country_code'
             | 'display_name'
+            | 'haptics_enabled'
             | 'locale'
             | 'theme_id'
           >
@@ -282,6 +284,15 @@ export type Database = {
           p_source: 'offline_sync' | 'online';
         };
         Returns: undefined;
+      };
+      get_companion_progress: {
+        Args: Record<never, never>;
+        Returns: {
+          experience: number;
+          experience_in_level: number;
+          experience_to_next_level: number;
+          level: number;
+        }[];
       };
       lookup_profile_by_public_code: {
         Args: { p_public_code: string };

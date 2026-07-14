@@ -64,6 +64,7 @@ const errorTranslationKeys = {
   AUTH_PROVIDER_CANCELLED: 'cancelled',
   AUTH_PROVIDER_FAILED: 'providerError',
   AUTH_TOKEN_MISSING: 'providerError',
+  INVALID_DISPLAY_NAME: 'providerError',
 } as const satisfies Record<AuthErrorCode, string>;
 
 export function LoginScreen() {

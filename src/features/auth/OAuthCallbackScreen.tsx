@@ -11,7 +11,7 @@ type CallbackStatus = 'loading' | 'error';
 
 type OAuthCallbackScreenProps = {
   code: string | null;
-  onComplete: () => void;
+  onComplete?: () => void;
   onReturnToSignIn: () => void;
   exchangeCode?: (code: string) => Promise<void>;
 };
@@ -25,24 +25,41 @@ export function OAuthCallbackScreen({
   const { t } = useTranslation('auth');
   const { theme } = useTheme();
   const completedCode = useRef<string | null>(null);
+  const onCompleteRef = useRef(onComplete);
   const [status, setStatus] = useState<CallbackStatus>(() =>
     code ? 'loading' : 'error',
   );
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     if (!code || completedCode.current === code) {
       return;
     }
 
+    let isActive = true;
+
     completedCode.current = code;
     setStatus('loading');
 
     void exchangeCode(code)
-      .then(onComplete)
+      .then(() => {
+        if (isActive) {
+          onCompleteRef.current?.();
+        }
+      })
       .catch(() => {
-        setStatus('error');
+        if (isActive) {
+          setStatus('error');
+        }
       });
-  }, [code, exchangeCode, onComplete]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [code, exchangeCode]);
 
   const isLoading = status === 'loading';
 

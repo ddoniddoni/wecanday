@@ -14,10 +14,10 @@
   "dailyRate": "{{scheduled}}개 중 {{completed}}개",
   "restDay": "휴식일",
   "dailyAccessibilityLabel": "{{date}}: {{value}}.",
-  "currentStreak": "현재 데일리 스트릭",
-  "highestStreak": "최고 데일리 스트릭",
+  "currentStreak": "현재 연속 실천",
+  "highestStreak": "가장 긴 연속 실천",
   "streakValue": "{{count}}일",
-  "accessibilitySummary": "주간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 현재 데일리 스트릭: {{currentStreak}}일. 최고 데일리 스트릭: {{highestStreak}}일.",
+  "accessibilitySummary": "주간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 현재 연속 실천: {{currentStreak}}일. 가장 긴 연속 실천: {{highestStreak}}일.",
   "annual": {
     "eyebrow": "나의 흐름",
     "title": "연간 통계",
@@ -31,13 +31,13 @@
     "completionCount": "예정된 {{scheduled}}개 중 {{completed}}개 완료",
     "totalCheckIns": "총 체크인",
     "totalCheckInsValue": "{{count}}회",
-    "highestStreak": "최고 데일리 스트릭",
+    "highestStreak": "가장 긴 연속 실천",
     "highestStreakValue": "{{count}}일",
     "heatmap": "12개월 히트맵",
     "monthAccessibilityLabel": "{{month}}월: {{value}}.",
     "monthlyTrend": "월별 추세",
     "restMonth": "예정 없음",
-    "accessibilitySummary": "연간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 총 체크인 {{totalCheckIns}}회. 최고 데일리 스트릭: {{highestStreak}}일."
+    "accessibilitySummary": "연간 완료율: {{rate}}%. 예정된 {{scheduled}}개 중 {{completed}}개 완료. 총 체크인 {{totalCheckIns}}회. 가장 긴 연속 실천: {{highestStreak}}일."
   },
   "monthly": {
     "eyebrow": "나의 흐름",

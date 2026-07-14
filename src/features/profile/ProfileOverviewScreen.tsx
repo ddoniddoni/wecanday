@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PrimaryNavigation } from '@/components/PrimaryNavigation';
+import { AppTabScreen } from '@/components/AppTabScreen';
 import { PublicCodeShareCard } from '@/features/friends/PublicCodeShareCard';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
@@ -70,7 +69,15 @@ export function ProfileOverviewScreen({
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <AppTabScreen
+      activeTab="profile"
+      navigation={{
+        onOpenPlans,
+        onOpenProfile: () => undefined,
+        onOpenStatistics,
+        onOpenToday,
+      }}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('eyebrow')}</Text>
@@ -99,19 +106,11 @@ export function ProfileOverviewScreen({
           title={t('account.title')}
         />
       </ScrollView>
-      <PrimaryNavigation
-        activeTab="profile"
-        onOpenPlans={onOpenPlans}
-        onOpenProfile={() => undefined}
-        onOpenStatistics={onOpenStatistics}
-        onOpenToday={onOpenToday}
-      />
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.lg, padding: spacing.lg },
   header: { gap: spacing.sm, paddingTop: spacing.md },
   eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.8, lineHeight: typography.lineHeight.caption },

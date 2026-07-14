@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import type { ThemePreference } from '@/theme/types';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { palette, radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 const PREFERENCES: readonly ThemePreference[] = ['system', 'light', 'dark', 'pixel-default'];
 
@@ -54,6 +54,7 @@ export function ThemeSelectionScreen({ onBack, onSave }: ThemeSelectionScreenPro
                 <View style={styles.optionCopy}>
                   <Text style={[styles.optionTitle, { color: theme.colors.text }]}>{t(`theme.options.${option}.label`)}</Text>
                   <Text style={[styles.optionDescription, { color: theme.colors.textMuted }]}>{t(`theme.options.${option}.description`)}</Text>
+                  {option === 'pixel-default' ? <PixelPalettePreview label={t('theme.options.pixel-default.previewLabel')} /> : null}
                 </View>
                 {isSaving ? <ActivityIndicator accessibilityLabel={t('theme.saving')} color={theme.colors.primary} /> : <View style={[styles.radio, { borderColor: theme.colors.primary, backgroundColor: isSelected ? theme.colors.primary : theme.colors.background }]} />}
               </Pressable>
@@ -63,6 +64,16 @@ export function ThemeSelectionScreen({ onBack, onSave }: ThemeSelectionScreenPro
         {hasSaveError ? <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>{t('theme.saveError')}</Text> : null}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function PixelPalettePreview({ label }: { label: string }) {
+  return (
+    <View accessibilityLabel={label} style={styles.pixelPalette}>
+      {[palette.pixelInk, palette.pixelShade, palette.pixelSky, palette.pixelCloud, palette.pixelCoral, palette.pixelGold].map((color) => (
+        <View key={color} style={[styles.pixelSwatch, { backgroundColor: color }]} />
+      ))}
+    </View>
   );
 }
 
@@ -78,6 +89,8 @@ const styles = StyleSheet.create({
   optionDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   optionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   options: { gap: spacing.sm },
+  pixelPalette: { flexDirection: 'row', gap: 2, marginTop: spacing.xs },
+  pixelSwatch: { height: 12, width: 12 },
   radio: { borderRadius: radii.pill, borderWidth: 2, height: spacing.md, width: spacing.md },
   screen: { flex: 1 },
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },

@@ -3,6 +3,7 @@ import enChallenges from '@/i18n/locales/en/challenges.json';
 import enCommon from '@/i18n/locales/en/common.json';
 import enCompanion from '@/i18n/locales/en/companion.json';
 import enFriends from '@/i18n/locales/en/friends.json';
+import enLegal from '@/i18n/locales/en/legal.json';
 import enOnboarding from '@/i18n/locales/en/onboarding.json';
 import enNotifications from '@/i18n/locales/en/notifications.json';
 import enPlans from '@/i18n/locales/en/plans.json';
@@ -16,6 +17,7 @@ import koChallenges from '@/i18n/locales/ko/challenges.json';
 import koCommon from '@/i18n/locales/ko/common.json';
 import koCompanion from '@/i18n/locales/ko/companion.json';
 import koFriends from '@/i18n/locales/ko/friends.json';
+import koLegal from '@/i18n/locales/ko/legal.json';
 import koOnboarding from '@/i18n/locales/ko/onboarding.json';
 import koNotifications from '@/i18n/locales/ko/notifications.json';
 import koPlans from '@/i18n/locales/ko/plans.json';
@@ -32,6 +34,7 @@ export const resources = {
     common: enCommon,
     companion: enCompanion,
     friends: enFriends,
+    legal: enLegal,
     onboarding: enOnboarding,
     notifications: enNotifications,
     plans: enPlans,
@@ -47,6 +50,7 @@ export const resources = {
     common: koCommon,
     companion: koCompanion,
     friends: koFriends,
+    legal: koLegal,
     onboarding: koOnboarding,
     notifications: koNotifications,
     plans: koPlans,

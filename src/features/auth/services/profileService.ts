@@ -4,6 +4,31 @@ import { AuthDomainError } from '@/features/auth/domain/authErrors';
 import { loadOnboardingPreferences } from '@/features/onboarding/data/onboardingPreferencesStorage';
 import type { Database, ProfileRow } from '@/lib/supabase/database.types';
 
+export async function updateOwnDisplayName(
+  client: SupabaseClient<Database>,
+  userId: string,
+  displayName: string,
+): Promise<ProfileRow> {
+  const normalizedDisplayName = displayName.trim();
+
+  if (normalizedDisplayName.length === 0 || normalizedDisplayName.length > 30) {
+    throw new AuthDomainError('INVALID_DISPLAY_NAME');
+  }
+
+  const { data, error } = await client
+    .from('profiles')
+    .update({ display_name: normalizedDisplayName })
+    .eq('id', userId)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new AuthDomainError('AUTH_PROFILE_UNAVAILABLE');
+  }
+
+  return data;
+}
+
 export async function loadAndSyncOwnProfile(
   client: SupabaseClient<Database>,
   userId: string,

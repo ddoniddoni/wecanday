@@ -11,9 +11,15 @@ describe('AccountSettingsScreen', () => {
     const screen = await render(
       <ThemeProvider preference="light">
         <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
           onBack={jest.fn()}
           onDeleteAccount={onDeleteAccount}
+          onOpenPrivacyPolicy={jest.fn()}
+          onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.resolve())}
+          onOpenTermsOfService={jest.fn()}
         />
       </ThemeProvider>,
     );
@@ -35,9 +41,15 @@ describe('AccountSettingsScreen', () => {
     const screen = await render(
       <ThemeProvider preference="light">
         <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
           onBack={jest.fn()}
           onDeleteAccount={jest.fn(() => Promise.resolve())}
+          onOpenPrivacyPolicy={jest.fn()}
+          onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.reject(new Error('SIGN_OUT_FAILED')))}
+          onOpenTermsOfService={jest.fn()}
         />
       </ThemeProvider>,
     );
@@ -48,5 +60,89 @@ describe('AccountSettingsScreen', () => {
       expect(screen.getByText("We couldn't sign you out. Please try again.")).toBeTruthy();
     });
     expect(screen.getByRole('button', { name: 'Delete account' })).toBeTruthy();
+  });
+
+  it('opens each legal document from account settings', async () => {
+    await i18n.changeLanguage('en');
+    const onOpenPrivacyPolicy = jest.fn();
+    const onOpenTermsOfService = jest.fn();
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
+          onBack={jest.fn()}
+          onDeleteAccount={jest.fn(() => Promise.resolve())}
+          onOpenPrivacyPolicy={onOpenPrivacyPolicy}
+          onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveDisplayName={jest.fn(() => Promise.resolve())}
+          onSignOut={jest.fn(() => Promise.resolve())}
+          onOpenTermsOfService={onOpenTermsOfService}
+        />
+      </ThemeProvider>,
+    );
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Privacy policy' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Terms of service' }));
+
+    expect(onOpenPrivacyPolicy).toHaveBeenCalledTimes(1);
+    expect(onOpenTermsOfService).toHaveBeenCalledTimes(1);
+  });
+
+  it('saves a nickname without changing the Google account', async () => {
+    await i18n.changeLanguage('en');
+    const onSaveDisplayName = jest.fn(() => Promise.resolve());
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
+          onBack={jest.fn()}
+          onDeleteAccount={jest.fn(() => Promise.resolve())}
+          onOpenPrivacyPolicy={jest.fn()}
+          onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveDisplayName={onSaveDisplayName}
+          onSignOut={jest.fn(() => Promise.resolve())}
+          onOpenTermsOfService={jest.fn()}
+        />
+      </ThemeProvider>,
+    );
+
+    await fireEvent.changeText(screen.getByLabelText('Nickname'), 'Sky');
+    await fireEvent.press(screen.getByRole('button', { name: 'Save nickname' }));
+
+    await waitFor(() => {
+      expect(onSaveDisplayName).toHaveBeenCalledWith('Sky');
+    });
+  });
+
+  it('saves the vibration feedback preference immediately', async () => {
+    await i18n.changeLanguage('en');
+    const onSaveHapticsPreference = jest.fn(() => Promise.resolve());
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
+          onBack={jest.fn()}
+          onDeleteAccount={jest.fn(() => Promise.resolve())}
+          onOpenPrivacyPolicy={jest.fn()}
+          onSaveDisplayName={jest.fn(() => Promise.resolve())}
+          onSaveHapticsPreference={onSaveHapticsPreference}
+          onSignOut={jest.fn(() => Promise.resolve())}
+          onOpenTermsOfService={jest.fn()}
+        />
+      </ThemeProvider>,
+    );
+
+    await fireEvent(
+      screen.getByRole('switch', { name: 'Vibration feedback' }),
+      'valueChange',
+      false,
+    );
+
+    await waitFor(() => {
+      expect(onSaveHapticsPreference).toHaveBeenCalledWith(false);
+    });
   });
 });

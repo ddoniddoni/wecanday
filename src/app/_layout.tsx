@@ -23,6 +23,11 @@ function RootNavigator() {
       >
         <Stack.Protected guard={auth.status !== 'signed_in'}>
           <Stack.Screen name="index" />
+          <Stack.Protected
+            guard={auth.status === 'loading' || auth.status === 'signed_out'}
+          >
+            <Stack.Screen name="auth/callback" />
+          </Stack.Protected>
         </Stack.Protected>
         <Stack.Protected guard={auth.status === 'signed_in'}>
           <Stack.Screen name="(app)" />

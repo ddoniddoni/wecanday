@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -9,7 +9,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   getCheckInErrorCode,
@@ -19,16 +18,28 @@ import {
   applyPendingCheckInOperations,
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
-import { PrimaryNavigation } from '@/components/PrimaryNavigation';
+import { AppTabScreen } from '@/components/AppTabScreen';
+import { CompletionFeedback } from '@/features/check-ins/CompletionFeedback';
+import { MicroGoalCard } from '@/features/check-ins/MicroGoalCard';
+import {
+  EXPERIENCE_PER_ROUTINE_COMPLETION,
+  getCompanionProgressForExperience,
+  type CompanionProgress,
+} from '@/features/companion/domain/progression';
 import { CompanionHero } from '@/features/companion/CompanionHero';
 import type { CompanionId } from '@/features/companion/domain/companions';
 import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
+import { StreakMomentCard } from '@/features/streaks/StreakMomentCard';
+import { TodayStatsSummary } from '@/features/streaks/TodayStatsSummary';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
   completeCheckIn,
   loadTodayRoutineItems,
   undoCheckIn,
 } from '@/features/check-ins/services/checkInService';
+import { playRoutineCompletionHaptic } from '@/features/check-ins/services/completionHaptics';
+import { loadCompanionProgress } from '@/features/companion/services/companionProgressService';
+import { loadCurrentDailyStreak } from '@/features/streaks/services/dailyStreakService';
 import {
   getCurrentRoutineDayWindow,
   systemClock,
@@ -44,14 +55,26 @@ import {
 } from '@/local-db/checkInOutbox';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { useReducedMotion } from 'react-native-reanimated';
 
 const SYNC_INTERVAL_MS = 30_000;
+const COMPLETION_FEEDBACK_DURATION_MS = 2_000;
+
+type CompletionFeedbackState = {
+  completedCount: number;
+  experienceGained: number;
+  hasLevelUp: boolean;
+  id: number;
+  level: number;
+  totalCount: number;
+};
 
 type TodayRoutineScreenProps = {
   client: SupabaseClient<Database>;
   companionId: CompanionId;
   displayName: string;
   hasPlanCreationSuccess: boolean;
+  isHapticsEnabled: boolean;
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
@@ -70,6 +93,7 @@ export function TodayRoutineScreen({
   companionId,
   displayName,
   hasPlanCreationSuccess,
+  isHapticsEnabled,
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
@@ -81,6 +105,7 @@ export function TodayRoutineScreen({
 }: TodayRoutineScreenProps) {
   const { t } = useTranslation('today');
   const { theme } = useTheme();
+  const shouldReduceMotion = useReducedMotion();
   const [routineDayWindow, setRoutineDayWindow] = useState<RoutineDayWindow>(() =>
     getCurrentRoutineDayWindow(routineDayConfig),
   );
@@ -92,6 +117,20 @@ export function TodayRoutineScreen({
   );
   const [errorCode, setErrorCode] = useState<CheckInErrorCode | null>(null);
   const [companionReactionId, setCompanionReactionId] = useState(0);
+  const initialCompanionProgress = getCompanionProgressForExperience(0);
+  const [companionProgress, setCompanionProgress] = useState<CompanionProgress>(
+    initialCompanionProgress,
+  );
+  const companionProgressRef = useRef(initialCompanionProgress);
+  const [completionFeedback, setCompletionFeedback] =
+    useState<CompletionFeedbackState | null>(null);
+  const completionFeedbackIdRef = useRef(0);
+  const routineListOffsetRef = useRef(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [highlightedRoutineId, setHighlightedRoutineId] = useState<string | null>(null);
+  const [dailyStreak, setDailyStreak] = useState<number | null>(null);
+  const dailyStreakRef = useRef<number | null>(null);
+  const [isDailyStreakLoading, setIsDailyStreakLoading] = useState(true);
 
   const refresh = useCallback(
     async (showLoading: boolean) => {
@@ -107,9 +146,16 @@ export function TodayRoutineScreen({
 
       try {
         await synchronizePendingCheckIns(client, userId, systemClock.now());
-        const [loadedItems, pendingOperations] = await Promise.all([
+        const [loadedItems, pendingOperations, loadedCompanionProgress, loadedDailyStreak] = await Promise.all([
           loadTodayRoutineItems(client, userId, nextRoutineDayWindow.key),
           loadPendingCheckInOperations(userId, nextRoutineDayWindow.key),
+          loadCompanionProgress(client).catch(() => null),
+          loadCurrentDailyStreak(
+            client,
+            userId,
+            nextRoutineDayWindow.key,
+            routineDayConfig,
+          ).catch(() => null),
         ]);
 
         setItems(
@@ -122,12 +168,19 @@ export function TodayRoutineScreen({
             })),
           ),
         );
+        if (loadedCompanionProgress) {
+          companionProgressRef.current = loadedCompanionProgress;
+          setCompanionProgress(loadedCompanionProgress);
+        }
+        dailyStreakRef.current = loadedDailyStreak;
+        setDailyStreak(loadedDailyStreak);
 
       } catch (error) {
         setErrorCode(getCheckInErrorCode(error));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsDailyStreakLoading(false);
       }
     },
     [client, routineDayConfig, userId],
@@ -148,8 +201,28 @@ export function TodayRoutineScreen({
     };
   }, [refresh]);
 
+  useEffect(() => {
+    if (!completionFeedback) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setCompletionFeedback((currentFeedback) =>
+        currentFeedback?.id === completionFeedback.id ? null : currentFeedback,
+      );
+    }, COMPLETION_FEEDBACK_DURATION_MS);
+
+    return () => clearTimeout(timeout);
+  }, [completionFeedback]);
+
   async function handleToggle(item: TodayRoutineItem) {
     const isComplete = item.completedAt !== null;
+    const isCompletingRoutineDay =
+      !isComplete &&
+      items.length > 0 &&
+      items.every((candidate) => candidate.id === item.id || candidate.completedAt !== null);
+    const isUndoingCompletedRoutineDay =
+      isComplete && items.length > 0 && items.every((candidate) => candidate.completedAt !== null);
     const occurredAt = systemClock.now().toISOString();
     const operation = createCheckInOutboxOperation({
       kind: isComplete ? 'undo' : 'complete',
@@ -160,6 +233,9 @@ export function TodayRoutineScreen({
     });
 
     setErrorCode(null);
+    if (highlightedRoutineId === item.id) {
+      setHighlightedRoutineId(null);
+    }
     setMutatingRoutineIds((previousIds) => new Set(previousIds).add(item.id));
     setItems((previousItems) =>
       previousItems.map((candidate) =>
@@ -173,7 +249,47 @@ export function TodayRoutineScreen({
       ),
     );
     if (!isComplete) {
-      setCompanionReactionId((previousReactionId) => previousReactionId + 1);
+      const feedbackId = completionFeedbackIdRef.current + 1;
+      const previousCompanionProgress = companionProgressRef.current;
+      const nextCompanionProgress = getCompanionProgressForExperience(
+        previousCompanionProgress.experience + EXPERIENCE_PER_ROUTINE_COMPLETION,
+      );
+
+      completionFeedbackIdRef.current = feedbackId;
+      setCompanionReactionId(feedbackId);
+      companionProgressRef.current = nextCompanionProgress;
+      setCompanionProgress(nextCompanionProgress);
+      setCompletionFeedback({
+        completedCount: items.filter((candidate) => candidate.completedAt !== null).length + 1,
+        experienceGained: EXPERIENCE_PER_ROUTINE_COMPLETION,
+        hasLevelUp: nextCompanionProgress.level > previousCompanionProgress.level,
+        id: feedbackId,
+        level: nextCompanionProgress.level,
+        totalCount: items.length,
+      });
+      void playRoutineCompletionHaptic({
+        isEnabled: isHapticsEnabled,
+        shouldReduceMotion,
+      });
+    } else {
+      const nextCompanionProgress = getCompanionProgressForExperience(
+        companionProgressRef.current.experience - EXPERIENCE_PER_ROUTINE_COMPLETION,
+      );
+
+      companionProgressRef.current = nextCompanionProgress;
+      setCompanionProgress(nextCompanionProgress);
+    }
+    if (isCompletingRoutineDay && dailyStreakRef.current !== null) {
+      const nextDailyStreak = dailyStreakRef.current + 1;
+
+      dailyStreakRef.current = nextDailyStreak;
+      setDailyStreak(nextDailyStreak);
+    }
+    if (isUndoingCompletedRoutineDay && dailyStreakRef.current !== null) {
+      const nextDailyStreak = Math.max(0, dailyStreakRef.current - 1);
+
+      dailyStreakRef.current = nextDailyStreak;
+      setDailyStreak(nextDailyStreak);
     }
     onRoutineCompletionChanged(item, !isComplete);
 
@@ -220,12 +336,32 @@ export function TodayRoutineScreen({
   }
 
   const completedCount = items.filter((item) => item.completedAt !== null).length;
+  const isAllComplete = items.length > 0 && completedCount === items.length;
+  const microGoalItem = items.find((item) => item.completedAt === null) ?? null;
+
+  function openMicroGoal() {
+    if (!microGoalItem) {
+      return;
+    }
+
+    setHighlightedRoutineId(microGoalItem.id);
+    scrollViewRef.current?.scrollTo({
+      animated: !shouldReduceMotion,
+      y: Math.max(0, routineListOffsetRef.current - spacing.lg),
+    });
+  }
 
   return (
-    <SafeAreaView
-      style={[styles.screen, { backgroundColor: theme.colors.background }]}
+    <AppTabScreen
+      activeTab="today"
+      navigation={{
+        onOpenPlans,
+        onOpenProfile,
+        onOpenStatistics,
+        onOpenToday: () => undefined,
+      }}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
@@ -243,10 +379,21 @@ export function TodayRoutineScreen({
         <CompanionHero
           companionId={companionId}
           completedCount={completedCount}
+          progress={companionProgress}
           reactionId={companionReactionId}
           routineDay={routineDayWindow.key}
           totalCount={items.length}
         />
+        {completionFeedback ? (
+          <CompletionFeedback
+            completedCount={completionFeedback.completedCount}
+            experienceGained={completionFeedback.experienceGained}
+            feedbackId={completionFeedback.id}
+            hasLevelUp={completionFeedback.hasLevelUp}
+            level={completionFeedback.level}
+            totalCount={completionFeedback.totalCount}
+          />
+        ) : null}
         <RoutineDayTiming config={routineDayConfig} />
 
         {hasPlanCreationSuccess ? (
@@ -313,7 +460,24 @@ export function TodayRoutineScreen({
         ) : null}
 
         {!isLoading && !errorCode && items.length > 0 ? (
-          <View style={styles.list}>
+          <>
+            <TodayStatsSummary
+              completedCount={completedCount}
+              dailyStreak={dailyStreak}
+              isDailyStreakLoading={isDailyStreakLoading}
+              totalCount={items.length}
+            />
+            <StreakMomentCard
+              dailyStreak={dailyStreak}
+              isAllComplete={isAllComplete}
+            />
+            <MicroGoalCard item={microGoalItem} onOpenRoutine={openMicroGoal} />
+            <View
+              onLayout={(event) => {
+                routineListOffsetRef.current = event.nativeEvent.layout.y;
+              }}
+              style={styles.list}
+            >
             <View style={styles.sectionHeader}>
               <Text
                 accessibilityRole="header"
@@ -336,10 +500,13 @@ export function TodayRoutineScreen({
                 <View
                   key={item.id}
                   style={[
-                    styles.routineItem,
-                    {
-                      backgroundColor: theme.colors.surface,
-                      borderColor: isComplete ? theme.colors.primary : theme.colors.border,
+                styles.routineItem,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor:
+                    isComplete || highlightedRoutineId === item.id
+                      ? theme.colors.primary
+                      : theme.colors.border,
                       opacity: isMutating ? 0.72 : 1,
                     },
                   ]}
@@ -416,17 +583,11 @@ export function TodayRoutineScreen({
                 {t('addRoutine')}
               </Text>
             </Pressable>
-          </View>
+            </View>
+          </>
         ) : null}
       </ScrollView>
-      <PrimaryNavigation
-        activeTab="today"
-        onOpenPlans={onOpenPlans}
-        onOpenProfile={onOpenProfile}
-        onOpenStatistics={onOpenStatistics}
-        onOpenToday={() => undefined}
-      />
-    </SafeAreaView>
+    </AppTabScreen>
   );
 }
 

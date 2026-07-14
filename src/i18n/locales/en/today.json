@@ -24,6 +24,27 @@
     "remaining": "{{hours}}h {{minutes}}m remaining"
   },
   "progress": "{{completed}} of {{total}} complete",
+  "microGoal": {
+    "eyebrow": "YOUR ONE THING",
+    "action": {
+      "accessibilityLabel": "Your one thing for today is {{title}}.",
+      "description": "Focus on this one step. You can mark it complete in your routine.",
+      "button": "Open {{title}}",
+      "buttonLabel": "Start this step"
+    },
+    "complete": {
+      "accessibilityLabel": "You completed your one thing for today.",
+      "title": "Your one thing is done!",
+      "description": "You kept every promise for today. Rest easy until your next routine day."
+    }
+  },
+  "completionFeedback": {
+    "accessibilityLabel": "Nice work. You completed {{completed}} of {{total}} routines today.",
+    "title": "Nice work! You did it.",
+    "progress": "{{completed}} of {{total}} complete today",
+    "experience": "+{{experience}} XP",
+    "levelUp": "Level {{level}} reached!"
+  },
   "stats": {
     "accessibilityLabel": "Today’s progress: {{progress}}. Daily streak: {{streak}}.",
     "progressLabel": "Today’s progress",
@@ -35,14 +56,30 @@
     "streakValue_one": "{{count}} day",
     "streakValue_other": "{{count}} days"
   },
+  "streakMoment": {
+    "celebration": {
+      "title_one": "{{count}} day in a row!",
+      "title_other": "{{count}} days in a row!",
+      "description": "You kept every promise for today. One small step is enough tomorrow, too."
+    },
+    "restart": {
+      "title": "Start with one step today",
+      "description": "Your record is not a judgment. Ease into today with one small action."
+    }
+  },
   "companion": {
     "eyebrow": "TODAY'S RHYTHM",
-    "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}.",
+    "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}. Level {{level}}, total experience {{experience}}.",
     "imageLabel": "WeCanDay companion, {{status}}",
     "states": {
       "resting": "Your next small step is ready.",
       "encouraging": "You are building a good rhythm.",
       "celebrating": "Everything for today is complete!"
+    },
+    "growth": {
+      "accessibilityLabel": "Companion level {{level}}. {{current}} of {{next}} XP to the next level.",
+      "level": "Level {{level}}",
+      "progress": "{{current}} / {{next}} XP"
     }
   },
   "loading": "Loading today’s routines…",

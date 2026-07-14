@@ -3,9 +3,11 @@ import * as Notifications from 'expo-notifications';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { AccountSettingsScreen } from '@/features/auth/AccountSettingsScreen';
+import { updateOwnDisplayName } from '@/features/auth/services/profileService';
 import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
 import { ChallengeInvitationsScreen } from '@/features/challenges/ChallengeInvitationsScreen';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { LegalDocumentScreen } from '@/features/legal/LegalDocumentScreen';
 import { CompanionSelectionScreen } from '@/features/companion/CompanionSelectionScreen';
 import {
   isCompanionId,
@@ -20,6 +22,7 @@ import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatistics
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
 import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
 import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
+import { saveHapticsPreference } from '@/features/settings/services/hapticsPreferenceService';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
 import { getSocialNotificationTarget } from '@/features/notifications/domain/socialPush';
 import { registerDevicePushToken } from '@/features/notifications/services/devicePushTokenService';
@@ -63,12 +66,14 @@ type AppScreen =
   | 'routine-edit'
   | 'annual-statistics'
   | 'account-settings'
+  | 'privacy-policy'
   | 'friend-search'
   | 'friend-requests'
   | 'friend-connections'
   | 'monthly-statistics'
   | 'profile'
   | 'theme-selection'
+  | 'terms-of-service'
   | 'weekly-statistics'
   | 'today';
 type PlanCreationReturnScreen = 'plan-list' | 'today';
@@ -170,6 +175,12 @@ export function ProfileHomeScreen() {
   }
 
   const authenticatedUserId = auth.userId;
+  const primaryNavigation = {
+    onOpenPlans: () => setScreen('plan-list'),
+    onOpenProfile: () => setScreen('profile'),
+    onOpenStatistics: () => setScreen('weekly-statistics'),
+    onOpenToday: () => setScreen('today'),
+  };
 
   if (
     auth.profile.time_zone === null ||
@@ -241,6 +252,7 @@ export function ProfileHomeScreen() {
 
     return (
       <PlanCreateScreen
+        onBack={() => setScreen(planCreationReturnScreen)}
         onComplete={() => {
           void completePlanCreation(planCreationReturnScreen);
         }}
@@ -321,11 +333,45 @@ export function ProfileHomeScreen() {
   if (screen === 'account-settings') {
     return (
       <AccountSettingsScreen
+        displayName={auth.profile.display_name}
+        hapticsEnabled={auth.profile.haptics_enabled !== false}
         onBack={() => setScreen('profile')}
         onDeleteAccount={auth.deleteAccount}
+        onOpenPrivacyPolicy={() => setScreen('privacy-policy')}
+        onSaveHapticsPreference={async (isEnabled) => {
+          if (!supabaseClient) {
+            throw new Error('HAPTICS_PREFERENCE_SAVE_FAILED');
+          }
+
+          const profile = await saveHapticsPreference(
+            supabaseClient,
+            authenticatedUserId,
+            isEnabled,
+          );
+          auth.replaceProfile(profile);
+        }}
+        onSaveDisplayName={async (displayName) => {
+          if (!supabaseClient) {
+            throw new Error('PROFILE_UPDATE_FAILED');
+          }
+
+          const profile = await updateOwnDisplayName(
+            supabaseClient,
+            authenticatedUserId,
+            displayName,
+          );
+          auth.replaceProfile(profile);
+        }}
         onSignOut={auth.signOut}
+        onOpenTermsOfService={() => setScreen('terms-of-service')}
       />
     );
+  }
+  if (screen === 'privacy-policy') {
+    return <LegalDocumentScreen document="privacy" onBack={() => setScreen('account-settings')} />;
+  }
+  if (screen === 'terms-of-service') {
+    return <LegalDocumentScreen document="terms" onBack={() => setScreen('account-settings')} />;
   }
   if (screen === 'companion-selection') {
     return (
@@ -421,6 +467,7 @@ export function ProfileHomeScreen() {
       <WeeklyStatisticsScreen
         client={supabaseClient}
         onBack={() => setScreen('today')}
+        primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
           timeZone: auth.profile.time_zone,
@@ -438,6 +485,7 @@ export function ProfileHomeScreen() {
       <MonthlyStatisticsScreen
         client={supabaseClient}
         onBack={() => setScreen('today')}
+        primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
           timeZone: auth.profile.time_zone,
@@ -455,6 +503,7 @@ export function ProfileHomeScreen() {
       <AnnualStatisticsScreen
         client={supabaseClient}
         onBack={() => setScreen('today')}
+        primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
           timeZone: auth.profile.time_zone,
@@ -555,6 +604,7 @@ export function ProfileHomeScreen() {
           });
           setScreen('routine-edit');
         }}
+        primaryNavigation={primaryNavigation}
       />
     );
   }
@@ -565,6 +615,7 @@ export function ProfileHomeScreen() {
       companionId={selectedCompanionId}
       displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
+      isHapticsEnabled={auth.profile.haptics_enabled !== false}
       onCreatePlan={() => showPlanCreation('today')}
       onEditRoutine={(routine) => {
         setSelectedRoutine({
