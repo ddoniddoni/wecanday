@@ -40,7 +40,7 @@
     "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}.",
     "imageLabel": "WeCanDay companion, {{status}}",
     "states": {
-      "resting": "Ready for one small step.",
+      "resting": "Your next small step is ready.",
       "encouraging": "You are building a good rhythm.",
       "celebrating": "Everything for today is complete!"
     }

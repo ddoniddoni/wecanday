@@ -267,34 +267,34 @@ export function TodayRoutineScreen({
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <View style={styles.headerTopRow}>
-            <View style={styles.headerCopy}>
-              <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-                {t('eyebrow', { name: displayName })}
-              </Text>
+          <View style={styles.headerCopy}>
+            <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+              {t('eyebrow', { name: displayName })}
+            </Text>
+            <View style={styles.titleRow}>
               <Text
                 accessibilityRole="header"
                 style={[styles.title, { color: theme.colors.text }]}
               >
                 {t('title')}
               </Text>
+              <Pressable
+                accessibilityLabel={t('openAccountSettings')}
+                accessibilityRole="button"
+                onPress={onOpenAccountSettings}
+                style={({ pressed }) => [
+                  styles.accountButton,
+                  {
+                    borderColor: theme.colors.border,
+                    opacity: pressed ? 0.72 : 1,
+                  },
+                ]}
+              >
+                <Text style={[styles.accountButtonLabel, { color: theme.colors.text }]}>
+                  •••
+                </Text>
+              </Pressable>
             </View>
-            <Pressable
-              accessibilityLabel={t('openAccountSettings')}
-              accessibilityRole="button"
-              onPress={onOpenAccountSettings}
-              style={({ pressed }) => [
-                styles.accountButton,
-                {
-                  borderColor: theme.colors.border,
-                  opacity: pressed ? 0.72 : 1,
-                },
-              ]}
-            >
-              <Text style={[styles.accountButtonLabel, { color: theme.colors.text }]}>
-                •••
-              </Text>
-            </Pressable>
           </View>
           <View style={styles.headerActions}>
             <Pressable
@@ -460,7 +460,12 @@ export function TodayRoutineScreen({
                         },
                       ]}
                     >
-                      <Text style={{ color: isComplete ? theme.colors.onPrimary : theme.colors.textMuted }}>
+                      <Text
+                        style={[
+                          styles.checkmarkLabel,
+                          { color: isComplete ? theme.colors.onPrimary : theme.colors.textMuted },
+                        ]}
+                      >
                         {isComplete ? '✓' : ''}
                       </Text>
                     </View>
@@ -579,13 +584,13 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
   header: { gap: spacing.md },
-  headerTopRow: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
-  headerCopy: { flex: 1, gap: spacing.xs },
+  headerCopy: { gap: spacing.xs },
+  titleRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
   headerActions: { flexDirection: 'row', gap: spacing.sm },
   eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.4, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.display, fontWeight: typography.weight.bold, letterSpacing: -0.8, lineHeight: typography.lineHeight.display },
+  title: { flexShrink: 1, fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: -0.4, lineHeight: typography.lineHeight.title },
   accountButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
-  accountButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, letterSpacing: 1, lineHeight: typography.lineHeight.body, marginTop: -spacing.sm },
+  accountButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, includeFontPadding: false, letterSpacing: 1, lineHeight: typography.size.body },
   utilityButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   primaryUtilityButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   utilityButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
@@ -609,6 +614,7 @@ const styles = StyleSheet.create({
   routineItem: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 1, flexDirection: 'row', gap: spacing.md, minHeight: 80, padding: spacing.md },
   toggleArea: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: spacing.md },
   checkmark: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
+  checkmarkLabel: { fontSize: typography.size.body, includeFontPadding: false, lineHeight: typography.size.body, textAlign: 'center' },
   itemCopy: { flex: 1, gap: spacing.xs },
   itemTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   syncLabel: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },

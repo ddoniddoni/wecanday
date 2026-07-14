@@ -37,12 +37,14 @@ export const radii = {
 export const typography = {
   size: {
     body: 16,
+    heading: 24,
     title: 30,
     display: 38,
     caption: 13,
   },
   lineHeight: {
     body: 24,
+    heading: 32,
     title: 38,
     display: 46,
     caption: 18,
