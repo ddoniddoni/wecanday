@@ -3,6 +3,10 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   FriendRequestDomainError,
 } from '@/features/friends/domain/friendRequests';
+import {
+  SocialMutationError,
+  invokeSocialMutation,
+} from '@/features/notifications/services/socialMutationService';
 import type {
   Database,
   FriendshipRow,
@@ -13,15 +17,16 @@ export async function createFriendRequest(
   client: SupabaseClient<Database>,
   recipientId: string,
 ): Promise<FriendshipRow> {
-  const { data, error } = await client.rpc('create_friend_request', {
-    p_recipient_id: recipientId,
-  });
-
-  if (!error && data) {
-    return data;
+  try {
+    return await invokeSocialMutation<FriendshipRow>(client, {
+      action: 'create_friend_request',
+      recipientId,
+    });
+  } catch (error) {
+    throw mapFriendRequestError(
+      error instanceof SocialMutationError ? error.code : undefined,
+    );
   }
-
-  throw mapFriendRequestError(error?.message);
 }
 
 export async function loadPendingFriendRequests(

@@ -10,6 +10,7 @@ import { AppState, Platform } from 'react-native';
 
 import { AuthDomainError } from '@/features/auth/domain/authErrors';
 import { loadAndSyncOwnProfile } from '@/features/auth/services/profileService';
+import { disableCurrentDevicePushToken } from '@/features/notifications/services/devicePushTokenService';
 import { supabaseClient } from '@/lib/supabase/client';
 import type { Database, ProfileRow } from '@/lib/supabase/database.types';
 
@@ -129,6 +130,14 @@ export function AuthProvider({
   async function signOut() {
     if (!client) {
       throw new AuthDomainError('AUTH_CONFIGURATION_MISSING');
+    }
+
+    if (state.status === 'signed_in') {
+      try {
+        await disableCurrentDevicePushToken(client);
+      } catch {
+        // Local logout must remain available if this best-effort cleanup is offline.
+      }
     }
 
     const { error } = await client.auth.signOut();

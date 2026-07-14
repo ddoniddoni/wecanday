@@ -72,6 +72,19 @@ export type ChallengeInvitationRow = Pick<
   'ends_on' | 'id' | 'schedule_weekdays' | 'starts_on' | 'title'
 > & { creator_name: string };
 
+export type DevicePushTokenRow = {
+  created_at: string;
+  device_id_hash: string;
+  enabled: boolean;
+  expo_push_token: string;
+  id: string;
+  last_seen_at: string;
+  locale: string;
+  platform: 'android' | 'ios';
+  updated_at: string;
+  user_id: string;
+};
+
 export type PlanRow = {
   created_at: string;
   description: string | null;
@@ -153,6 +166,12 @@ export type Database = {
       };
       challenges: {
         Row: ChallengeRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      device_push_tokens: {
+        Row: DevicePushTokenRow;
         Insert: never;
         Update: never;
         Relationships: [];
@@ -313,6 +332,19 @@ export type Database = {
       list_challenge_invitations: {
         Args: Record<never, never>;
         Returns: ChallengeInvitationRow[];
+      };
+      upsert_device_push_token: {
+        Args: {
+          p_device_id_hash: string;
+          p_expo_push_token: string;
+          p_locale: string;
+          p_platform: 'android' | 'ios';
+        };
+        Returns: DevicePushTokenRow;
+      };
+      disable_current_device_push_token: {
+        Args: { p_device_id_hash: string; p_platform: 'android' | 'ios' };
+        Returns: undefined;
       };
     };
     Enums: Record<never, never>;

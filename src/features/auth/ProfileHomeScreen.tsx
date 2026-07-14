@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as Notifications from 'expo-notifications';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
@@ -13,6 +14,8 @@ import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsSc
 import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
 import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
+import { getSocialNotificationTarget } from '@/features/notifications/domain/socialPush';
+import { registerDevicePushToken } from '@/features/notifications/services/devicePushTokenService';
 import { cancelRoutineReminder, synchronizeRoutineReminder } from '@/features/notifications/services/routineReminderService';
 import { synchronizeActiveRoutineReminders } from '@/features/notifications/services/routineReminderSynchronizationService';
 import {
@@ -102,6 +105,49 @@ export function ProfileHomeScreen() {
     profileForReminderSync,
     userIdForReminderSync,
   ]);
+
+  useEffect(() => {
+    if (!supabaseClient || !profileForReminderSync || !userIdForReminderSync) {
+      return;
+    }
+
+    const client = supabaseClient;
+    const register = () => {
+      void registerDevicePushToken(client, profileForReminderSync.locale).catch(() => {
+        // A token registration failure must not block the signed-in experience.
+      });
+    };
+
+    register();
+    i18n.on('languageChanged', register);
+
+    return () => {
+      i18n.off('languageChanged', register);
+    };
+  }, [profileForReminderSync, userIdForReminderSync]);
+
+  useEffect(() => {
+    if (auth.status !== 'signed_in') {
+      return;
+    }
+
+    const openTarget = (response: Notifications.NotificationResponse | null) => {
+      const target = getSocialNotificationTarget(
+        response?.notification.request.content.data,
+      );
+
+      if (target) {
+        setScreen(target.screen);
+      }
+    };
+
+    void Notifications.getLastNotificationResponseAsync().then(openTarget);
+    const subscription = Notifications.addNotificationResponseReceivedListener(openTarget);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [auth.status]);
 
   useEffect(() => {
     if (profileForReminderSync && isThemePreference(profileForReminderSync.theme_id)) {
@@ -206,6 +252,11 @@ export function ProfileHomeScreen() {
         onAllow={async () => {
           const result = await requestRoutineNotificationPermission();
 
+          if (result === 'granted' && supabaseClient) {
+            void registerDevicePushToken(supabaseClient, auth.profile.locale).catch(() => {
+              // Permission succeeds independently of temporary registration failures.
+            });
+          }
           await markNotificationPermissionPrimerHandled(authenticatedUserId);
           return result;
         }}

@@ -12,6 +12,9 @@
     "title": "WeCanDay",
     "body": "Your planned routine is ready when you are."
   },
+  "social": {
+    "channelName": "Social updates"
+  },
   "result": {
     "granted": {
       "title": "Reminders are on",

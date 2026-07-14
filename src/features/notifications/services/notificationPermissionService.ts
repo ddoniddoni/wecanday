@@ -7,6 +7,7 @@ import { i18n } from '@/i18n';
 const NOTIFICATION_PERMISSION_PROMPT_KEY_PREFIX =
   'wecanday:notification-permission-prompt:';
 const ROUTINE_REMINDERS_CHANNEL_ID = 'routine-reminders';
+const SOCIAL_UPDATES_CHANNEL_ID = 'social-updates';
 
 export type NotificationPermissionResult = 'denied' | 'granted';
 
@@ -53,6 +54,17 @@ export async function requestRoutineNotificationPermission(): Promise<Notificati
   const requestedPermission = await Notifications.requestPermissionsAsync();
 
   return requestedPermission.granted ? 'granted' : 'denied';
+}
+
+export async function ensureSocialUpdatesNotificationChannel(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+
+  await Notifications.setNotificationChannelAsync(SOCIAL_UPDATES_CHANNEL_ID, {
+    importance: Notifications.AndroidImportance.DEFAULT,
+    name: i18n.t('notifications:social.channelName'),
+  });
 }
 
 function getPromptKey(userId: string): string {

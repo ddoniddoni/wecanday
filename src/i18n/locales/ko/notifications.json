@@ -12,6 +12,9 @@
     "title": "위캔데이",
     "body": "준비되었을 때 오늘의 루틴을 시작해 보세요."
   },
+  "social": {
+    "channelName": "소셜 소식"
+  },
   "result": {
     "granted": {
       "title": "알림을 사용할 수 있어요",

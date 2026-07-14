@@ -7,6 +7,10 @@ import {
   validateChallengeInput,
   type ChallengeInput,
 } from '@/features/challenges/domain/challengeInput';
+import {
+  SocialMutationError,
+  invokeSocialMutation,
+} from '@/features/notifications/services/socialMutationService';
 import type {
   ChallengeInvitationRow,
   ChallengeRow,
@@ -18,19 +22,21 @@ export async function createOneToOneChallenge(
   input: ChallengeInput,
 ): Promise<ChallengeRow> {
   const validatedInput = validateChallengeInput(input);
-  const { data, error } = await client.rpc('create_one_to_one_challenge', {
-    p_ends_on: validatedInput.endsOn,
-    p_friend_id: validatedInput.friendId,
-    p_schedule_weekdays: validatedInput.scheduleWeekdays,
-    p_starts_on: validatedInput.startsOn,
-    p_title: validatedInput.title,
-  });
-
-  if (error || !data) {
-    throw mapChallengeError(error?.message, 'CHALLENGE_CREATE_FAILED');
+  try {
+    return await invokeSocialMutation<ChallengeRow>(client, {
+      action: 'create_one_to_one_challenge',
+      endsOn: validatedInput.endsOn,
+      friendId: validatedInput.friendId,
+      scheduleWeekdays: validatedInput.scheduleWeekdays,
+      startsOn: validatedInput.startsOn,
+      title: validatedInput.title,
+    });
+  } catch (error) {
+    throw mapChallengeError(
+      error instanceof SocialMutationError ? error.code : undefined,
+      'CHALLENGE_CREATE_FAILED',
+    );
   }
-
-  return data;
 }
 
 export async function loadChallengeInvitations(
