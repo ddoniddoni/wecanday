@@ -12,7 +12,13 @@
   "scheduleLabel": "반복 요일",
   "reminderTimeLabel": "알림 시각",
   "reminderTimePlaceholder": "09:00",
-  "reminderTimeHint": "선택 사항이에요. 비워 두면 알림을 끌 수 있어요.",
+  "reminderTimeHint": "선택 사항이에요. 20:00처럼 입력하고, 비워 두면 알림을 끌 수 있어요.",
+  "validation": {
+    "summaryTitle": "입력할 항목을 확인해 주세요",
+    "routineTitle": "수행할 행동을 입력해 주세요.",
+    "reminderTime": "20:00처럼 입력하거나 비워 두세요.",
+    "scheduleWeekdays": "반복할 요일을 하나 이상 골라 주세요."
+  },
   "weekdays": {
     "sunday": "일",
     "monday": "월",

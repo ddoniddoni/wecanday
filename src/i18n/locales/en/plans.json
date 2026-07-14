@@ -12,7 +12,13 @@
   "scheduleLabel": "Repeat on",
   "reminderTimeLabel": "Reminder time",
   "reminderTimePlaceholder": "09:00",
-  "reminderTimeHint": "Optional. Leave blank to turn reminders off.",
+  "reminderTimeHint": "Optional. Use 24-hour time, such as 20:00. Leave blank to turn reminders off.",
+  "validation": {
+    "summaryTitle": "Check these inputs",
+    "routineTitle": "Enter the action you want to do.",
+    "reminderTime": "Enter a time like 20:00, or leave it blank.",
+    "scheduleWeekdays": "Choose at least one day."
+  },
   "weekdays": {
     "sunday": "Sun",
     "monday": "Mon",

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,12 @@ import {
   getRoutineCreationErrorCode,
   type RoutineCreationErrorCode,
 } from '@/features/plans/domain/planErrors';
+import {
+  formatReminderTime,
+  getRoutineFormIssues,
+  parseReminderMinute,
+  type RoutineFormIssue,
+} from '@/features/plans/domain/routineFormValidation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
@@ -54,7 +60,7 @@ export function RoutineCreateScreen({
   const { t } = useTranslation('plans');
   const { theme } = useTheme();
   const [routineTitle, setRoutineTitle] = useState(initialRoutineTitle);
-  const [reminderTime, setReminderTime] = useState(formatReminderTime(initialReminderMinute));
+  const [reminderTime, setReminderTime] = useState(() => formatReminderTime(initialReminderMinute));
   const [scheduleWeekdays, setScheduleWeekdays] = useState<number[]>(initialScheduleWeekdays);
   const copyKey = mode === 'edit' ? 'routineEdit' : 'routineCreate';
   const [errorCode, setErrorCode] = useState<RoutineCreationErrorCode | null>(null);
@@ -62,6 +68,9 @@ export function RoutineCreateScreen({
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiveConfirmationVisible, setIsArchiveConfirmationVisible] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [hasAttemptedSave, setHasAttemptedSave] = useState(false);
+  const routineTitleInputRef = useRef<TextInput>(null);
+  const reminderTimeInputRef = useRef<TextInput>(null);
   const backKey = mode === 'edit'
     ? returnTo === 'plans'
       ? 'routineEdit.backToPlans'
@@ -69,8 +78,18 @@ export function RoutineCreateScreen({
     : 'routineCreate.back';
   const nextRoutineStatus = routineStatus === 'active' ? 'paused' : 'active';
   const statusActionKey = nextRoutineStatus === 'paused' ? 'pause' : 'resume';
+  const validationIssues = getRoutineFormIssues({
+    reminderTime,
+    routineTitle,
+    scheduleWeekdays,
+  });
+  const shouldShowValidation = hasAttemptedSave && validationIssues.length > 0;
+  const hasRoutineTitleIssue = shouldShowValidation && validationIssues.includes('routineTitle');
+  const hasReminderTimeIssue = shouldShowValidation && validationIssues.includes('reminderTime');
+  const hasScheduleWeekdaysIssue = shouldShowValidation && validationIssues.includes('scheduleWeekdays');
 
   function toggleWeekday(weekday: number) {
+    setErrorCode(null);
     setScheduleWeekdays((selectedWeekdays) =>
       selectedWeekdays.includes(weekday)
         ? selectedWeekdays.filter((value) => value !== weekday)
@@ -80,8 +99,10 @@ export function RoutineCreateScreen({
 
   async function handleSave() {
     const reminderMinute = parseReminderMinute(reminderTime);
-    if (routineTitle.trim().length === 0 || scheduleWeekdays.length === 0 || reminderMinute === undefined) {
-      setErrorCode('INVALID_PLAN_INPUT');
+    setHasAttemptedSave(true);
+    if (validationIssues.length > 0 || reminderMinute === undefined) {
+      setErrorCode(null);
+      focusFirstInvalidField(validationIssues);
       return;
     }
 
@@ -99,6 +120,17 @@ export function RoutineCreateScreen({
       setErrorCode(getRoutineCreationErrorCode(error));
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  function focusFirstInvalidField(issues: RoutineFormIssue[]) {
+    if (issues.includes('routineTitle')) {
+      routineTitleInputRef.current?.focus();
+      return;
+    }
+
+    if (issues.includes('reminderTime')) {
+      reminderTimeInputRef.current?.focus();
     }
   }
 
@@ -170,35 +202,62 @@ export function RoutineCreateScreen({
           </Text>
           <TextInput
             accessibilityLabel={t('routineTitleLabel')}
+            accessibilityHint={hasRoutineTitleIssue ? t('validation.routineTitle') : undefined}
             maxLength={80}
-            onChangeText={setRoutineTitle}
+            onChangeText={(nextRoutineTitle) => {
+              setRoutineTitle(nextRoutineTitle);
+              setErrorCode(null);
+            }}
             placeholder={t('routineTitlePlaceholder')}
             placeholderTextColor={theme.colors.textMuted}
+            ref={routineTitleInputRef}
             style={[
               styles.input,
               {
                 backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.border,
+                borderColor: hasRoutineTitleIssue ? theme.colors.accent : theme.colors.border,
                 color: theme.colors.text,
               },
             ]}
             value={routineTitle}
           />
+          {hasRoutineTitleIssue ? (
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+              {t('validation.routineTitle')}
+            </Text>
+          ) : null}
         </View>
 
         <View style={styles.fieldGroup}>
           <Text style={[styles.label, { color: theme.colors.text }]}>{t('reminderTimeLabel')}</Text>
           <TextInput
             accessibilityLabel={t('reminderTimeLabel')}
+            accessibilityHint={hasReminderTimeIssue ? t('validation.reminderTime') : undefined}
             keyboardType="numbers-and-punctuation"
             maxLength={5}
-            onChangeText={setReminderTime}
+            onChangeText={(nextReminderTime) => {
+              setReminderTime(nextReminderTime);
+              setErrorCode(null);
+            }}
             placeholder={t('reminderTimePlaceholder')}
             placeholderTextColor={theme.colors.textMuted}
-            style={[styles.input, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, color: theme.colors.text }]}
+            ref={reminderTimeInputRef}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: hasReminderTimeIssue ? theme.colors.accent : theme.colors.border,
+                color: theme.colors.text,
+              },
+            ]}
             value={reminderTime}
           />
           <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('reminderTimeHint')}</Text>
+          {hasReminderTimeIssue ? (
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+              {t('validation.reminderTime')}
+            </Text>
+          ) : null}
         </View>
 
         <View style={styles.fieldGroup}>
@@ -232,7 +291,29 @@ export function RoutineCreateScreen({
               );
             })}
           </View>
+          {hasScheduleWeekdaysIssue ? (
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+              {t('validation.scheduleWeekdays')}
+            </Text>
+          ) : null}
         </View>
+
+        {shouldShowValidation ? (
+          <View
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            style={[styles.validationSummary, { backgroundColor: theme.colors.surface, borderColor: theme.colors.accent }]}
+          >
+            <Text style={[styles.validationTitle, { color: theme.colors.text }]}>
+              {t('validation.summaryTitle')}
+            </Text>
+            {validationIssues.map((issue) => (
+              <Text key={issue} style={[styles.validationItem, { color: theme.colors.textMuted }]}>
+                {t(`validation.${issue}`)}
+              </Text>
+            ))}
+          </View>
+        ) : null}
 
         {errorCode ? (
           <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>
@@ -379,12 +460,16 @@ const styles = StyleSheet.create({
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
   description: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   fieldGroup: { gap: spacing.sm, marginTop: spacing.sm },
+  fieldError: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
   label: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   input: { borderRadius: radii.md, borderWidth: 1, fontSize: typography.size.body, minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   weekdayList: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   weekdayButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum, paddingHorizontal: spacing.sm },
   weekdayLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
+  validationSummary: { borderRadius: radii.md, borderWidth: 1, gap: spacing.xs, padding: spacing.md },
+  validationTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  validationItem: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   saveButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', marginTop: spacing.md, minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   saveButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   statusButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
@@ -401,16 +486,3 @@ const styles = StyleSheet.create({
   archiveConfirmButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   archiveConfirmLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
 });
-
-function formatReminderTime(reminderMinute: number | null): string {
-  if (reminderMinute === null) return '';
-  return `${Math.floor(reminderMinute / 60).toString().padStart(2, '0')}:${(reminderMinute % 60).toString().padStart(2, '0')}`;
-}
-
-function parseReminderMinute(value: string): number | null | undefined {
-  if (value.trim() === '') return null;
-  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
-  if (!match) return undefined;
-  const hour = Number(match[1]); const minute = Number(match[2]);
-  return hour <= 23 && minute <= 59 ? hour * 60 + minute : undefined;
-}

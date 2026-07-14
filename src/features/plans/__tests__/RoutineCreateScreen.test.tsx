@@ -103,6 +103,32 @@ describe('RoutineCreateScreen', () => {
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ reminderMinute: 570, routineTitle: 'Read', scheduleWeekdays: [0, 1, 2, 3, 4, 5, 6] }));
   });
 
+  it('explains an invalid reminder time next to the affected input', async () => {
+    await i18n.changeLanguage('en');
+    const onSave = jest.fn(() => Promise.resolve());
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <RoutineCreateScreen
+          onBack={jest.fn()}
+          onComplete={jest.fn()}
+          onSave={onSave}
+          planTitle="Read"
+        />
+      </ThemeProvider>,
+    );
+
+    await fireEvent.changeText(screen.getByLabelText('Today’s action'), 'Read a book');
+    await fireEvent.changeText(screen.getByLabelText('Reminder time'), '20000');
+    await fireEvent.press(screen.getByRole('button', { name: 'Add routine' }));
+
+    expect(screen.getByText('Check these inputs')).toBeTruthy();
+    expect(screen.getAllByText('Enter a time like 20:00, or leave it blank.')).toHaveLength(2);
+    expect(screen.getByLabelText('Reminder time').props.accessibilityHint).toBe(
+      'Enter a time like 20:00, or leave it blank.',
+    );
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it('pauses an active routine independently from its title and weekdays', async () => {
     await i18n.changeLanguage('en');
     const onChangeStatus = jest.fn<Promise<void>, ['active' | 'paused']>(() => Promise.resolve());
