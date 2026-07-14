@@ -149,6 +149,12 @@ export async function removeCheckInOperationsForRoutine(
   );
 }
 
+export async function clearCheckInOperationsForUser(userId: string): Promise<void> {
+  const database = await getDatabase();
+
+  await database.runAsync('delete from sync_outbox where user_id = ?', userId);
+}
+
 export async function markCheckInOperationFailed(
   operation: CheckInOutboxOperation,
   errorCode: string,

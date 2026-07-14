@@ -103,6 +103,12 @@ export async function removeCheckInOperationsForRoutine(
   );
 }
 
+export async function clearCheckInOperationsForUser(userId: string): Promise<void> {
+  await saveWebOperations(
+    (await loadWebOperations()).filter((candidate) => candidate.userId !== userId),
+  );
+}
+
 export async function markCheckInOperationFailed(
   operation: CheckInOutboxOperation,
   errorCode: string,

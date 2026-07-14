@@ -39,6 +39,19 @@ export async function cancelRoutineReminder(routineId: string): Promise<void> {
   ));
 }
 
+export async function cancelManagedRoutineReminders(): Promise<void> {
+  const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+  const reminderIds = scheduledNotifications
+    .map((notification) => notification.identifier)
+    .filter((identifier) => identifier.startsWith('routine-reminder:'));
+
+  await Promise.all(
+    reminderIds.map((identifier) =>
+      Notifications.cancelScheduledNotificationAsync(identifier),
+    ),
+  );
+}
+
 function getReminderIdentifier(routineId: string, weekday: number): string {
   return `routine-reminder:${routineId}:${weekday}`;
 }

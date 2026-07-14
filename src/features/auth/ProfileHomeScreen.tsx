@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { AccountSettingsScreen } from '@/features/auth/AccountSettingsScreen';
 import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
 import { ChallengeInvitationsScreen } from '@/features/challenges/ChallengeInvitationsScreen';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
@@ -53,6 +54,7 @@ type AppScreen =
   | 'routine-create'
   | 'routine-edit'
   | 'annual-statistics'
+  | 'account-settings'
   | 'friend-search'
   | 'friend-requests'
   | 'friend-connections'
@@ -67,7 +69,6 @@ export function ProfileHomeScreen() {
   const { setPreference } = useTheme();
   const profileForReminderSync = auth.status === 'signed_in' ? auth.profile : null;
   const userIdForReminderSync = auth.status === 'signed_in' ? auth.userId : null;
-  const [hasSignOutError, setHasSignOutError] = useState(false);
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
   const [screen, setScreen] = useState<AppScreen>('today');
   const [planCreationReturnScreen, setPlanCreationReturnScreen] =
@@ -288,6 +289,15 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'account-settings') {
+    return (
+      <AccountSettingsScreen
+        onBack={() => setScreen('today')}
+        onDeleteAccount={auth.deleteAccount}
+        onSignOut={auth.signOut}
+      />
+    );
+  }
   if (screen === 'friend-search') {
     if (!supabaseClient) {
       return null;
@@ -454,16 +464,6 @@ export function ProfileHomeScreen() {
     );
   }
 
-  async function handleSignOut() {
-    setHasSignOutError(false);
-
-    try {
-      await auth.signOut();
-    } catch {
-      setHasSignOutError(true);
-    }
-  }
-
   if (!supabaseClient) {
     return null;
   }
@@ -511,7 +511,6 @@ export function ProfileHomeScreen() {
       client={supabaseClient}
       displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
-      hasSignOutError={hasSignOutError}
       onCreatePlan={() => showPlanCreation('today')}
       onEditRoutine={(routine) => {
         setSelectedRoutine({
@@ -524,6 +523,7 @@ export function ProfileHomeScreen() {
       onOpenFriendSearch={() => setScreen('friend-search')}
       onOpenPlans={() => setScreen('plan-list')}
       onOpenAnnualStatistics={() => setScreen('annual-statistics')}
+      onOpenAccountSettings={() => setScreen('account-settings')}
       onOpenMonthlyStatistics={() => setScreen('monthly-statistics')}
       onOpenThemes={() => setScreen('theme-selection')}
       onOpenWeeklyStatistics={() => setScreen('weekly-statistics')}
@@ -539,7 +539,6 @@ export function ProfileHomeScreen() {
           scheduleWeekdays: routine.schedule_weekdays,
         });
       }}
-      onSignOut={() => void handleSignOut()}
       publicCode={auth.profile.public_code}
       routineDayConfig={{
         dayStartMinute: auth.profile.day_start_minute,

@@ -33,6 +33,14 @@ export async function markNotificationPermissionPrimerHandled(
   }
 }
 
+export async function clearNotificationPermissionPrimer(userId: string): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(getPromptKey(userId));
+  } catch {
+    // Local cleanup must not block logout or account deletion.
+  }
+}
+
 export async function requestRoutineNotificationPermission(): Promise<NotificationPermissionResult> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(ROUTINE_REMINDERS_CHANNEL_ID, {

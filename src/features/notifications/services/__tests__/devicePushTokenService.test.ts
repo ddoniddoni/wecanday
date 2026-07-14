@@ -5,6 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 
 import {
+  clearPushInstallationId,
   disableCurrentDevicePushToken,
   registerDevicePushToken,
 } from '@/features/notifications/services/devicePushTokenService';
@@ -25,6 +26,7 @@ jest.mock('expo-notifications', () => ({
   getPermissionsAsync: jest.fn(),
 }));
 jest.mock('expo-secure-store', () => ({
+  deleteItemAsync: jest.fn(),
   getItemAsync: jest.fn(),
   setItemAsync: jest.fn(),
 }));
@@ -96,5 +98,13 @@ describe('device push token service', () => {
       p_platform: 'android',
     });
     Object.defineProperty(Platform, 'OS', { configurable: true, value: originalPlatform });
+  });
+
+  it('removes the local push installation ID when an account is deleted', async () => {
+    await clearPushInstallationId();
+
+    expect(mockedSecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      'wecanday:push-device-id',
+    );
   });
 });

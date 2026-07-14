@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 
 import {
+  cancelManagedRoutineReminders,
   cancelRoutineReminder,
   synchronizeRoutineReminder,
 } from '@/features/notifications/services/routineReminderService';
@@ -50,6 +51,20 @@ describe('routine reminder service', () => {
     expect(mockedNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledTimes(7);
     expect(mockedNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith(
       'routine-reminder:routine-1:6',
+    );
+  });
+
+  it('removes only routine reminders when account data is cleared', async () => {
+    mockedNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
+      { identifier: 'routine-reminder:routine-1:1' },
+      { identifier: 'unrelated-notification' },
+    ] as never);
+
+    await cancelManagedRoutineReminders();
+
+    expect(mockedNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledTimes(1);
+    expect(mockedNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith(
+      'routine-reminder:routine-1:1',
     );
   });
 });

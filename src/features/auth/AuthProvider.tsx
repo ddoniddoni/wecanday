@@ -9,6 +9,11 @@ import {
 import { AppState, Platform } from 'react-native';
 
 import { AuthDomainError } from '@/features/auth/domain/authErrors';
+import { deleteCurrentAccount } from '@/features/auth/services/accountDeletionService';
+import {
+  clearDeletedUserData,
+  clearSignedOutUserData,
+} from '@/features/auth/services/localAccountCleanup';
 import { loadAndSyncOwnProfile } from '@/features/auth/services/profileService';
 import { disableCurrentDevicePushToken } from '@/features/notifications/services/devicePushTokenService';
 import { supabaseClient } from '@/lib/supabase/client';
@@ -24,6 +29,7 @@ type AuthState =
 type AuthContextValue = AuthState & {
   replaceProfile: (profile: ProfileRow) => void;
   retry: () => void;
+  deleteAccount: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -133,18 +139,39 @@ export function AuthProvider({
     }
 
     if (state.status === 'signed_in') {
-      try {
-        await disableCurrentDevicePushToken(client);
-      } catch {
-        // Local logout must remain available if this best-effort cleanup is offline.
-      }
+      await Promise.allSettled([
+        disableCurrentDevicePushToken(client),
+        clearSignedOutUserData(state.userId),
+      ]);
     }
 
-    const { error } = await client.auth.signOut();
+    const { error } = await client.auth.signOut({ scope: 'local' });
 
     if (error) {
       throw new AuthDomainError('AUTH_PROVIDER_FAILED');
     }
+  }
+
+  async function deleteAccount() {
+    if (!client || state.status !== 'signed_in') {
+      throw new AuthDomainError('ACCOUNT_DELETION_FAILED');
+    }
+
+    try {
+      await deleteCurrentAccount(client);
+    } catch {
+      throw new AuthDomainError('ACCOUNT_DELETION_FAILED');
+    }
+
+    await clearDeletedUserData(state.userId);
+
+    try {
+      await client.auth.signOut({ scope: 'local' });
+    } catch {
+      // The server has already deleted the account; do not present that as a failure.
+    }
+
+    setState({ status: 'signed_out' });
   }
 
   function replaceProfile(profile: ProfileRow) {
@@ -156,7 +183,7 @@ export function AuthProvider({
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, replaceProfile, retry, signOut }}>
+    <AuthContext.Provider value={{ ...state, deleteAccount, replaceProfile, retry, signOut }}>
       {children}
     </AuthContext.Provider>
   );

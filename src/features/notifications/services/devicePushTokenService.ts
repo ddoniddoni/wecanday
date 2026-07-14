@@ -72,6 +72,10 @@ export async function disableCurrentDevicePushToken(
   }
 }
 
+export async function clearPushInstallationId(): Promise<void> {
+  await SecureStore.deleteItemAsync(PUSH_DEVICE_ID_KEY);
+}
+
 function getEasProjectId(): string | null {
   const projectId = Constants.expoConfig?.extra?.eas?.projectId;
 

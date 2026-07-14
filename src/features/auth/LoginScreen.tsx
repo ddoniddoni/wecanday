@@ -58,6 +58,7 @@ function GoogleProviderButton({
 }
 
 const errorTranslationKeys = {
+  ACCOUNT_DELETION_FAILED: 'providerError',
   AUTH_CONFIGURATION_MISSING: 'configurationError',
   AUTH_PROFILE_UNAVAILABLE: 'profileError',
   AUTH_PROVIDER_CANCELLED: 'cancelled',

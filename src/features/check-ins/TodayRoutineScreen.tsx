@@ -52,12 +52,12 @@ type TodayRoutineScreenProps = {
   client: SupabaseClient<Database>;
   displayName: string;
   hasPlanCreationSuccess: boolean;
-  hasSignOutError: boolean;
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenFriendSearch: () => void;
   onOpenPlans: () => void;
   onOpenAnnualStatistics: () => void;
+  onOpenAccountSettings: () => void;
   onOpenMonthlyStatistics: () => void;
   onOpenThemes: () => void;
   onOpenWeeklyStatistics: () => void;
@@ -65,7 +65,6 @@ type TodayRoutineScreenProps = {
     item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays'>,
     isCompleted: boolean,
   ) => void;
-  onSignOut: () => void;
   publicCode: string;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -75,17 +74,16 @@ export function TodayRoutineScreen({
   client,
   displayName,
   hasPlanCreationSuccess,
-  hasSignOutError,
   onCreatePlan,
   onEditRoutine,
   onOpenFriendSearch,
   onOpenPlans,
   onOpenAnnualStatistics,
+  onOpenAccountSettings,
   onOpenMonthlyStatistics,
   onOpenThemes,
   onOpenWeeklyStatistics,
   onRoutineCompletionChanged,
-  onSignOut,
   publicCode,
   routineDayConfig,
   userId,
@@ -314,9 +312,9 @@ export function TodayRoutineScreen({
               </Text>
             </Pressable>
             <Pressable
-              accessibilityLabel={t('signOut')}
+              accessibilityLabel={t('openAccountSettings')}
               accessibilityRole="button"
-              onPress={onSignOut}
+              onPress={onOpenAccountSettings}
               style={({ pressed }) => [
                 styles.signOutButton,
                 {
@@ -326,7 +324,7 @@ export function TodayRoutineScreen({
               ]}
             >
               <Text style={[styles.signOutLabel, { color: theme.colors.text }]}>
-                {t('signOut')}
+                {t('openAccountSettings')}
               </Text>
             </Pressable>
           </View>
@@ -399,12 +397,6 @@ export function TodayRoutineScreen({
             {t('planCreated')}
           </Text>
         ) : null}
-        {hasSignOutError ? (
-          <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>
-            {t('signOutError')}
-          </Text>
-        ) : null}
-
         {isLoading ? (
           <View style={styles.stateContainer}>
             <ActivityIndicator accessibilityLabel={t('loading')} color={theme.colors.primary} />
