@@ -9,11 +9,13 @@ describe('ProfileOverviewScreen', () => {
     await i18n.changeLanguage('en');
     const onOpenThemes = jest.fn();
     const onOpenAccountSettings = jest.fn();
+    const onOpenCompanionSelection = jest.fn();
     const screen = await render(
       <ThemeProvider preference="light">
         <ProfileOverviewScreen
           displayName="Jamie"
           onOpenAccountSettings={onOpenAccountSettings}
+          onOpenCompanionSelection={onOpenCompanionSelection}
           onOpenFriendSearch={jest.fn()}
           onOpenPlans={jest.fn()}
           onOpenStatistics={jest.fn()}
@@ -29,8 +31,10 @@ describe('ProfileOverviewScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Change theme' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Open settings' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Change companion' }));
 
     expect(onOpenThemes).toHaveBeenCalledTimes(1);
     expect(onOpenAccountSettings).toHaveBeenCalledTimes(1);
+    expect(onOpenCompanionSelection).toHaveBeenCalledTimes(1);
   });
 });

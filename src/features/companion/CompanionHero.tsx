@@ -10,12 +10,15 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { getCompanionState } from '@/features/companion/domain/companion';
+import {
+  getCompanionAsset,
+  type CompanionId,
+} from '@/features/companion/domain/companions';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, typography } from '@/theme/tokens';
 
-const companionImage = require('../../../assets/companion/sprout-companion-hero.png');
-
 type CompanionHeroProps = {
+  companionId: CompanionId;
   completedCount: number;
   reactionId: number;
   routineDay: string;
@@ -23,6 +26,7 @@ type CompanionHeroProps = {
 };
 
 export function CompanionHero({
+  companionId,
   completedCount,
   reactionId,
   routineDay,
@@ -96,7 +100,7 @@ export function CompanionHero({
         accessibilityLabel={t('companion.imageLabel', { status: statusLabel })}
         accessibilityRole="image"
         resizeMode="contain"
-        source={companionImage}
+        source={getCompanionAsset(companionId)}
         style={[styles.image, animatedImageStyle]}
       />
     </View>

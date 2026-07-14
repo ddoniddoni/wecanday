@@ -7,6 +7,11 @@
     "description": "오늘의 기분에 맞는 테마를 골라보세요.",
     "action": "테마 변경"
   },
+  "companion": {
+    "title": "매일의 동반자",
+    "description": "다음 작은 걸음을 응원할 친구를 골라보세요.",
+    "action": "동반자 변경"
+  },
   "account": {
     "title": "계정 및 개인정보",
     "description": "계정, 개인정보, 로그인 설정을 관리하세요.",

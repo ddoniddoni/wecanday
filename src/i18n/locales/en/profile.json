@@ -7,6 +7,11 @@
     "description": "Choose the mood that fits your day.",
     "action": "Change theme"
   },
+  "companion": {
+    "title": "Daily companion",
+    "description": "Choose who cheers for your next small step.",
+    "action": "Change companion"
+  },
   "account": {
     "title": "Account & privacy",
     "description": "Manage your account, privacy, and sign-in.",

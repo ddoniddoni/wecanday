@@ -21,6 +21,7 @@ import {
 } from '@/features/check-ins/domain/todayRoutines';
 import { PrimaryNavigation } from '@/components/PrimaryNavigation';
 import { CompanionHero } from '@/features/companion/CompanionHero';
+import type { CompanionId } from '@/features/companion/domain/companions';
 import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
@@ -48,6 +49,7 @@ const SYNC_INTERVAL_MS = 30_000;
 
 type TodayRoutineScreenProps = {
   client: SupabaseClient<Database>;
+  companionId: CompanionId;
   displayName: string;
   hasPlanCreationSuccess: boolean;
   onCreatePlan: () => void;
@@ -65,6 +67,7 @@ type TodayRoutineScreenProps = {
 
 export function TodayRoutineScreen({
   client,
+  companionId,
   displayName,
   hasPlanCreationSuccess,
   onCreatePlan,
@@ -238,6 +241,7 @@ export function TodayRoutineScreen({
         </View>
 
         <CompanionHero
+          companionId={companionId}
           completedCount={completedCount}
           reactionId={companionReactionId}
           routineDay={routineDayWindow.key}

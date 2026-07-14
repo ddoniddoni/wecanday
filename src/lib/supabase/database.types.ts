@@ -1,5 +1,6 @@
 export type ProfileRow = {
   avatar_seed: string;
+  companion_id: string | null;
   country_code: string | null;
   created_at: string;
   day_start_minute: number | null;
@@ -144,6 +145,7 @@ export type Database = {
           Pick<
             ProfileRow,
             | 'avatar_seed'
+            | 'companion_id'
             | 'country_code'
             | 'display_name'
             | 'locale'

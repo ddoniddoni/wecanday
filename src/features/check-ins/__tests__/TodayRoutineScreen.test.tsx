@@ -50,6 +50,7 @@ describe('TodayRoutineScreen', () => {
       <ThemeProvider preference="light">
         <TodayRoutineScreen
           client={{} as SupabaseClient<Database>}
+          companionId="sprout"
           displayName="Jamie"
           hasPlanCreationSuccess={false}
           onCreatePlan={jest.fn()}

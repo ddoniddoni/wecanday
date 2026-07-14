@@ -10,6 +10,7 @@ import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 type ProfileOverviewScreenProps = {
   displayName: string;
   onOpenAccountSettings: () => void;
+  onOpenCompanionSelection: () => void;
   onOpenFriendSearch: () => void;
   onOpenPlans: () => void;
   onOpenStatistics: () => void;
@@ -57,6 +58,7 @@ function ProfileActionCard({
 export function ProfileOverviewScreen({
   displayName,
   onOpenAccountSettings,
+  onOpenCompanionSelection,
   onOpenFriendSearch,
   onOpenPlans,
   onOpenStatistics,
@@ -78,6 +80,12 @@ export function ProfileOverviewScreen({
           <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('description')}</Text>
         </View>
         <PublicCodeShareCard onFindFriend={onOpenFriendSearch} publicCode={publicCode} />
+        <ProfileActionCard
+          actionLabel={t('companion.action')}
+          description={t('companion.description')}
+          onPress={onOpenCompanionSelection}
+          title={t('companion.title')}
+        />
         <ProfileActionCard
           actionLabel={t('appearance.action')}
           description={t('appearance.description')}

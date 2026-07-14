@@ -1,0 +1,17 @@
+{
+  "eyebrow": "YOUR COMPANION",
+  "title": "Choose your daily companion",
+  "description": "Pick the friend who will cheer for each small step.",
+  "optionAccessibilityLabel": "Choose {{name}}",
+  "imageAccessibilityLabel": "{{name}} companion",
+  "selected": "Selected",
+  "continue": "Choose this companion",
+  "back": "Back",
+  "saving": "Saving companion",
+  "saveError": "We couldn't save your companion. Please try again.",
+  "options": {
+    "sprout": { "name": "Sprout", "description": "A calm little leaf for steady days." },
+    "dew": { "name": "Dew", "description": "A bright drop for fresh starts." },
+    "ember": { "name": "Ember", "description": "A warm glow for brave steps." }
+  }
+}

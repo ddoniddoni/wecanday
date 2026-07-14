@@ -6,6 +6,12 @@ import { AccountSettingsScreen } from '@/features/auth/AccountSettingsScreen';
 import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
 import { ChallengeInvitationsScreen } from '@/features/challenges/ChallengeInvitationsScreen';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
+import { CompanionSelectionScreen } from '@/features/companion/CompanionSelectionScreen';
+import {
+  isCompanionId,
+  type CompanionId,
+} from '@/features/companion/domain/companions';
+import { saveCompanionPreference } from '@/features/companion/services/companionPreferenceService';
 import { FriendCodeSearchScreen } from '@/features/friends/FriendCodeSearchScreen';
 import { FriendConnectionsScreen } from '@/features/friends/FriendConnectionsScreen';
 import { FriendRequestsScreen } from '@/features/friends/FriendRequestsScreen';
@@ -49,6 +55,7 @@ import { isThemePreference } from '@/theme/types';
 type AppScreen =
   | 'challenge-create'
   | 'challenge-invitations'
+  | 'companion-selection'
   | 'notification-permission'
   | 'plan-create'
   | 'plan-list'
@@ -187,6 +194,26 @@ export function ProfileHomeScreen() {
     );
   }
 
+  async function saveSelectedCompanion(companionId: CompanionId) {
+    if (!supabaseClient) {
+      throw new Error('COMPANION_PREFERENCE_SAVE_FAILED');
+    }
+
+    const profile = await saveCompanionPreference(
+      supabaseClient,
+      authenticatedUserId,
+      companionId,
+    );
+
+    auth.replaceProfile(profile);
+  }
+
+  const selectedCompanionId = auth.profile.companion_id;
+
+  if (!isCompanionId(selectedCompanionId)) {
+    return <CompanionSelectionScreen onSave={saveSelectedCompanion} />;
+  }
+
   function showPlanCreation(returnScreen: PlanCreationReturnScreen) {
     setPlanCreationReturnScreen(returnScreen);
     setScreen('plan-create');
@@ -300,6 +327,15 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'companion-selection') {
+    return (
+      <CompanionSelectionScreen
+        initialCompanionId={selectedCompanionId}
+        onBack={() => setScreen('profile')}
+        onSave={saveSelectedCompanion}
+      />
+    );
+  }
   if (screen === 'friend-search') {
     if (!supabaseClient) {
       return null;
@@ -319,6 +355,7 @@ export function ProfileHomeScreen() {
       <ProfileOverviewScreen
         displayName={auth.profile.display_name}
         onOpenAccountSettings={() => setScreen('account-settings')}
+        onOpenCompanionSelection={() => setScreen('companion-selection')}
         onOpenFriendSearch={() => setScreen('friend-search')}
         onOpenPlans={() => setScreen('plan-list')}
         onOpenStatistics={() => setScreen('weekly-statistics')}
@@ -525,6 +562,7 @@ export function ProfileHomeScreen() {
   return (
     <TodayRoutineScreen
       client={supabaseClient}
+      companionId={selectedCompanionId}
       displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
       onCreatePlan={() => showPlanCreation('today')}
