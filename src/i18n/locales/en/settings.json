@@ -12,5 +12,13 @@
       "dark": { "label": "Dark", "description": "A low-light workspace." },
       "pixel-default": { "label": "Pixel day", "description": "A limited sky, navy, coral, and gold palette with crisp square details.", "previewLabel": "Pixel day palette preview" }
     }
+  },
+  "language": {
+    "eyebrow": "Language",
+    "title": "Choose your language",
+    "description": "Your choice applies right away and stays with your account.",
+    "back": "Back to profile",
+    "saving": "Saving language",
+    "saveError": "We couldn't save your language. Please try again."
   }
 }

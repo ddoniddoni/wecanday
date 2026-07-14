@@ -18,6 +18,7 @@ type CompletionFeedbackProps = {
   feedbackId: number;
   hasLevelUp: boolean;
   level: number;
+  reduceMotion: boolean;
   totalCount: number;
 };
 
@@ -27,11 +28,12 @@ export function CompletionFeedback({
   feedbackId,
   hasLevelUp,
   level,
+  reduceMotion,
   totalCount,
 }: CompletionFeedbackProps) {
   const { t } = useTranslation('today');
   const { theme } = useTheme();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() || reduceMotion;
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.get() }],

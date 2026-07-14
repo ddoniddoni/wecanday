@@ -11,6 +11,7 @@ type ProfileOverviewScreenProps = {
   onOpenAccountSettings: () => void;
   onOpenCompanionSelection: () => void;
   onOpenFriendSearch: () => void;
+  onOpenLanguageSelection: () => void;
   onOpenPlans: () => void;
   onOpenStatistics: () => void;
   onOpenThemes: () => void;
@@ -59,6 +60,7 @@ export function ProfileOverviewScreen({
   onOpenAccountSettings,
   onOpenCompanionSelection,
   onOpenFriendSearch,
+  onOpenLanguageSelection,
   onOpenPlans,
   onOpenStatistics,
   onOpenThemes,
@@ -92,6 +94,12 @@ export function ProfileOverviewScreen({
           description={t('companion.description')}
           onPress={onOpenCompanionSelection}
           title={t('companion.title')}
+        />
+        <ProfileActionCard
+          actionLabel={t('language.action')}
+          description={t('language.description')}
+          onPress={onOpenLanguageSelection}
+          title={t('language.title')}
         />
         <ProfileActionCard
           actionLabel={t('appearance.action')}

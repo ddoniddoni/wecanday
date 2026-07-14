@@ -21,8 +21,11 @@ import { AnnualStatisticsScreen } from '@/features/statistics/AnnualStatisticsSc
 import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatisticsScreen';
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
 import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
+import { LanguageSelectionScreen } from '@/features/settings/LanguageSelectionScreen';
+import { saveLocalePreference } from '@/features/settings/services/localePreferenceService';
 import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
 import { saveHapticsPreference } from '@/features/settings/services/hapticsPreferenceService';
+import { saveReduceMotionPreference } from '@/features/settings/services/reduceMotionPreferenceService';
 import { NotificationPermissionScreen } from '@/features/notifications/NotificationPermissionScreen';
 import { getSocialNotificationTarget } from '@/features/notifications/domain/socialPush';
 import { registerDevicePushToken } from '@/features/notifications/services/devicePushTokenService';
@@ -51,6 +54,11 @@ import { getCurrentRoutineDayWindow } from '@/features/routine-day/domain/routin
 import { RoutineDaySetupScreen } from '@/features/routine-day/RoutineDaySetupScreen';
 import { completeInitialRoutineDaySettings } from '@/features/routine-day/services/routineDaySettingsService';
 import { i18n } from '@/i18n';
+import { resolveSupportedLocale, type SupportedLocale } from '@/i18n/types';
+import {
+  loadOnboardingPreferences,
+  saveOnboardingPreferences,
+} from '@/features/onboarding/data/onboardingPreferencesStorage';
 import { supabaseClient } from '@/lib/supabase/client';
 import { useTheme } from '@/theme/ThemeProvider';
 import { isThemePreference } from '@/theme/types';
@@ -70,6 +78,7 @@ type AppScreen =
   | 'friend-search'
   | 'friend-requests'
   | 'friend-connections'
+  | 'language-selection'
   | 'monthly-statistics'
   | 'profile'
   | 'theme-selection'
@@ -82,6 +91,7 @@ export function ProfileHomeScreen() {
   const auth = useAuth();
   const { setPreference } = useTheme();
   const profileForReminderSync = auth.status === 'signed_in' ? auth.profile : null;
+  const profileLocale = auth.status === 'signed_in' ? auth.profile.locale : null;
   const userIdForReminderSync = auth.status === 'signed_in' ? auth.userId : null;
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
   const [screen, setScreen] = useState<AppScreen>('today');
@@ -140,6 +150,14 @@ export function ProfileHomeScreen() {
       i18n.off('languageChanged', register);
     };
   }, [profileForReminderSync, userIdForReminderSync]);
+
+  useEffect(() => {
+    const resolvedProfileLocale = resolveSupportedLocale(profileLocale);
+
+    if (i18n.resolvedLanguage !== resolvedProfileLocale) {
+      void i18n.changeLanguage(resolvedProfileLocale);
+    }
+  }, [profileLocale]);
 
   useEffect(() => {
     if (auth.status !== 'signed_in') {
@@ -217,6 +235,23 @@ export function ProfileHomeScreen() {
     );
 
     auth.replaceProfile(profile);
+  }
+
+  async function saveSelectedLocale(locale: SupportedLocale) {
+    if (!supabaseClient) {
+      throw new Error('LOCALE_PREFERENCE_SAVE_FAILED');
+    }
+
+    const profile = await saveLocalePreference(supabaseClient, authenticatedUserId, locale);
+    auth.replaceProfile(profile);
+
+    void loadOnboardingPreferences()
+      .then((preferences) =>
+        saveOnboardingPreferences({ ...preferences, locale }),
+      )
+      .catch(() => {
+        // The profile is authoritative; a later sign-in will repair this local cache.
+      });
   }
 
   const selectedCompanionId = auth.profile.companion_id;
@@ -330,11 +365,20 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'language-selection') {
+    return (
+      <LanguageSelectionScreen
+        onBack={() => setScreen('profile')}
+        onSave={saveSelectedLocale}
+      />
+    );
+  }
   if (screen === 'account-settings') {
     return (
       <AccountSettingsScreen
         displayName={auth.profile.display_name}
         hapticsEnabled={auth.profile.haptics_enabled !== false}
+        reduceMotionEnabled={auth.profile.reduce_motion === true}
         onBack={() => setScreen('profile')}
         onDeleteAccount={auth.deleteAccount}
         onOpenPrivacyPolicy={() => setScreen('privacy-policy')}
@@ -344,6 +388,18 @@ export function ProfileHomeScreen() {
           }
 
           const profile = await saveHapticsPreference(
+            supabaseClient,
+            authenticatedUserId,
+            isEnabled,
+          );
+          auth.replaceProfile(profile);
+        }}
+        onSaveReduceMotionPreference={async (isEnabled) => {
+          if (!supabaseClient) {
+            throw new Error('REDUCE_MOTION_PREFERENCE_SAVE_FAILED');
+          }
+
+          const profile = await saveReduceMotionPreference(
             supabaseClient,
             authenticatedUserId,
             isEnabled,
@@ -403,6 +459,7 @@ export function ProfileHomeScreen() {
         onOpenAccountSettings={() => setScreen('account-settings')}
         onOpenCompanionSelection={() => setScreen('companion-selection')}
         onOpenFriendSearch={() => setScreen('friend-search')}
+        onOpenLanguageSelection={() => setScreen('language-selection')}
         onOpenPlans={() => setScreen('plan-list')}
         onOpenStatistics={() => setScreen('weekly-statistics')}
         onOpenThemes={() => setScreen('theme-selection')}
@@ -616,6 +673,7 @@ export function ProfileHomeScreen() {
       displayName={auth.profile.display_name}
       hasPlanCreationSuccess={hasPlanCreationSuccess}
       isHapticsEnabled={auth.profile.haptics_enabled !== false}
+      isMotionReduced={auth.profile.reduce_motion === true}
       onCreatePlan={() => showPlanCreation('today')}
       onEditRoutine={(routine) => {
         setSelectedRoutine({

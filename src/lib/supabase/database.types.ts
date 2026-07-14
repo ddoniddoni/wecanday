@@ -9,6 +9,7 @@ export type ProfileRow = {
   id: string;
   locale: string | null;
   public_code: string;
+  reduce_motion: boolean;
   routine_day_settings_completed_at: string | null;
   theme_id: string;
   time_zone: string | null;
@@ -151,6 +152,7 @@ export type Database = {
             | 'display_name'
             | 'haptics_enabled'
             | 'locale'
+            | 'reduce_motion'
             | 'theme_id'
           >
         >;

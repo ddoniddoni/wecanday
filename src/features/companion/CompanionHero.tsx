@@ -23,6 +23,7 @@ type CompanionHeroProps = {
   completedCount: number;
   progress: CompanionProgress;
   reactionId: number;
+  reduceMotion: boolean;
   routineDay: string;
   totalCount: number;
 };
@@ -32,12 +33,13 @@ export function CompanionHero({
   completedCount,
   progress,
   reactionId,
+  reduceMotion,
   routineDay,
   totalCount,
 }: CompanionHeroProps) {
   const { t } = useTranslation('today');
   const { theme } = useTheme();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() || reduceMotion;
   const scale = useSharedValue(1);
   const companionState = getCompanionState({ completedCount, totalCount });
   const progressPercent = totalCount === 0 ? 0 : (completedCount / totalCount) * 100;

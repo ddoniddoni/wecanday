@@ -74,6 +74,7 @@ describe('TodayRoutineScreen', () => {
           displayName="Jamie"
           hasPlanCreationSuccess={false}
           isHapticsEnabled
+          isMotionReduced={false}
           onCreatePlan={jest.fn()}
           onEditRoutine={jest.fn()}
           onOpenPlans={jest.fn()}
@@ -113,6 +114,40 @@ describe('TodayRoutineScreen', () => {
         expect.objectContaining({ id: 'routine-1' }),
         true,
       );
+    });
+  });
+
+  it('uses reduced feedback when the account preference is enabled', async () => {
+    await i18n.changeLanguage('en');
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <TodayRoutineScreen
+          client={{} as SupabaseClient<Database>}
+          companionId="sprout"
+          displayName="Jamie"
+          hasPlanCreationSuccess={false}
+          isHapticsEnabled
+          isMotionReduced
+          onCreatePlan={jest.fn()}
+          onEditRoutine={jest.fn()}
+          onOpenPlans={jest.fn()}
+          onOpenProfile={jest.fn()}
+          onOpenStatistics={jest.fn()}
+          onRoutineCompletionChanged={jest.fn()}
+          routineDayConfig={{ dayStartMinute: 0, timeZone: 'UTC' }}
+          userId="user-1"
+        />
+      </ThemeProvider>,
+    );
+
+    await screen.findByRole('button', { name: 'Complete Morning walk' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Complete Morning walk' }));
+
+    await waitFor(() => {
+      expect(playRoutineCompletionHaptic).toHaveBeenCalledWith({
+        isEnabled: true,
+        shouldReduceMotion: true,
+      });
     });
   });
 

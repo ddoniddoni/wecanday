@@ -15,6 +15,7 @@ const profile: ProfileRow = {
   id: 'user-1',
   locale: 'en',
   public_code: 'Ab7kL2xP9Qm4',
+  reduce_motion: false,
   routine_day_settings_completed_at: '2026-07-14T00:00:00.000Z',
   theme_id: 'light',
   time_zone: 'Asia/Seoul',

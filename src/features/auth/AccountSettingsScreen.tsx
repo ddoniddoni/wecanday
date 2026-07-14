@@ -18,10 +18,12 @@ import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 type AccountSettingsScreenProps = {
   displayName: string;
   hapticsEnabled: boolean;
+  reduceMotionEnabled: boolean;
   onBack: () => void;
   onDeleteAccount: () => Promise<void>;
   onOpenPrivacyPolicy: () => void;
   onSaveHapticsPreference: (isEnabled: boolean) => Promise<void>;
+  onSaveReduceMotionPreference: (isEnabled: boolean) => Promise<void>;
   onSaveDisplayName: (displayName: string) => Promise<void>;
   onSignOut: () => Promise<void>;
   onOpenTermsOfService: () => void;
@@ -30,10 +32,12 @@ type AccountSettingsScreenProps = {
 export function AccountSettingsScreen({
   displayName,
   hapticsEnabled,
+  reduceMotionEnabled,
   onBack,
   onDeleteAccount,
   onOpenPrivacyPolicy,
   onSaveHapticsPreference,
+  onSaveReduceMotionPreference,
   onSaveDisplayName,
   onSignOut,
   onOpenTermsOfService,
@@ -51,6 +55,9 @@ export function AccountSettingsScreen({
   const [isHapticsEnabled, setIsHapticsEnabled] = useState(hapticsEnabled);
   const [isSavingHaptics, setIsSavingHaptics] = useState(false);
   const [hasHapticsError, setHasHapticsError] = useState(false);
+  const [isReduceMotionEnabled, setIsReduceMotionEnabled] = useState(reduceMotionEnabled);
+  const [isSavingReduceMotion, setIsSavingReduceMotion] = useState(false);
+  const [hasReduceMotionError, setHasReduceMotionError] = useState(false);
 
   async function handleHapticsChange(nextIsEnabled: boolean) {
     const previousIsEnabled = isHapticsEnabled;
@@ -66,6 +73,23 @@ export function AccountSettingsScreen({
       setHasHapticsError(true);
     } finally {
       setIsSavingHaptics(false);
+    }
+  }
+
+  async function handleReduceMotionChange(nextIsEnabled: boolean) {
+    const previousIsEnabled = isReduceMotionEnabled;
+
+    setHasReduceMotionError(false);
+    setIsReduceMotionEnabled(nextIsEnabled);
+    setIsSavingReduceMotion(true);
+
+    try {
+      await onSaveReduceMotionPreference(nextIsEnabled);
+    } catch {
+      setIsReduceMotionEnabled(previousIsEnabled);
+      setHasReduceMotionError(true);
+    } finally {
+      setIsSavingReduceMotion(false);
     }
   }
 
@@ -178,6 +202,33 @@ export function AccountSettingsScreen({
           {hasNicknameError ? (
             <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>
               {t('account.nicknameError')}
+            </Text>
+          ) : null}
+        </View>
+        <View style={[styles.section, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingCopy}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('account.reduceMotionTitle')}
+              </Text>
+              <Text style={[styles.sectionDescription, { color: theme.colors.textMuted }]}>
+                {t('account.reduceMotionDescription')}
+              </Text>
+            </View>
+            <Switch
+              accessibilityLabel={t('account.reduceMotionLabel')}
+              accessibilityRole="switch"
+              accessibilityState={{ busy: isSavingReduceMotion, checked: isReduceMotionEnabled }}
+              disabled={isDeleting || isSavingReduceMotion || isSigningOut}
+              onValueChange={(nextIsEnabled) => void handleReduceMotionChange(nextIsEnabled)}
+              thumbColor={theme.colors.surface}
+              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+              value={isReduceMotionEnabled}
+            />
+          </View>
+          {hasReduceMotionError ? (
+            <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>
+              {t('account.reduceMotionError')}
             </Text>
           ) : null}
         </View>

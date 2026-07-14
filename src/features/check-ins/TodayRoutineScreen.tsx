@@ -75,6 +75,7 @@ type TodayRoutineScreenProps = {
   displayName: string;
   hasPlanCreationSuccess: boolean;
   isHapticsEnabled: boolean;
+  isMotionReduced: boolean;
   onCreatePlan: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
@@ -94,6 +95,7 @@ export function TodayRoutineScreen({
   displayName,
   hasPlanCreationSuccess,
   isHapticsEnabled,
+  isMotionReduced,
   onCreatePlan,
   onEditRoutine,
   onOpenPlans,
@@ -105,7 +107,7 @@ export function TodayRoutineScreen({
 }: TodayRoutineScreenProps) {
   const { t } = useTranslation('today');
   const { theme } = useTheme();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() || isMotionReduced;
   const [routineDayWindow, setRoutineDayWindow] = useState<RoutineDayWindow>(() =>
     getCurrentRoutineDayWindow(routineDayConfig),
   );
@@ -381,6 +383,7 @@ export function TodayRoutineScreen({
           completedCount={completedCount}
           progress={companionProgress}
           reactionId={companionReactionId}
+          reduceMotion={shouldReduceMotion}
           routineDay={routineDayWindow.key}
           totalCount={items.length}
         />
@@ -391,6 +394,7 @@ export function TodayRoutineScreen({
             feedbackId={completionFeedback.id}
             hasLevelUp={completionFeedback.hasLevelUp}
             level={completionFeedback.level}
+            reduceMotion={shouldReduceMotion}
             totalCount={completionFeedback.totalCount}
           />
         ) : null}

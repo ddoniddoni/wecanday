@@ -13,10 +13,12 @@ describe('AccountSettingsScreen', () => {
         <AccountSettingsScreen
           displayName="Mina"
           hapticsEnabled
+          reduceMotionEnabled={false}
           onBack={jest.fn()}
           onDeleteAccount={onDeleteAccount}
           onOpenPrivacyPolicy={jest.fn()}
           onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveReduceMotionPreference={jest.fn(() => Promise.resolve())}
           onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.resolve())}
           onOpenTermsOfService={jest.fn()}
@@ -43,10 +45,12 @@ describe('AccountSettingsScreen', () => {
         <AccountSettingsScreen
           displayName="Mina"
           hapticsEnabled
+          reduceMotionEnabled={false}
           onBack={jest.fn()}
           onDeleteAccount={jest.fn(() => Promise.resolve())}
           onOpenPrivacyPolicy={jest.fn()}
           onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveReduceMotionPreference={jest.fn(() => Promise.resolve())}
           onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.reject(new Error('SIGN_OUT_FAILED')))}
           onOpenTermsOfService={jest.fn()}
@@ -71,10 +75,12 @@ describe('AccountSettingsScreen', () => {
         <AccountSettingsScreen
           displayName="Mina"
           hapticsEnabled
+          reduceMotionEnabled={false}
           onBack={jest.fn()}
           onDeleteAccount={jest.fn(() => Promise.resolve())}
           onOpenPrivacyPolicy={onOpenPrivacyPolicy}
           onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveReduceMotionPreference={jest.fn(() => Promise.resolve())}
           onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.resolve())}
           onOpenTermsOfService={onOpenTermsOfService}
@@ -97,10 +103,12 @@ describe('AccountSettingsScreen', () => {
         <AccountSettingsScreen
           displayName="Mina"
           hapticsEnabled
+          reduceMotionEnabled={false}
           onBack={jest.fn()}
           onDeleteAccount={jest.fn(() => Promise.resolve())}
           onOpenPrivacyPolicy={jest.fn()}
           onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveReduceMotionPreference={jest.fn(() => Promise.resolve())}
           onSaveDisplayName={onSaveDisplayName}
           onSignOut={jest.fn(() => Promise.resolve())}
           onOpenTermsOfService={jest.fn()}
@@ -124,11 +132,13 @@ describe('AccountSettingsScreen', () => {
         <AccountSettingsScreen
           displayName="Mina"
           hapticsEnabled
+          reduceMotionEnabled={false}
           onBack={jest.fn()}
           onDeleteAccount={jest.fn(() => Promise.resolve())}
           onOpenPrivacyPolicy={jest.fn()}
           onSaveDisplayName={jest.fn(() => Promise.resolve())}
           onSaveHapticsPreference={onSaveHapticsPreference}
+          onSaveReduceMotionPreference={jest.fn(() => Promise.resolve())}
           onSignOut={jest.fn(() => Promise.resolve())}
           onOpenTermsOfService={jest.fn()}
         />
@@ -143,6 +153,34 @@ describe('AccountSettingsScreen', () => {
 
     await waitFor(() => {
       expect(onSaveHapticsPreference).toHaveBeenCalledWith(false);
+    });
+  });
+
+  it('saves the reduce motion preference immediately', async () => {
+    await i18n.changeLanguage('en');
+    const onSaveReduceMotionPreference = jest.fn(() => Promise.resolve());
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <AccountSettingsScreen
+          displayName="Mina"
+          hapticsEnabled
+          reduceMotionEnabled={false}
+          onBack={jest.fn()}
+          onDeleteAccount={jest.fn(() => Promise.resolve())}
+          onOpenPrivacyPolicy={jest.fn()}
+          onSaveDisplayName={jest.fn(() => Promise.resolve())}
+          onSaveHapticsPreference={jest.fn(() => Promise.resolve())}
+          onSaveReduceMotionPreference={onSaveReduceMotionPreference}
+          onSignOut={jest.fn(() => Promise.resolve())}
+          onOpenTermsOfService={jest.fn()}
+        />
+      </ThemeProvider>,
+    );
+
+    await fireEvent(screen.getByRole('switch', { name: 'Reduce motion' }), 'valueChange', true);
+
+    await waitFor(() => {
+      expect(onSaveReduceMotionPreference).toHaveBeenCalledWith(true);
     });
   });
 });

@@ -1,7 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { AuthDomainError } from '@/features/auth/domain/authErrors';
-import { loadOnboardingPreferences } from '@/features/onboarding/data/onboardingPreferencesStorage';
+import {
+  loadOnboardingPreferences,
+  saveOnboardingPreferences,
+} from '@/features/onboarding/data/onboardingPreferencesStorage';
+import { resolveSupportedLocale } from '@/i18n/types';
 import type { Database, ProfileRow } from '@/lib/supabase/database.types';
 
 export async function updateOwnDisplayName(
@@ -49,27 +53,43 @@ export async function loadAndSyncOwnProfile(
   }
 
   const shouldSyncPreferences =
-    (preferences.countryCode &&
-      preferences.countryCode !== profileResult.data.country_code) ||
-    (preferences.locale && preferences.locale !== profileResult.data.locale);
+    (profileResult.data.country_code === null && preferences.countryCode !== null) ||
+    (profileResult.data.locale === null && preferences.locale !== null);
 
-  if (!shouldSyncPreferences) {
-    return profileResult.data;
+  let profile = profileResult.data;
+
+  if (shouldSyncPreferences) {
+    const { data, error } = await client
+      .from('profiles')
+      .update({
+        country_code: profile.country_code ?? preferences.countryCode,
+        locale: profile.locale ?? preferences.locale,
+      })
+      .eq('id', userId)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      throw new AuthDomainError('AUTH_PROFILE_UNAVAILABLE');
+    }
+
+    profile = data;
   }
 
-  const { data, error } = await client
-    .from('profiles')
-    .update({
-      country_code: preferences.countryCode,
-      locale: preferences.locale,
-    })
-    .eq('id', userId)
-    .select('*')
-    .single();
+  const nextPreferences = {
+    ...preferences,
+    countryCode: profile.country_code ?? preferences.countryCode,
+    locale: profile.locale ? resolveSupportedLocale(profile.locale) : preferences.locale,
+  };
 
-  if (error || !data) {
-    throw new AuthDomainError('AUTH_PROFILE_UNAVAILABLE');
+  if (
+    nextPreferences.countryCode !== preferences.countryCode ||
+    nextPreferences.locale !== preferences.locale
+  ) {
+    void saveOnboardingPreferences(nextPreferences).catch(() => {
+      // The profile is authoritative; a later sign-in will repair this local cache.
+    });
   }
 
-  return data;
+  return profile;
 }

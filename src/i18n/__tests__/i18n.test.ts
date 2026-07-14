@@ -30,6 +30,12 @@ describe('i18n foundation', () => {
     expect(Object.keys(resources.ko.routineDay).sort()).toEqual(
       Object.keys(resources.en.routineDay).sort(),
     );
+    expect(Object.keys(resources.ko.settings).sort()).toEqual(
+      Object.keys(resources.en.settings).sort(),
+    );
+    expect(Object.keys(resources.ko.profile).sort()).toEqual(
+      Object.keys(resources.en.profile).sort(),
+    );
     expect(Object.keys(resources.ko.today).sort()).toEqual(
       Object.keys(resources.en.today).sort(),
     );
