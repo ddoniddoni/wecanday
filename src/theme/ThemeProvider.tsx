@@ -7,6 +7,8 @@ import {
 } from 'react';
 import { useColorScheme } from 'react-native';
 
+import type { CompanionId } from '@/features/companion/domain/companions';
+import { applyCompanionAccent } from '@/theme/companionAccent';
 import { darkTheme } from '@/theme/themes/dark';
 import { lightTheme } from '@/theme/themes/light';
 import { pixelDefaultTheme } from '@/theme/themes/pixel-default';
@@ -18,6 +20,24 @@ const themes: Record<ThemeId, AppTheme> = {
   'pixel-default': pixelDefaultTheme,
 };
 
+const companionThemes: Record<ThemeId, Record<CompanionId, AppTheme>> = {
+  dark: {
+    dew: applyCompanionAccent(darkTheme, 'dew'),
+    ember: applyCompanionAccent(darkTheme, 'ember'),
+    sprout: applyCompanionAccent(darkTheme, 'sprout'),
+  },
+  light: {
+    dew: applyCompanionAccent(lightTheme, 'dew'),
+    ember: applyCompanionAccent(lightTheme, 'ember'),
+    sprout: applyCompanionAccent(lightTheme, 'sprout'),
+  },
+  'pixel-default': {
+    dew: applyCompanionAccent(pixelDefaultTheme, 'dew'),
+    ember: applyCompanionAccent(pixelDefaultTheme, 'ember'),
+    sprout: applyCompanionAccent(pixelDefaultTheme, 'sprout'),
+  },
+};
+
 type ThemeContextValue = {
   preference: ThemePreference;
   setPreference: (preference: ThemePreference) => void;
@@ -27,11 +47,13 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 type ThemeProviderProps = PropsWithChildren<{
+  companionId?: CompanionId;
   preference?: ThemePreference;
 }>;
 
 export function ThemeProvider({
   children,
+  companionId,
   preference = 'system',
 }: ThemeProviderProps) {
   const [selectedPreference, setSelectedPreference] = useState<ThemePreference>(preference);
@@ -42,9 +64,12 @@ export function ThemeProvider({
         ? 'dark'
         : 'light'
       : selectedPreference;
+  const resolvedTheme = companionId
+    ? companionThemes[resolvedThemeId][companionId]
+    : themes[resolvedThemeId];
   const value = useMemo(
-    () => ({ preference: selectedPreference, setPreference: setSelectedPreference, theme: themes[resolvedThemeId] }),
-    [selectedPreference, resolvedThemeId],
+    () => ({ preference: selectedPreference, setPreference: setSelectedPreference, theme: resolvedTheme }),
+    [resolvedTheme, selectedPreference],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -7,6 +7,7 @@ import { completeCheckIn, loadTodayRoutineItems } from '@/features/check-ins/ser
 import { playRoutineCompletionHaptic } from '@/features/check-ins/services/completionHaptics';
 import { i18n } from '@/i18n';
 import type { Database } from '@/lib/supabase/database.types';
+import { systemClock } from '@/features/routine-day/domain/routineDay';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 jest.mock('@/features/check-ins/services/checkInOutboxService', () => ({
@@ -76,7 +77,12 @@ function createDeferred<T>() {
 }
 
 describe('TodayRoutineScreen', () => {
+  beforeEach(() => {
+    jest.spyOn(systemClock, 'now').mockReturnValue(new Date('2026-07-14T12:00:00.000Z'));
+  });
+
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.mocked(loadTodayRoutineItems).mockReset();
     jest.mocked(loadTodayRoutineItems).mockResolvedValue([
       {

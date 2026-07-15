@@ -2,8 +2,10 @@ import '@/i18n';
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import type { PropsWithChildren } from 'react';
 
 import { AuthProvider, useAuth } from '@/features/auth/AuthProvider';
+import { isCompanionId } from '@/features/companion/domain/companions';
 import { configureNotificationPresentation } from '@/features/notifications/services/notificationPresentationService';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
@@ -38,12 +40,21 @@ function RootNavigator() {
   );
 }
 
+function AuthenticatedThemeProvider({ children }: PropsWithChildren) {
+  const auth = useAuth();
+  const companionId = auth.status === 'signed_in' && isCompanionId(auth.profile.companion_id)
+    ? auth.profile.companion_id
+    : undefined;
+
+  return <ThemeProvider companionId={companionId}>{children}</ThemeProvider>;
+}
+
 export default function RootLayout() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <AuthenticatedThemeProvider>
         <RootNavigator />
-      </AuthProvider>
-    </ThemeProvider>
+      </AuthenticatedThemeProvider>
+    </AuthProvider>
   );
 }

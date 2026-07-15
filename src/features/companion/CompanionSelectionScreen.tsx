@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +16,7 @@ import {
   getCompanionAsset,
   type CompanionId,
 } from '@/features/companion/domain/companions';
+import { getCompanionAccent } from '@/theme/companionAccent';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
@@ -66,6 +67,7 @@ export function CompanionSelectionScreen({
           {companionIds.map((companionId) => {
             const isSelected = selectedCompanionId === companionId;
             const name = t(`options.${companionId}.name`);
+            const companionAccent = getCompanionAccent(theme.id, companionId);
 
             return (
               <Pressable
@@ -78,7 +80,7 @@ export function CompanionSelectionScreen({
                   styles.option,
                   {
                     backgroundColor: theme.colors.surface,
-                    borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                    borderColor: isSelected ? companionAccent.primary : theme.colors.border,
                     opacity: pressed ? 0.72 : 1,
                   },
                 ]}
@@ -86,7 +88,7 @@ export function CompanionSelectionScreen({
                 <Image
                   accessibilityLabel={t('imageAccessibilityLabel', { name })}
                   accessibilityRole="image"
-                  resizeMode="contain"
+                  contentFit="contain"
                   source={getCompanionAsset(companionId)}
                   style={styles.image}
                 />
@@ -96,7 +98,7 @@ export function CompanionSelectionScreen({
                     {t(`options.${companionId}.description`)}
                   </Text>
                 </View>
-                <Text style={[styles.selectedLabel, { color: theme.colors.primary }]}>
+                <Text style={[styles.selectedLabel, { color: companionAccent.primary }]}>
                   {isSelected ? t('selected') : ''}
                 </Text>
               </Pressable>

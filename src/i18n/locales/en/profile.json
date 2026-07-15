@@ -13,9 +13,9 @@
     "action": "Change theme"
   },
   "companion": {
-    "title": "Daily companion",
-    "description": "Choose who cheers for your next small step.",
-    "action": "Change companion"
+    "title": "Daily pet",
+    "description": "Choose the pet who cheers for your next small step.",
+    "action": "Change pet"
   },
   "account": {
     "title": "Account & privacy",

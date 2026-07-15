@@ -5,7 +5,7 @@ import { i18n } from '@/i18n';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 describe('ProfileOverviewScreen', () => {
-  it('keeps account information in a dedicated profile space', async () => {
+  it('offers compact icon actions in the profile space', async () => {
     await i18n.changeLanguage('en');
     const onOpenThemes = jest.fn();
     const onOpenLanguageSelection = jest.fn();
@@ -34,7 +34,12 @@ describe('ProfileOverviewScreen', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Change theme' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Change language' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Open settings' }));
-    await fireEvent.press(screen.getByRole('button', { name: 'Change companion' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Change pet' }));
+
+    expect(screen.queryByText('Daily pet')).toBeNull();
+    expect(screen.queryByText('Language')).toBeNull();
+    expect(screen.queryByText('Appearance')).toBeNull();
+    expect(screen.queryByText('Account & privacy')).toBeNull();
 
     expect(onOpenThemes).toHaveBeenCalledTimes(1);
     expect(onOpenLanguageSelection).toHaveBeenCalledTimes(1);

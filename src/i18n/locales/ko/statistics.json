@@ -10,6 +10,7 @@
   "completionRate": "주간 완료율",
   "rateValue": "{{count}}%",
   "completionCount": "예정된 {{scheduled}}개 중 {{completed}}개 완료",
+  "completionCountCompact": "{{completed}}/{{scheduled}} 완료",
   "dailyProgress": "일별 진행",
   "dailyRate": "{{scheduled}}개 중 {{completed}}개",
   "dailyCompactRate": "{{completed}}/{{scheduled}}",

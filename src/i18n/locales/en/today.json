@@ -10,7 +10,7 @@
     "accessibilityLabel": "Today’s progress: {{completed}} of {{total}} complete. Current streak: {{streak}}.",
     "eyebrow": "Today’s progress",
     "noScheduled": "No routines today",
-    "companionImageLabel": "Today’s WeCanDay companion",
+    "companionImageLabel": "Today’s WeCanDay pet",
     "streak": "{{streak}} in a row"
   },
   "routines": {
@@ -81,15 +81,15 @@
   },
   "companion": {
     "eyebrow": "TODAY'S RHYTHM",
-    "accessibilityLabel": "Routine day {{routineDay}}. Companion is {{status}}. Level {{level}}, total experience {{experience}}.",
-    "imageLabel": "WeCanDay companion, {{status}}",
+    "accessibilityLabel": "Routine day {{routineDay}}. Pet is {{status}}. Level {{level}}, total experience {{experience}}.",
+    "imageLabel": "WeCanDay pet, {{status}}",
     "states": {
       "resting": "Your next small step is ready.",
       "encouraging": "You are building a good rhythm.",
       "celebrating": "Everything for today is complete!"
     },
     "growth": {
-      "accessibilityLabel": "Companion level {{level}}. {{current}} of {{next}} XP to the next level.",
+      "accessibilityLabel": "Pet level {{level}}. {{current}} of {{next}} XP to the next level.",
       "level": "Level {{level}}",
       "progress": "{{current}} / {{next}} XP"
     }

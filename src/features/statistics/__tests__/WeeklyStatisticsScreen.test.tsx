@@ -37,7 +37,9 @@ describe('WeeklyStatisticsScreen', () => {
     const screen = await renderScreen();
 
     expect(await screen.findByText('100%')).toBeTruthy();
+    expect(screen.getByText('3/3 complete')).toBeTruthy();
     expect(screen.getByText('3 of 3 scheduled routines complete')).toBeTruthy();
+    expect(screen.getByText('Mon 6')).toBeTruthy();
     expect(screen.getByText('1/1').props.numberOfLines).toBe(1);
     expect(screen.getByText('2/2').props.numberOfLines).toBe(1);
     expect(screen.getByText('Rest day')).toBeTruthy();
@@ -64,6 +66,23 @@ describe('WeeklyStatisticsScreen', () => {
     expect(
       await screen.findByText('No routines were scheduled in the last seven routine days.'),
     ).toBeTruthy();
+  });
+
+  it('formats routine-day labels in the selected language', async () => {
+    await i18n.changeLanguage('ko');
+    mockedLoadWeeklyStatistics.mockResolvedValue({
+      completedCount: 1,
+      currentDailyStreak: 1,
+      days: [
+        { completedCount: 1, completionRate: 100, routineDay: '2026-07-06', scheduledCount: 1 },
+      ],
+      highestDailyStreak: 1,
+      scheduledCount: 1,
+    });
+
+    const screen = await renderScreen();
+
+    expect(await screen.findByText('7월 6일')).toBeTruthy();
   });
 });
 

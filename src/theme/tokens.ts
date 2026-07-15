@@ -24,6 +24,24 @@ export const palette = {
   transparent: 'transparent',
 } as const;
 
+export const companionAccents = {
+  dark: {
+    dew: { accent: '#B6EAFF', focus: '#75C8F3', primary: '#75C8F3' },
+    ember: { accent: '#FFD09B', focus: '#FF956D', primary: '#FF956D' },
+    sprout: { accent: '#E2F58A', focus: '#B7D663', primary: '#B7D663' },
+  },
+  light: {
+    dew: { accent: '#73CBEA', focus: '#1E7FB7', primary: '#1E7FB7' },
+    ember: { accent: '#F2A463', focus: '#CE643E', primary: '#CE643E' },
+    sprout: { accent: '#B4D95A', focus: '#5F7A2B', primary: '#5F7A2B' },
+  },
+  'pixel-default': {
+    dew: { accent: '#7ECCE6', focus: '#2584B8', primary: '#2584B8' },
+    ember: { accent: '#EFA162', focus: '#C95E3D', primary: '#C95E3D' },
+    sprout: { accent: '#C7DE6B', focus: '#65833D', primary: '#65833D' },
+  },
+} as const;
+
 export const spacing = {
   none: 0,
   xs: 4,

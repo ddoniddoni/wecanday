@@ -16,7 +16,7 @@ describe('CompanionSelectionScreen', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Choose Dew' }));
     await fireEvent.press(
-      screen.getByRole('button', { name: 'Choose this companion' }),
+      screen.getByRole('button', { name: 'Choose this pet' }),
     );
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith('dew'));

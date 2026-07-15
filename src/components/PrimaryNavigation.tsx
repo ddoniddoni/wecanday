@@ -51,7 +51,7 @@ function TabIcon({ color, tab }: { color: string; tab: PrimaryNavigationTab }) {
 function ProfileIcon({ color }: { color: string }) {
   return (
     <View style={styles.profileIcon}>
-      <View style={[styles.profileHead, { borderColor: color }]} />
+      <View style={[styles.profileHead, { backgroundColor: color }]} />
       <View style={[styles.profileShoulders, { borderColor: color }]} />
     </View>
   );
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   chartBarShort: { height: 7 },
   chartBarMedium: { height: 12 },
   chartBarTall: { height: 18 },
-  profileIcon: { height: 20, position: 'relative', width: 20 },
-  profileHead: { borderRadius: radii.pill, borderWidth: 2, height: 8, left: 6, position: 'absolute', top: 1, width: 8 },
-  profileShoulders: { borderBottomWidth: 0, borderTopLeftRadius: radii.pill, borderTopRightRadius: radii.pill, borderWidth: 2, height: 9, left: 3, position: 'absolute', top: 11, width: 14 },
+  profileIcon: { alignItems: 'center', height: 20, justifyContent: 'space-between', width: 20 },
+  profileHead: { borderRadius: radii.pill, height: 8, width: 8 },
+  profileShoulders: { borderLeftWidth: 2, borderRightWidth: 2, borderTopLeftRadius: radii.pill, borderTopRightRadius: radii.pill, borderTopWidth: 2, height: 9, width: 16 },
 });

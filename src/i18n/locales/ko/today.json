@@ -10,7 +10,7 @@
     "accessibilityLabel": "오늘 진행: {{total}}개 중 {{completed}}개 완료. 연속 실천: {{streak}}.",
     "eyebrow": "오늘 진행",
     "noScheduled": "오늘 예정된 루틴이 없어요",
-    "companionImageLabel": "오늘의 위캔데이 동반자",
+    "companionImageLabel": "오늘의 위캔데이 펫",
     "streak": "연속 실천 {{streak}}"
   },
   "routines": {
@@ -79,15 +79,15 @@
   },
   "companion": {
     "eyebrow": "오늘의 리듬",
-    "accessibilityLabel": "루틴 데이 {{routineDay}}. 동반자 상태: {{status}}. 레벨 {{level}}, 총 경험치 {{experience}}.",
-    "imageLabel": "위캔데이 동반자, {{status}}",
+    "accessibilityLabel": "루틴 데이 {{routineDay}}. 펫 상태: {{status}}. 레벨 {{level}}, 총 경험치 {{experience}}.",
+    "imageLabel": "위캔데이 펫, {{status}}",
     "states": {
       "resting": "다음 걸음,\n준비됐어요.",
       "encouraging": "좋은 흐름을 만들고 있어요.",
       "celebrating": "오늘의 작은 걸음을 모두 마쳤어요!"
     },
     "growth": {
-      "accessibilityLabel": "동반자 레벨 {{level}}. 다음 레벨까지 {{next}} XP 중 {{current}} XP.",
+      "accessibilityLabel": "펫 레벨 {{level}}. 다음 레벨까지 {{next}} XP 중 {{current}} XP.",
       "level": "레벨 {{level}}",
       "progress": "{{current}} / {{next}} XP"
     }

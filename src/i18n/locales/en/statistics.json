@@ -10,6 +10,7 @@
   "completionRate": "Weekly completion rate",
   "rateValue": "{{count}}%",
   "completionCount": "{{completed}} of {{scheduled}} scheduled routines complete",
+  "completionCountCompact": "{{completed}}/{{scheduled}} complete",
   "dailyProgress": "Daily progress",
   "dailyRate": "{{completed}}/{{scheduled}}",
   "dailyCompactRate": "{{completed}}/{{scheduled}}",
