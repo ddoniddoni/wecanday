@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Pressable,
@@ -40,20 +41,20 @@ export function PremiumScreen({ onClose }: PremiumScreenProps) {
         </View>
 
         <View style={[styles.crown, { backgroundColor: theme.colors.primary }]}>
-          <Text accessibilityElementsHidden style={[styles.crownLabel, { color: theme.colors.onPrimary }]}>✦</Text>
+          <MaterialIcons color={theme.colors.onPrimary} name="workspace-premium" size={44} />
         </View>
         <View style={styles.heroCopy}>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('title')}
           </Text>
-          <Text style={[styles.accentTitle, { color: theme.colors.primary }]}>{t('accentTitle')}</Text>
+          <Text style={[styles.accentTitle, { color: theme.colors.text }]}>{t('accentTitle')}</Text>
           <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('description')}</Text>
         </View>
 
         <View style={styles.benefitGrid}>
-          <BenefitCard icon="∞" label={t('benefits.unlimited.title')} description={t('benefits.unlimited.description')} />
-          <BenefitCard icon="↗" label={t('benefits.insights.title')} description={t('benefits.insights.description')} />
-          <BenefitCard icon="✦" label={t('benefits.coaching.title')} description={t('benefits.coaching.description')} isWide />
+          <BenefitCard icon="all-inclusive" label={t('benefits.unlimited.title')} description={t('benefits.unlimited.description')} />
+          <BenefitCard icon="insights" label={t('benefits.insights.title')} description={t('benefits.insights.description')} />
+          <BenefitCard icon="auto-awesome" label={t('benefits.coaching.title')} description={t('benefits.coaching.description')} isWide />
         </View>
 
         <View style={styles.packageList}>
@@ -107,7 +108,7 @@ function BenefitCard({
   label,
 }: {
   description: string;
-  icon: string;
+  icon: ComponentProps<typeof MaterialIcons>['name'];
   isWide?: boolean;
   label: string;
 }) {
@@ -122,7 +123,7 @@ function BenefitCard({
       ]}
     >
       <View style={[styles.benefitIcon, { borderColor: theme.colors.primary }]}>
-        <Text style={[styles.benefitIconLabel, { color: theme.colors.primary }]}>{icon}</Text>
+        <MaterialIcons color={theme.colors.focus} name={icon} size={20} />
       </View>
       <View style={styles.benefitCopy}>
         <Text style={[styles.benefitTitle, { color: theme.colors.text }]}>{label}</Text>
@@ -167,7 +168,7 @@ function PackageCard({
         <Text style={[styles.packageDescription, { color: theme.colors.textMuted }]}>{t(`packages.${kind}.description`)}</Text>
       </View>
       <View style={styles.priceCopy}>
-        <Text style={[styles.pricePending, { color: isSelected ? theme.colors.primary : theme.colors.textMuted }]}>
+        <Text style={[styles.pricePending, { color: isSelected ? theme.colors.text : theme.colors.textMuted }]}>
           {t('packages.pricePending')}
         </Text>
       </View>
@@ -184,7 +185,6 @@ const styles = StyleSheet.create({
   brand: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   headerSpacer: { width: touchTarget.minimum },
   crown: { alignItems: 'center', alignSelf: 'center', borderRadius: radii.sm, height: 58, justifyContent: 'center', width: 132 },
-  crownLabel: { fontSize: typography.size.display, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.display },
   heroCopy: { alignItems: 'center', gap: spacing.xs },
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
   accentTitle: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   benefitCard: { borderRadius: radii.md, borderWidth: 1, flexBasis: '47%', flexDirection: 'row', flexGrow: 1, gap: spacing.sm, minHeight: 92, padding: spacing.sm },
   benefitCardWide: { flexBasis: '100%', minHeight: 72 },
   benefitIcon: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, height: 34, justifyContent: 'center', width: 34 },
-  benefitIconLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   benefitCopy: { flex: 1 },
   benefitTitle: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   benefitDescription: { fontSize: 11, lineHeight: 15 },

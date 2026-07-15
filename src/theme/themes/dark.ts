@@ -4,7 +4,6 @@ import type { AppTheme } from '@/theme/types';
 export const darkTheme: AppTheme = {
   id: 'dark',
   isDark: true,
-  isPixel: false,
   colors: {
     background: palette.darkBackground,
     surface: palette.darkSurface,

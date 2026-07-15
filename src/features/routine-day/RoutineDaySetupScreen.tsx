@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getCalendars } from 'expo-localization';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -110,7 +111,7 @@ export function RoutineDaySetupScreen({
     >
       <View style={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-          <Text style={[styles.brand, { color: theme.colors.primary }]}>{t('brand')}</Text>
+          <Text style={[styles.brand, { color: theme.colors.text }]}>{t('brand')}</Text>
           <Text
             accessibilityRole="header"
             style={[styles.title, { color: theme.colors.text }]}
@@ -144,7 +145,10 @@ export function RoutineDaySetupScreen({
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: theme.colors.text }]}>{t('dayStartLabel')}</Text>
+            <View style={styles.labelRow}>
+              <MaterialIcons color={theme.colors.focus} name="light-mode" size={22} />
+              <Text style={[styles.label, { color: theme.colors.text }]}>{t('dayStartLabel')}</Text>
+            </View>
             <View style={styles.dayStartControl}>
             <Pressable
               accessibilityLabel={t('decreaseDayStartAccessibilityLabel')}
@@ -228,14 +232,19 @@ export function RoutineDaySetupScreen({
               styles.saveButton,
               {
                 backgroundColor: theme.colors.primary,
+                borderBottomColor: theme.colors.focus,
                 opacity: pressed || isSaving ? 0.7 : 1,
               },
+              pressed && !isSaving && styles.saveButtonPressed,
             ]}
           >
             {isSaving ? (
               <ActivityIndicator accessibilityLabel={t('saving')} color={theme.colors.onPrimary} />
             ) : (
-              <Text style={[styles.saveButtonLabel, { color: theme.colors.onPrimary }]}>{t('continue')}</Text>
+              <View style={styles.saveButtonContent}>
+                <Text style={[styles.saveButtonLabel, { color: theme.colors.onPrimary }]}>{t('continue')}</Text>
+                <MaterialIcons color={theme.colors.onPrimary} name="arrow-forward" size={20} />
+              </View>
             )}
           </Pressable>
         </View>
@@ -253,11 +262,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.sm,
   },
-  card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.md, padding: spacing.md },
-  brand: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
+  card: { borderBottomWidth: 4, borderRadius: radii.md, borderWidth: 2, gap: spacing.md, padding: spacing.md },
+  brand: { fontFamily: typography.family.extraBold, fontSize: typography.size.title, lineHeight: typography.lineHeight.title, textAlign: 'center' },
   title: {
+    fontFamily: typography.family.extraBold,
     fontSize: typography.size.heading,
-    fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.heading,
     textAlign: 'center',
   },
@@ -270,10 +279,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   label: {
+    fontFamily: typography.family.bold,
     fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.body,
   },
+  labelRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm },
   timeZoneInput: {
     borderRadius: radii.md,
     borderWidth: 1,
@@ -322,17 +332,20 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     alignItems: 'center',
+    borderBottomWidth: 4,
     borderRadius: radii.sm,
     justifyContent: 'center',
     marginTop: spacing.md,
     minHeight: 56,
     paddingHorizontal: spacing.lg,
   },
+  saveButtonPressed: { borderBottomWidth: 0, transform: [{ translateY: 4 }] },
   saveButtonLabel: {
+    fontFamily: typography.family.bold,
     fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.body,
   },
+  saveButtonContent: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm },
   windowSummary: { gap: spacing.sm, marginTop: spacing.sm },
   windowLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.8, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   windowTrack: { borderRadius: radii.pill, height: 44, justifyContent: 'center', overflow: 'hidden', padding: spacing.xs },

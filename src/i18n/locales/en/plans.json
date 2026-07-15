@@ -58,9 +58,10 @@
     "archiveConfirm": "Archive"
   },
   "list": {
-    "eyebrow": "Routine Journey",
-    "title": "Today's Quests",
-    "description": "Manage each routine and keep your journey moving.",
+    "eyebrow": "To-do",
+    "title": "Today's to-dos",
+    "description": "Manage your routines and organize today’s to-dos.",
+    "progress": "{{active}} of {{total}} active",
     "back": "Back to today",
     "loading": "Loading your plans",
     "retry": "Try again",
@@ -68,6 +69,7 @@
     "emptyDescription": "Start with one small action.",
     "createPlan": "Create a new plan",
     "addRoutine": "Add routine",
+    "addCustomRoutine": "Add Custom Routine",
     "addRoutineToPlan": "Add a routine to {{title}}",
     "editRoutine": "Edit {{title}}, {{status}}",
     "archivePlan": "Archive plan",

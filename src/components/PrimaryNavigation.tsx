@@ -1,3 +1,5 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -17,55 +19,13 @@ type PrimaryNavigationProps = {
 
 export type PrimaryNavigationActions = Omit<PrimaryNavigationProps, 'activeTab'>;
 
-function TabIcon({ color, tab }: { color: string; tab: PrimaryNavigationTab }) {
-  if (tab === 'community') {
-    return (
-      <View style={styles.communityIcon}>
-        <View style={[styles.communityBubble, styles.communityBubbleBack, { borderColor: color }]} />
-        <View style={[styles.communityBubble, styles.communityBubbleFront, { borderColor: color }]} />
-      </View>
-    );
-  }
-
-  if (tab === 'today') {
-    return (
-      <View style={styles.iconBox}>
-        <View style={[styles.homeRoof, { borderColor: color }]} />
-        <View style={[styles.homeBody, { borderColor: color }]} />
-      </View>
-    );
-  }
-
-  if (tab === 'plans') {
-    return (
-      <View style={[styles.documentIcon, { borderColor: color }]}>
-        <View style={[styles.documentLine, { backgroundColor: color }]} />
-        <View style={[styles.documentLine, styles.documentLineShort, { backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  if (tab === 'statistics') {
-    return (
-      <View style={styles.chartIcon}>
-        <View style={[styles.chartBar, styles.chartBarShort, { backgroundColor: color }]} />
-        <View style={[styles.chartBar, styles.chartBarMedium, { backgroundColor: color }]} />
-        <View style={[styles.chartBar, styles.chartBarTall, { backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  return <ProfileIcon color={color} />;
-}
-
-function ProfileIcon({ color }: { color: string }) {
-  return (
-    <View style={styles.profileIcon}>
-      <View style={[styles.profileHead, { backgroundColor: color }]} />
-      <View style={[styles.profileShoulders, { borderColor: color }]} />
-    </View>
-  );
-}
+const iconNames: Record<PrimaryNavigationTab, ComponentProps<typeof MaterialIcons>['name']> = {
+  community: 'forum',
+  plans: 'calendar-today',
+  profile: 'settings',
+  statistics: 'bar-chart',
+  today: 'home',
+};
 
 export function PrimaryNavigation({
   activeTab,
@@ -89,13 +49,16 @@ export function PrimaryNavigation({
     <View
       style={[
         styles.bar,
-        { backgroundColor: theme.colors.surface },
+        {
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+        },
       ]}
     >
       {tabs.map(({ onPress, tab }) => {
         const isActive = activeTab === tab;
-        const iconColor = isActive ? theme.colors.primary : theme.colors.textMuted;
-        const labelColor = isActive ? theme.colors.primary : theme.colors.textMuted;
+        const iconColor = isActive ? theme.colors.onPrimary : theme.colors.textMuted;
+        const labelColor = isActive ? theme.colors.onPrimary : theme.colors.textMuted;
         const label = t(`navigation.${tab}`);
 
         return (
@@ -108,13 +71,13 @@ export function PrimaryNavigation({
             style={({ pressed }) => [
               styles.tab,
               {
-                backgroundColor: palette.transparent,
+                backgroundColor: isActive ? theme.colors.primary : palette.transparent,
                 opacity: pressed ? 0.72 : 1,
               },
             ]}
           >
             <View style={styles.iconContainer}>
-              <TabIcon color={iconColor} tab={tab} />
+              <MaterialIcons color={iconColor} name={iconNames[tab]} size={22} />
             </View>
             <Text numberOfLines={1} style={[styles.tabLabel, { color: labelColor }]}>{label}</Text>
           </Pressable>
@@ -126,9 +89,10 @@ export function PrimaryNavigation({
 
 const styles = StyleSheet.create({
   bar: {
+    borderTopWidth: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.xs,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
   },
   tab: {
@@ -137,26 +101,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing.xs,
     justifyContent: 'center',
+    marginHorizontal: 2,
     minHeight: 56,
   },
   iconContainer: { alignItems: 'center', height: 24, justifyContent: 'center', width: 28 },
-  tabLabel: { fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 12, maxWidth: 62, textAlign: 'center' },
-  iconBox: { alignItems: 'center', height: 20, justifyContent: 'flex-end', width: 22 },
-  homeRoof: { borderLeftWidth: 2, borderTopWidth: 2, height: 12, transform: [{ rotate: '45deg' }], width: 12 },
-  homeBody: { borderBottomWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, bottom: 0, height: 11, position: 'absolute', width: 14 },
-  documentIcon: { borderRadius: 3, borderWidth: 2, gap: 3, height: 20, justifyContent: 'center', paddingHorizontal: 3, width: 15 },
-  documentLine: { borderRadius: 2, height: 2, width: '100%' },
-  documentLineShort: { width: '65%' },
-  communityIcon: { height: 20, position: 'relative', width: 22 },
-  communityBubble: { borderRadius: radii.pill, borderWidth: 2, height: 12, position: 'absolute', width: 15 },
-  communityBubbleBack: { left: 0, top: 1 },
-  communityBubbleFront: { bottom: 0, right: 0 },
-  chartIcon: { alignItems: 'flex-end', flexDirection: 'row', gap: 2, height: 20, width: 20 },
-  chartBar: { borderRadius: 2, width: 5 },
-  chartBarShort: { height: 7 },
-  chartBarMedium: { height: 12 },
-  chartBarTall: { height: 18 },
-  profileIcon: { alignItems: 'center', height: 20, justifyContent: 'space-between', width: 20 },
-  profileHead: { borderRadius: radii.pill, height: 8, width: 8 },
-  profileShoulders: { borderLeftWidth: 2, borderRightWidth: 2, borderTopLeftRadius: radii.pill, borderTopRightRadius: radii.pill, borderTopWidth: 2, height: 9, width: 16 },
+  tabLabel: { fontFamily: typography.family.bold, fontSize: 10, lineHeight: 12, maxWidth: 62, textAlign: 'center' },
 });

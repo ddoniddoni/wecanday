@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +64,7 @@ export function NicknameSetupScreen({
           onPress={onBack}
           style={({ pressed }) => [styles.backButton, { opacity: pressed || isSaving ? 0.6 : 1 }]}
         >
-          <Text style={[styles.backLabel, { color: theme.colors.text }]}>‹</Text>
+          <MaterialIcons color={theme.colors.text} name="arrow-back-ios-new" size={20} />
         </Pressable>
         <View style={[styles.progressTrack, { backgroundColor: theme.colors.border }]}>
           <View style={[styles.progressFill, { backgroundColor: theme.colors.primary }]} />
@@ -121,8 +122,10 @@ export function NicknameSetupScreen({
             styles.continueButton,
             {
               backgroundColor: theme.colors.primary,
+              borderBottomColor: theme.colors.focus,
               opacity: !isValid || isSaving ? 0.45 : pressed ? 0.72 : 1,
             },
+            pressed && isValid && !isSaving && styles.continueButtonPressed,
           ]}
         >
           {isSaving ? (
@@ -142,15 +145,15 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   topBar: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.md, paddingTop: spacing.xs },
   backButton: { alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum },
-  backLabel: { fontSize: typography.size.title, lineHeight: typography.lineHeight.title },
   progressTrack: { borderRadius: radii.pill, flex: 1, height: 8, overflow: 'hidden' },
   progressFill: { borderRadius: radii.pill, height: '100%', width: '34%' },
   content: { alignItems: 'center', flex: 1, gap: spacing.lg, justifyContent: 'center', paddingHorizontal: spacing.lg },
   image: { height: 96, width: 128 },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
-  input: { borderRadius: radii.sm, borderWidth: 1, fontSize: typography.size.body, minHeight: 56, paddingHorizontal: spacing.md, textAlign: 'center', width: '100%' },
+  title: { fontFamily: typography.family.extraBold, fontSize: typography.size.title, lineHeight: typography.lineHeight.title, textAlign: 'center' },
+  input: { borderRadius: radii.sm, borderWidth: 2, fontFamily: typography.family.body, fontSize: typography.size.body, minHeight: 56, paddingHorizontal: spacing.md, textAlign: 'center', width: '100%' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   footer: { padding: spacing.md },
-  continueButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: 56, paddingHorizontal: spacing.lg },
-  continueLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  continueButton: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.sm, justifyContent: 'center', minHeight: 56, paddingHorizontal: spacing.lg },
+  continueButtonPressed: { borderBottomWidth: 0, transform: [{ translateY: 4 }] },
+  continueLabel: { fontFamily: typography.family.bold, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
 });

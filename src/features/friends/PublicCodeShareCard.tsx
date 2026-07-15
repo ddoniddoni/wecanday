@@ -63,7 +63,7 @@ export function PublicCodeShareCard({
         <Text style={[styles.title, { color: theme.colors.text }]}>{t('publicCode.title')}</Text>
         <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('publicCode.description')}</Text>
       </View>
-      <Text accessibilityRole="text" style={[styles.code, { color: theme.colors.primary }]}>{publicCode}</Text>
+      <Text accessibilityRole="text" style={[styles.code, { color: theme.colors.text }]}>{publicCode}</Text>
       <View style={styles.actions}>
         <Pressable
           accessibilityLabel={t('publicCode.copy')}
@@ -107,7 +107,7 @@ export function PublicCodeShareCard({
         </Text>
       </Pressable>
       {feedback ? (
-        <Text accessibilityRole={actionState === 'error' ? 'alert' : 'text'} style={[styles.feedback, { color: actionState === 'error' ? theme.colors.text : theme.colors.primary }]}>
+        <Text accessibilityRole={actionState === 'error' ? 'alert' : 'text'} style={[styles.feedback, { color: actionState === 'error' ? theme.colors.text : theme.colors.textMuted }]}>
           {feedback}
         </Text>
       ) : null}

@@ -77,7 +77,7 @@ function CountryOptionRow({
           {option.code}
         </Text>
       </View>
-      <Text style={[styles.selectedLabel, { color: theme.colors.primary }]}>
+      <Text style={[styles.selectedLabel, { color: theme.colors.text }]}>
         {isSelected ? t('selected') : ''}
       </Text>
     </Pressable>
@@ -115,8 +115,12 @@ function ActionButton({
           borderColor: isPrimary
             ? theme.colors.primary
             : theme.colors.border,
+          borderBottomColor: isPrimary
+            ? theme.colors.focus
+            : theme.colors.border,
           opacity: isDisabled ? 0.45 : pressed ? 0.75 : 1,
         },
+        pressed && !isDisabled && styles.actionButtonPressed,
       ]}
     >
       <Text
@@ -138,11 +142,11 @@ function ActionButton({
 function getInitialStep(
   preferences: OnboardingPreferences,
 ): OnboardingStep {
-  if (!preferences.countryCode) {
-    return 'country';
+  if (!preferences.locale) {
+    return 'language';
   }
 
-  return preferences.locale ? 'greeting' : 'language';
+  return preferences.countryCode ? 'greeting' : 'country';
 }
 
 export function OnboardingFlowScreen({
@@ -190,7 +194,7 @@ export function OnboardingFlowScreen({
       return;
     }
 
-    void persistAndApply(preferences, () => setStep('language'));
+    void persistAndApply(preferences, () => setStep(preferences.locale ? 'greeting' : 'language'));
   }
 
   function handleLanguageSelect(locale: OnboardingPreferences['locale']) {
@@ -211,7 +215,7 @@ export function OnboardingFlowScreen({
 
     void persistAndApply(preferences, async () => {
       await i18n.changeLanguage(locale);
-      setStep('greeting');
+      setStep(preferences.countryCode ? 'greeting' : 'country');
     });
   }
 
@@ -252,8 +256,8 @@ export function OnboardingFlowScreen({
         style={[styles.screen, { backgroundColor: theme.colors.background }]}
       >
         <View style={styles.contentHeader}>
-          <Text style={[styles.progress, { color: theme.colors.primary }]}>
-            {t('stepProgress', { current: 1, total: 3 })}
+          <Text style={[styles.progress, { color: theme.colors.textMuted }]}>
+            {t('stepProgress', { current: 2, total: 3 })}
           </Text>
           <Text
             accessibilityRole="header"
@@ -348,6 +352,7 @@ export function OnboardingFlowScreen({
                     {
                       backgroundColor: theme.colors.surface,
                       borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                      borderBottomColor: isSelected ? theme.colors.focus : theme.colors.border,
                       opacity: isSaving ? 0.45 : pressed ? 0.75 : 1,
                     },
                   ]}
@@ -381,7 +386,7 @@ export function OnboardingFlowScreen({
       style={[styles.screen, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.greetingContent}>
-        <Text style={[styles.progress, { color: theme.colors.primary }]}>
+        <Text style={[styles.progress, { color: theme.colors.textMuted }]}>
           {t('stepProgress', { current: 3, total: 3 })}
         </Text>
         <Text
@@ -424,7 +429,7 @@ const styles = StyleSheet.create({
   languageContent: { flex: 1, paddingHorizontal: spacing.sm, paddingTop: spacing.sm },
   closeButton: { alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum, width: touchTarget.minimum },
   closeLabel: { fontSize: typography.size.heading, lineHeight: typography.lineHeight.heading },
-  languageTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading, marginHorizontal: spacing.md, marginTop: spacing.sm, textAlign: 'center' },
+  languageTitle: { fontFamily: typography.family.extraBold, fontSize: 24, lineHeight: 32, marginHorizontal: spacing.md, marginTop: spacing.sm, textAlign: 'center' },
   greetingContent: {
     flex: 1,
     gap: spacing.md,
@@ -504,8 +509,9 @@ const styles = StyleSheet.create({
   },
   languageOption: {
     alignItems: 'center',
+    borderBottomWidth: 4,
     borderRadius: radii.sm,
-    borderWidth: 1,
+    borderWidth: 2,
     flexBasis: '48%',
     gap: spacing.sm,
     justifyContent: 'center',
@@ -515,8 +521,8 @@ const styles = StyleSheet.create({
   languageSymbol: { alignItems: 'center', borderRadius: radii.sm, height: 44, justifyContent: 'center', width: 44 },
   languageSymbolText: { fontSize: 24, lineHeight: 30 },
   languageName: {
+    fontFamily: typography.family.bold,
     fontSize: typography.size.caption,
-    fontWeight: typography.weight.medium,
     lineHeight: typography.lineHeight.caption,
     textAlign: 'center',
   },
@@ -526,15 +532,18 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: 'center',
+    borderBottomWidth: 4,
     borderRadius: radii.sm,
-    borderWidth: 1,
+    borderWidth: 2,
     justifyContent: 'center',
     minHeight: 56,
     paddingHorizontal: spacing.lg,
   },
+  actionButtonPressed: { borderBottomWidth: 0, transform: [{ translateY: 4 }] },
   actionButtonLabel: {
+    fontFamily: typography.family.bold,
     fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
+    letterSpacing: 0.8,
     lineHeight: typography.lineHeight.body,
   },
   error: {

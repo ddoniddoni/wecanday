@@ -1,12 +1,18 @@
 {
   "appName": "WeCanDay",
+  "journey": {
+    "title": "To-do",
+    "experience": "{{count}} XP",
+    "level": "Lv.{{level}}",
+    "companionLabel": "Your to-do companion"
+  },
   "foundationReady": "The app foundation is ready.",
   "navigation": {
-    "today": "Today",
-    "plans": "Plans",
-    "community": "Community",
-    "statistics": "Statistics",
-    "profile": "My space"
+    "today": "Home",
+    "plans": "To-do",
+    "community": "Chat",
+    "statistics": "Stats",
+    "profile": "Settings"
   },
   "safeFallback": "Content is unavailable."
 }

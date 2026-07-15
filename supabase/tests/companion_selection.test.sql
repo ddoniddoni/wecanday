@@ -14,7 +14,7 @@ select ok(
     select 1
     from pg_catalog.pg_constraint
     where conname = 'profiles_companion_id_check'
-      and pg_get_constraintdef(oid) like '%sprout%dew%ember%'
+      and pg_get_constraintdef(oid) like '%sprout%dew%ember%luna%'
   ),
   'the database restricts companion IDs to the supported set'
 );

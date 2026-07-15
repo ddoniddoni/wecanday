@@ -1,5 +1,4 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { Image } from 'expo-image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,17 +20,17 @@ import {
   type TodayRoutineItem,
 } from '@/features/check-ins/domain/todayRoutines';
 import { AppTabScreen } from '@/components/AppTabScreen';
+import { JourneyHeader } from '@/components/JourneyHeader';
 import { CompletionFeedback } from '@/features/check-ins/CompletionFeedback';
 import {
   EXPERIENCE_PER_ROUTINE_COMPLETION,
   getCompanionProgressForExperience,
 } from '@/features/companion/domain/progression';
-import { getCompanionAsset, type CompanionId } from '@/features/companion/domain/companions';
-import { TodayDateStrip } from '@/features/check-ins/TodayDateStrip';
+import type { CompanionId } from '@/features/companion/domain/companions';
+import { TodayJourneyMap } from '@/features/check-ins/TodayJourneyMap';
+import { JourneyLandscape, useJourneyScene } from '@/features/check-ins/JourneyLandscape';
 import { TodayProgressSummary } from '@/features/check-ins/TodayProgressSummary';
-import { TodayRoutineGroups } from '@/features/check-ins/TodayRoutineGroups';
 import { RoutineExecutionScreen } from '@/features/check-ins/RoutineExecutionScreen';
-import { StreakMomentCard } from '@/features/streaks/StreakMomentCard';
 import { synchronizePendingCheckIns } from '@/features/check-ins/services/checkInOutboxService';
 import {
   completeCheckIn,
@@ -60,7 +59,6 @@ import { useReducedMotion } from 'react-native-reanimated';
 
 const SYNC_INTERVAL_MS = 30_000;
 const COMPLETION_FEEDBACK_DURATION_MS = 2_000;
-const selectedDateFormattersByLocale = new Map<string, Intl.DateTimeFormat>();
 const noOp = () => undefined;
 
 type CompletionFeedbackState = {
@@ -100,7 +98,6 @@ export function TodayRoutineScreen({
   isMotionReduced,
   onCreatePlan,
   onOpenCommunity = noOp,
-  onEditRoutine,
   onOpenPlans,
   onOpenProfile,
   onOpenStatistics,
@@ -108,14 +105,15 @@ export function TodayRoutineScreen({
   routineDayConfig,
   userId,
 }: TodayRoutineScreenProps) {
-  const { i18n, t } = useTranslation('today');
+  const { t } = useTranslation('today');
   const { theme } = useTheme();
   const shouldReduceMotion = useReducedMotion() || isMotionReduced;
+  const journeyScene = useJourneyScene(routineDayConfig.timeZone);
   const [routineDayWindow, setRoutineDayWindow] = useState<RoutineDayWindow>(() =>
     getCurrentRoutineDayWindow(routineDayConfig),
   );
   const [items, setItems] = useState<TodayRoutineItem[]>([]);
-  const [selectedRoutineDay, setSelectedRoutineDay] = useState(routineDayWindow.key);
+  const selectedRoutineDay = routineDayWindow.key;
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [mutatingRoutineIds, setMutatingRoutineIds] = useState<ReadonlySet<string>>(
@@ -229,19 +227,6 @@ export function TodayRoutineScreen({
 
     return () => clearTimeout(timeout);
   }, [completionFeedback]);
-
-  function handleSelectRoutineDay(nextRoutineDay: string) {
-    if (nextRoutineDay === selectedRoutineDay) {
-      return;
-    }
-
-    setSelectedRoutineDay(nextRoutineDay);
-    setItems([]);
-    setCompletionFeedback(null);
-    setErrorCode(null);
-    setIsLoading(true);
-    setIsRefreshing(false);
-  }
 
   async function handleToggle(item: TodayRoutineItem) {
     if (selectedRoutineDay !== routineDayWindow.key) {
@@ -364,17 +349,12 @@ export function TodayRoutineScreen({
   }
 
   const completedCount = items.filter((item) => item.completedAt !== null).length;
-  const isAllComplete = items.length > 0 && completedCount === items.length;
   const isCurrentRoutineDay = selectedRoutineDay === routineDayWindow.key;
   const nextRoutineId = isCurrentRoutineDay
     ? groupTodayRoutineItems(items)
       .flatMap((group) => group.items)
       .find((item) => item.completedAt === null)?.id ?? null
     : null;
-  const selectedDateLabel = getSelectedDateFormatter(i18n.language).format(
-    toUtcDate(selectedRoutineDay),
-  );
-
   if (executionRoutineId && isCurrentRoutineDay) {
     return (
       <RoutineExecutionScreen
@@ -398,31 +378,13 @@ export function TodayRoutineScreen({
         onOpenToday: () => undefined,
       }}
     >
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.headerCopy}>
-            <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
-              {t('home.journeyTitle')}
-            </Text>
-            <Text style={[styles.date, { color: theme.colors.textMuted }]}>{selectedDateLabel}</Text>
-          </View>
-          <View style={[styles.experienceBadge, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-            <Image
-              accessibilityLabel={t('progressSummary.companionImageLabel')}
-              accessibilityRole="image"
-              contentFit="contain"
-              source={getCompanionAsset(companionId)}
-              style={styles.experiencePet}
-            />
-            <Text style={[styles.experienceLabel, { color: theme.colors.primary }]}>
-              {t('home.experience', { count: companionProgress.experience })}
-            </Text>
-          </View>
-        </View>
-        <TodayDateStrip
-          onSelectRoutineDay={handleSelectRoutineDay}
-          routineDay={selectedRoutineDay}
-          todayRoutineDay={routineDayWindow.key}
+      <View style={styles.homeContent}>
+        <JourneyLandscape scene={journeyScene} />
+        <ScrollView contentContainerStyle={styles.content}>
+        <JourneyHeader
+          companionId={companionId}
+          experience={companionProgress.experience}
+          level={companionProgress.level}
         />
         {!isLoading && !errorCode && isCurrentRoutineDay ? (
           <TodayProgressSummary
@@ -446,7 +408,7 @@ export function TodayRoutineScreen({
         ) : null}
 
         {hasPlanCreationSuccess ? (
-          <Text style={[styles.success, { color: theme.colors.primary }]}>
+          <Text style={[styles.success, { color: theme.colors.text }]}>
             {t('planCreated')}
           </Text>
         ) : null}
@@ -511,66 +473,27 @@ export function TodayRoutineScreen({
         ) : null}
 
         {!isLoading && !errorCode && items.length > 0 ? (
-          <>
-            <View style={styles.list}>
-            <View style={styles.sectionHeader}>
-              <Text
-                accessibilityRole="header"
-                style={[styles.sectionTitle, { color: theme.colors.text }]}
-              >
-                {t('routines.title')}
-              </Text>
-              <Text style={[styles.sectionMeta, { color: theme.colors.textMuted }]}>
-                {t('routines.count', { count: items.length })}
-              </Text>
-            </View>
-              <TodayRoutineGroups
-                groups={groupTodayRoutineItems(items)}
-                isReadOnly={!isCurrentRoutineDay}
-                mutatingRoutineIds={mutatingRoutineIds}
-                nextRoutineId={nextRoutineId}
-                onEditRoutine={onEditRoutine}
-                onStartRoutine={(item) => setExecutionRoutineId(item.id)}
-                onToggleRoutine={(item) => void handleToggle(item)}
-              />
-            {isCurrentRoutineDay ? (
-              <>
-                <StreakMomentCard
-                  dailyStreak={dailyStreak}
-                  isAllComplete={isAllComplete}
-                />
-                <Pressable
-              accessibilityRole="button"
-              onPress={onCreatePlan}
-              style={({ pressed }) => [
-                styles.addButton,
-                { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-              ]}
-            >
-              <Text style={[styles.addButtonLabel, { color: theme.colors.text }]}>
-                {t('addRoutine')}
-              </Text>
-            </Pressable>
-              </>
-            ) : null}
-            </View>
-          </>
+          <TodayJourneyMap
+            companionId={companionId}
+            isLandscapeBackgroundShared
+            isReadOnly={!isCurrentRoutineDay}
+            items={items}
+            mutatingRoutineIds={mutatingRoutineIds}
+            nextRoutineId={nextRoutineId}
+            onStartRoutine={(item) => setExecutionRoutineId(item.id)}
+            onToggleRoutine={(item) => void handleToggle(item)}
+            scene={journeyScene}
+          />
         ) : null}
-      </ScrollView>
+        </ScrollView>
+      </View>
     </AppTabScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
-  date: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
-  experienceBadge: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexDirection: 'row', gap: 2, minHeight: touchTarget.minimum, paddingEnd: spacing.sm, paddingStart: spacing.xs },
-  experienceLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  experiencePet: { height: 28, width: 28 },
-  header: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
-  headerCopy: { flex: 1, gap: spacing.xs },
-  title: { flexShrink: 1, fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: -0.4, lineHeight: typography.lineHeight.title },
+  content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.md },
+  homeContent: { flex: 1, overflow: 'hidden' },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
@@ -580,34 +503,4 @@ const styles = StyleSheet.create({
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   retryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   retryLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  sectionHeader: { alignItems: 'baseline', flexDirection: 'row', justifyContent: 'space-between' },
-  sectionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  sectionMeta: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
-  list: { gap: spacing.sm },
-  addButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
-  addButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });
-
-function toUtcDate(routineDay: string): Date {
-  const [year, month, day] = routineDay.split('-').map(Number);
-
-  return new Date(Date.UTC(year, month - 1, day, 12));
-}
-
-function getSelectedDateFormatter(locale: string): Intl.DateTimeFormat {
-  const cachedFormatter = selectedDateFormattersByLocale.get(locale);
-
-  if (cachedFormatter) {
-    return cachedFormatter;
-  }
-
-  const formatter = new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-    timeZone: 'UTC',
-    weekday: 'long',
-  });
-
-  selectedDateFormattersByLocale.set(locale, formatter);
-  return formatter;
-}

@@ -42,7 +42,7 @@ export function NotificationPermissionScreen({
       <View style={styles.content}>
         {result === null ? (
           <>
-            <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+            <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
               {t('primer.eyebrow')}
             </Text>
             <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>

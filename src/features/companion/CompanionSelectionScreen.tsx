@@ -44,8 +44,10 @@ export function CompanionSelectionScreen({
 
     try {
       await onSave(selectedCompanionId);
+      onBack?.();
     } catch {
       setHasSaveError(true);
+    } finally {
       setIsSaving(false);
     }
   }
@@ -54,7 +56,7 @@ export function CompanionSelectionScreen({
     <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.primary }]}>
+          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('title')}
           </Text>
           <Text style={[styles.description, { color: theme.colors.textMuted }]}>
@@ -80,6 +82,7 @@ export function CompanionSelectionScreen({
                   {
                     backgroundColor: theme.colors.surface,
                     borderColor: isSelected ? companionAccent.primary : theme.colors.border,
+                    borderBottomColor: isSelected ? companionAccent.focus : theme.colors.border,
                     opacity: pressed ? 0.72 : 1,
                   },
                 ]}
@@ -102,7 +105,7 @@ export function CompanionSelectionScreen({
                     styles.selectedLabel,
                     {
                       backgroundColor: isSelected ? companionAccent.primary : palette.transparent,
-                      color: isSelected ? theme.colors.onPrimary : companionAccent.primary,
+                      color: isSelected ? companionAccent.onPrimary : companionAccent.primary,
                     },
                   ]}
                 >
@@ -138,7 +141,12 @@ export function CompanionSelectionScreen({
           onPress={() => void handleSave()}
           style={({ pressed }) => [
             styles.primaryButton,
-            { backgroundColor: theme.colors.primary, opacity: pressed || isSaving ? 0.72 : 1 },
+            {
+              backgroundColor: theme.colors.primary,
+              borderBottomColor: theme.colors.focus,
+              opacity: pressed || isSaving ? 0.72 : 1,
+            },
+            pressed && styles.buttonPressed,
           ]}
         >
           {isSaving ? (
@@ -156,18 +164,19 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { gap: spacing.md, padding: spacing.md },
   header: { alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md },
-  title: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading, textAlign: 'center' },
+  title: { fontFamily: typography.family.extraBold, fontSize: typography.size.heading, lineHeight: typography.lineHeight.heading, textAlign: 'center' },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
-  options: { gap: spacing.sm, marginTop: spacing.sm },
-  option: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 2, gap: spacing.xs, minHeight: 216, padding: spacing.md },
-  image: { height: 124, width: 124 },
+  options: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
+  option: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.sm, borderWidth: 2, flexBasis: '47%', flexGrow: 1, gap: spacing.xs, minHeight: 218, padding: spacing.sm },
+  image: { height: 104, width: 104 },
   optionCopy: { alignItems: 'center', gap: spacing.xs },
-  optionName: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, textAlign: 'center' },
+  optionName: { fontFamily: typography.family.bold, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
   optionDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   selectedLabel: { borderRadius: radii.pill, fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 14, minHeight: 18, overflow: 'hidden', paddingHorizontal: spacing.sm, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   footer: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md },
-  primaryButton: { alignItems: 'center', borderRadius: radii.sm, flex: 1, justifyContent: 'center', minHeight: 56, paddingHorizontal: spacing.md },
+  primaryButton: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.sm, flex: 1, justifyContent: 'center', minHeight: 56, paddingHorizontal: spacing.md },
+  buttonPressed: { borderBottomWidth: 0, transform: [{ translateY: 4 }] },
   secondaryButton: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  buttonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  buttonLabel: { fontFamily: typography.family.bold, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
 });

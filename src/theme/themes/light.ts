@@ -4,7 +4,6 @@ import type { AppTheme } from '@/theme/types';
 export const lightTheme: AppTheme = {
   id: 'light',
   isDark: false,
-  isPixel: false,
   colors: {
     background: palette.lightBackground,
     surface: palette.lightSurface,
@@ -14,6 +13,6 @@ export const lightTheme: AppTheme = {
     onPrimary: palette.lightText,
     accent: palette.lightAccent,
     border: palette.lightBorder,
-    focus: palette.lightPrimary,
+    focus: palette.lightPrimaryDark,
   },
 };

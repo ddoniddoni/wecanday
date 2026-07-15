@@ -53,7 +53,7 @@ export function LanguageSelectionScreen({ onBack, onSave }: LanguageSelectionScr
         >
           <Text style={[styles.backLabel, { color: theme.colors.text }]}>{t('language.back')}</Text>
         </Pressable>
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('language.eyebrow')}</Text>
+        <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>{t('language.eyebrow')}</Text>
         <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
           {t('language.title')}
         </Text>

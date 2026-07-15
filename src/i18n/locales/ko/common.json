@@ -1,12 +1,18 @@
 {
   "appName": "위캔데이",
+  "journey": {
+    "title": "할 일",
+    "experience": "{{count}} XP",
+    "level": "Lv.{{level}}",
+    "companionLabel": "할 일 동반자"
+  },
   "foundationReady": "앱 기반 준비가 완료됐어요.",
   "navigation": {
-    "today": "오늘",
-    "plans": "계획",
-    "community": "커뮤니티",
+    "today": "홈",
+    "plans": "할 일",
+    "community": "채팅",
     "statistics": "통계",
-    "profile": "내 공간"
+    "profile": "설정"
   },
   "safeFallback": "콘텐츠를 표시할 수 없어요."
 }

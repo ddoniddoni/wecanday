@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ import {
   type MonthlyStatistics,
 } from '@/features/statistics/domain/monthlyStatistics';
 import { loadMonthlyStatistics } from '@/features/statistics/services/monthlyStatisticsService';
+import { StatisticsPeriodTabs } from '@/features/statistics/StatisticsPeriodTabs';
 import type { Database } from '@/lib/supabase/database.types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
@@ -29,6 +31,8 @@ import type { AppTheme } from '@/theme/types';
 type MonthlyStatisticsScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  onOpenAnnual?: () => void;
+  onOpenWeekly?: () => void;
   primaryNavigation?: PrimaryNavigationActions;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -39,6 +43,8 @@ const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 export function MonthlyStatisticsScreen({
   client,
   onBack,
+  onOpenAnnual,
+  onOpenWeekly,
   primaryNavigation,
   routineDayConfig,
   userId,
@@ -94,24 +100,32 @@ export function MonthlyStatisticsScreen({
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
+          <Pressable
+            accessibilityLabel={t('back')}
+            accessibilityRole="button"
+            onPress={onBack}
+            style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.64 : 1 }]}
+          >
+            <MaterialIcons color={theme.colors.text} name="arrow-back" size={24} />
+          </Pressable>
           <View style={styles.headerCopy}>
-            <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('monthly.eyebrow')}</Text>
+            <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>{t('monthly.eyebrow')}</Text>
             <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
               {t('monthly.title')}
             </Text>
           </View>
-          {!primaryNavigation ? <Pressable
-            accessibilityLabel={t('back')}
-            accessibilityRole="button"
-            onPress={onBack}
-            style={({ pressed }) => [
-              styles.outlineButton,
-              { borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
-            ]}
-          >
-            <Text style={[styles.outlineButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
-          </Pressable> : null}
+          <View style={styles.headerSpacer} />
         </View>
+
+        {onOpenWeekly && onOpenAnnual ? (
+          <StatisticsPeriodTabs
+            activePeriod="month"
+            onSelectPeriod={(period) => {
+              if (period === 'week') onOpenWeekly();
+              if (period === 'year') onOpenAnnual();
+            }}
+          />
+        ) : null}
 
         <MonthNavigation
           canGoForward={monthKey < currentMonthKey}
@@ -168,7 +182,7 @@ export function MonthlyStatisticsScreen({
           >
             <View style={[styles.rateCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
               <Text style={[styles.label, { color: theme.colors.textMuted }]}>{t('monthly.completionRate')}</Text>
-              <Text style={[styles.rate, { color: theme.colors.primary }]}>{t('rateValue', { count: completionRate })}</Text>
+              <Text style={[styles.rate, { color: theme.colors.text }]}>{t('rateValue', { count: completionRate })}</Text>
               <Text style={[styles.description, { color: theme.colors.textMuted }]}>
                 {t('monthly.completionCount', {
                   completed: statistics.completedCount,
@@ -188,7 +202,7 @@ export function MonthlyStatisticsScreen({
 
             <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
               <Text style={[styles.cardTitle, { color: theme.colors.text }]}>{t('monthly.completedRoutineDays')}</Text>
-              <Text style={[styles.completedDaysValue, { color: theme.colors.primary }]}>
+              <Text style={[styles.completedDaysValue, { color: theme.colors.text }]}>
                 {t('monthly.completedRoutineDaysValue', { count: statistics.completedRoutineDayCount })}
               </Text>
             </View>
@@ -229,7 +243,7 @@ function MonthNavigation({
         onPress={onPrevious}
         style={({ pressed }) => [styles.monthButton, { opacity: pressed ? 0.72 : 1 }]}
       >
-        <Text style={[styles.monthButtonLabel, { color: theme.colors.primary }]}>‹</Text>
+        <Text style={[styles.monthButtonLabel, { color: theme.colors.text }]}>‹</Text>
       </Pressable>
       <Text accessibilityRole="header" style={[styles.monthLabel, { color: theme.colors.text }]}>{label}</Text>
       <Pressable
@@ -240,7 +254,7 @@ function MonthNavigation({
         onPress={onNext}
         style={({ pressed }) => [styles.monthButton, { opacity: pressed || !canGoForward ? 0.4 : 1 }]}
       >
-        <Text style={[styles.monthButtonLabel, { color: theme.colors.primary }]}>›</Text>
+        <Text style={[styles.monthButtonLabel, { color: theme.colors.text }]}>›</Text>
       </Pressable>
     </View>
   );
@@ -340,7 +354,7 @@ function MonthlyPlanRow({
           })}
         </Text>
       </View>
-      <Text style={[styles.planRate, { color: theme.colors.primary }]}>{t('rateValue', { count: planStatistic.completionRate })}</Text>
+      <Text style={[styles.planRate, { color: theme.colors.text }]}>{t('rateValue', { count: planStatistic.completionRate })}</Text>
     </View>
   );
 }
@@ -354,11 +368,13 @@ function formatMonthLabel(monthKey: string, locale: string): string {
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
-  header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
-  headerCopy: { flex: 1, gap: spacing.xs },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
+  backButton: { alignItems: 'center', height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
+  content: { flexGrow: 1, gap: spacing.md, paddingBottom: spacing.xxl, paddingHorizontal: spacing.md },
+  header: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' },
+  headerCopy: { alignItems: 'center', flex: 1, gap: 2 },
+  headerSpacer: { width: touchTarget.minimum },
+  eyebrow: { fontFamily: typography.family.bold, fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
+  title: { fontFamily: typography.family.extraBold, fontSize: 24, lineHeight: 32 },
   outlineButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   outlineButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   monthNavigation: { alignItems: 'center', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.sm },

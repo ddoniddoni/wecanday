@@ -29,7 +29,10 @@ export function AppTabScreen({
         {children}
       </SafeAreaView>
       {shouldShowNavigation ? (
-        <SafeAreaView edges={['bottom']} style={styles.navigationSafeArea}>
+        <SafeAreaView
+          edges={['bottom']}
+          style={[styles.navigationSafeArea, { backgroundColor: theme.colors.surface }]}
+        >
           <PrimaryNavigation activeTab={activeTab} {...navigation} />
         </SafeAreaView>
       ) : null}
@@ -39,6 +42,6 @@ export function AppTabScreen({
 
 const styles = StyleSheet.create({
   content: { flex: 1 },
-  navigationSafeArea: { paddingBottom: spacing.xs, paddingTop: spacing.sm },
+  navigationSafeArea: { paddingBottom: spacing.xs },
   screen: { flex: 1 },
 });

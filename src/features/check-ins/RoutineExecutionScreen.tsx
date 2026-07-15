@@ -113,7 +113,7 @@ export function RoutineExecutionScreen({
       </View>
 
       <View style={[styles.focusCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-        <Text style={[styles.currentLabel, { color: theme.colors.primary }]}>
+        <Text style={[styles.currentLabel, { color: theme.colors.text }]}>
           {t('currentLabel')}
         </Text>
         <Text accessibilityRole="header" numberOfLines={3} style={[styles.routineTitle, { color: theme.colors.text }]}>

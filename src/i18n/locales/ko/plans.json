@@ -58,9 +58,10 @@
     "archiveConfirm": "보관"
   },
   "list": {
-    "eyebrow": "루틴 여정",
-    "title": "오늘의 퀘스트",
-    "description": "루틴을 관리하고 나만의 여정을 이어가세요.",
+    "eyebrow": "할 일",
+    "title": "오늘의 할 일",
+    "description": "루틴을 관리하고 오늘의 할 일을 정리하세요.",
+    "progress": "{{total}}개 중 {{active}}개 활성",
     "back": "오늘로 돌아가기",
     "loading": "계획을 불러오고 있어요",
     "retry": "다시 시도",
@@ -68,6 +69,7 @@
     "emptyDescription": "작은 행동 하나부터 시작해 볼까요?",
     "createPlan": "새 계획 만들기",
     "addRoutine": "루틴 추가",
+    "addCustomRoutine": "커스텀 루틴 추가",
     "addRoutineToPlan": "{{title}}에 루틴 추가",
     "editRoutine": "{{title}} 수정, {{status}}",
     "archivePlan": "계획 보관",

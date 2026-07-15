@@ -2,12 +2,15 @@
   "eyebrow": "{{name}}님의 루틴 데이",
   "title": "오늘",
   "home": {
-    "journeyTitle": "루틴 여정",
+    "journeyTitle": "할 일",
+    "level": "Lv.{{level}}",
     "experience": "{{count}} XP",
     "routineCount": "{{total}}개 중 {{completed}}개",
     "routinesLabel": "루틴",
     "streakLabel": "연속 실천",
-    "routineDayLabel": "루틴 데이"
+    "routineDayLabel": "루틴 데이",
+    "proValue": "Pro",
+    "proLabel": "출시 예정"
   },
   "dateSelector": {
     "accessibilityLabel": "7일 날짜 선택",
@@ -113,6 +116,12 @@
   "completeItem": "{{title}} 완료",
   "startItem": "{{title}} 시작",
   "undoItem": "{{title}} 완료 취소",
+  "undoConfirmation": {
+    "title": "완료를 취소할까요?",
+    "description": "{{title}}의 완료 기록을 취소하면 획득한 경험치와 연속 실천도 함께 되돌아가요.",
+    "cancel": "유지하기",
+    "confirm": "완료 취소"
+  },
   "reviewItem": "{{title}} 기록 보기",
   "nextRoutine": "다음",
   "timeGroups": {

@@ -1,6 +1,6 @@
 import type { ImageSourcePropType } from 'react-native';
 
-export const companionIds = ['sprout', 'dew', 'ember'] as const;
+export const companionIds = ['sprout', 'dew', 'ember', 'luna'] as const;
 
 export type CompanionId = (typeof companionIds)[number];
 
@@ -8,6 +8,7 @@ const companionAssets: Record<CompanionId, ImageSourcePropType> = {
   sprout: require('../../../../assets/companion/sprout-companion-hero.png'),
   dew: require('../../../../assets/companion/dew-companion.png'),
   ember: require('../../../../assets/companion/ember-companion.png'),
+  luna: require('../../../../assets/companion/luna-companion.png'),
 };
 
 export function getCompanionAsset(companionId: CompanionId): ImageSourcePropType {

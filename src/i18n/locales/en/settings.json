@@ -1,18 +1,39 @@
 {
+  "hub": {
+    "title": "Settings",
+    "back": "Back to profile",
+    "appSettings": "App Settings",
+    "notifications": "Notifications",
+    "theme": "Theme Settings",
+    "account": "Account",
+    "logout": "Logout",
+    "accountDetails": "Account & Delete Account",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "signingOut": "Signing out…",
+    "signOutError": "We couldn't sign you out. Please try again.",
+    "version": "WeCanDay v{{version}}"
+  },
   "theme": {
     "eyebrow": "Appearance",
     "title": "App Theme",
-    "description": "Choose how Routine Journey looks. Your selection is applied and saved right away.",
+    "description": "Choose how WeCanDay looks. Your selection is applied and saved right away.",
     "displayModeTitle": "Display Mode",
     "characterThemeTitle": "Character Theme",
+    "characterOptions": {
+      "sprout": "Sprout Green",
+      "dew": "Dew Blue",
+      "ember": "Ember Orange",
+      "luna": "Luna Purple"
+    },
     "back": "Back to profile",
     "saving": "Saving theme",
     "saveError": "We couldn't save your theme. Please try again.",
     "options": {
       "system": { "label": "System", "description": "Match your device appearance." },
       "light": { "label": "Light", "description": "A bright, calm workspace." },
-      "dark": { "label": "Dark", "description": "A low-light workspace." },
-      "pixel-default": { "label": "Routine Garden", "description": "A crisp pixel palette made for your existing routine pets.", "previewLabel": "Routine Garden palette preview" }
+      "dark": { "label": "Dark", "description": "A low-light workspace." }
     }
   },
   "language": {

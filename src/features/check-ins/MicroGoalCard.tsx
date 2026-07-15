@@ -30,7 +30,7 @@ export function MicroGoalCard({ item, onOpenRoutine }: MicroGoalCardProps) {
         },
       ]}
     >
-      <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+      <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
         {t('microGoal.eyebrow')}
       </Text>
       <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>

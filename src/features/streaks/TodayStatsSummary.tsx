@@ -52,7 +52,7 @@ export function TodayStatsSummary({
         <Text style={[styles.label, { color: theme.colors.textMuted }]}>
           {t('stats.streakLabel')}
         </Text>
-        <Text style={[styles.value, { color: theme.colors.primary }]}>{streakLabel}</Text>
+        <Text style={[styles.value, { color: theme.colors.text }]}>{streakLabel}</Text>
       </View>
     </View>
   );

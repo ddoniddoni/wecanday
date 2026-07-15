@@ -12,6 +12,7 @@
   "options": {
     "sprout": { "name": "Sprout", "description": "A calm little leaf for steady days." },
     "dew": { "name": "Dew", "description": "A bright drop for fresh starts." },
-    "ember": { "name": "Ember", "description": "A warm glow for brave steps." }
+    "ember": { "name": "Ember", "description": "A warm glow for brave steps." },
+    "luna": { "name": "Luna", "description": "A gentle night-sky friend for calm, steady steps." }
   }
 }

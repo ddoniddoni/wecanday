@@ -1,5 +1,11 @@
 import '@/i18n';
 
+import {
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/plus-jakarta-sans';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import type { PropsWithChildren } from 'react';
@@ -50,6 +56,16 @@ function AuthenticatedThemeProvider({ children }: PropsWithChildren) {
 }
 
 export default function RootLayout() {
+  const [areFontsLoaded] = useFonts({
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
+  });
+
+  if (!areFontsLoaded) {
+    return null;
+  }
+
   return (
     <AuthProvider>
       <AuthenticatedThemeProvider>

@@ -2,12 +2,15 @@
   "eyebrow": "{{name}}’s routine day",
   "title": "Today",
   "home": {
-    "journeyTitle": "Routine journey",
+    "journeyTitle": "To-do",
+    "level": "Lv.{{level}}",
     "experience": "{{count}} XP",
     "routineCount": "{{completed}}/{{total}}",
     "routinesLabel": "Routines",
     "streakLabel": "Day streak",
-    "routineDayLabel": "Routine day"
+    "routineDayLabel": "Routine day",
+    "proValue": "Pro",
+    "proLabel": "Coming soon"
   },
   "dateSelector": {
     "accessibilityLabel": "Seven-day date selector",
@@ -115,6 +118,12 @@
   "completeItem": "Complete {{title}}",
   "startItem": "Start {{title}}",
   "undoItem": "Undo {{title}}",
+  "undoConfirmation": {
+    "title": "Undo this completion?",
+    "description": "Undoing {{title}} will also remove the experience and streak progress earned from it.",
+    "cancel": "Keep completed",
+    "confirm": "Undo completion"
+  },
   "reviewItem": "Review {{title}}",
   "nextRoutine": "Next",
   "timeGroups": {

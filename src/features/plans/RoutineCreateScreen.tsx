@@ -14,7 +14,7 @@ import {
   type RoutineFormIssue,
 } from '@/features/plans/domain/routineFormValidation';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { palette, radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 const WEEKDAYS = [
   { key: 'sunday', value: 0 },
@@ -186,7 +186,7 @@ export function RoutineCreateScreen({
             {t(backKey)}
           </Text>
         </Pressable>
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+        <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
           {t(`${copyKey}.planLabel`, { planTitle })}
         </Text>
         <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
@@ -222,7 +222,7 @@ export function RoutineCreateScreen({
             value={routineTitle}
           />
           {hasRoutineTitleIssue ? (
-            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: palette.error }]}>
               {t('validation.routineTitle')}
             </Text>
           ) : null}
@@ -254,7 +254,7 @@ export function RoutineCreateScreen({
           />
           <Text style={[styles.description, { color: theme.colors.textMuted }]}>{t('reminderTimeHint')}</Text>
           {hasReminderTimeIssue ? (
-            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: palette.error }]}>
               {t('validation.reminderTime')}
             </Text>
           ) : null}
@@ -292,7 +292,7 @@ export function RoutineCreateScreen({
             })}
           </View>
           {hasScheduleWeekdaysIssue ? (
-            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: theme.colors.accent }]}>
+            <Text accessibilityLiveRegion="polite" style={[styles.fieldError, { color: palette.error }]}>
               {t('validation.scheduleWeekdays')}
             </Text>
           ) : null}

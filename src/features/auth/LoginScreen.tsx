@@ -108,7 +108,7 @@ export function LoginScreen() {
             source={getCompanionAsset('sprout')}
             style={styles.brandImage}
           />
-          <Text style={[styles.brandTitle, { color: theme.colors.primary }]}>{t('brandTitle')}</Text>
+          <Text style={[styles.brandTitle, { color: theme.colors.text }]}>{t('brandTitle')}</Text>
           <Text style={[styles.brandTagline, { color: theme.colors.textMuted }]}>{t('brandTagline')}</Text>
         </View>
         <View style={styles.authCopy}>
@@ -147,21 +147,21 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     gap: spacing.md,
-    justifyContent: 'center',
     padding: spacing.md,
   },
-  brandCard: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, gap: spacing.xs, padding: spacing.md },
+  brandCard: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.md, borderWidth: 2, gap: spacing.xs, padding: spacing.md },
   brandImage: { height: 176, width: '100%' },
-  brandTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
-  brandTagline: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
+  brandTitle: { fontFamily: typography.family.extraBold, fontSize: typography.size.heading, lineHeight: typography.lineHeight.heading },
+  brandTagline: { fontFamily: typography.family.body, fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   authCopy: { alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm },
   title: {
+    fontFamily: typography.family.extraBold,
     fontSize: typography.size.heading,
-    fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.heading,
     textAlign: 'center',
   },
   description: {
+    fontFamily: typography.family.body,
     fontSize: typography.size.caption,
     lineHeight: typography.lineHeight.caption,
     textAlign: 'center',
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderColor: googleButton.borderColor,
     borderRadius: radii.sm,
-    borderWidth: 1,
+    borderBottomWidth: 4,
+    borderWidth: 2,
     justifyContent: 'center',
     minHeight: Math.max(googleButton.height, touchTarget.minimum),
   },
@@ -188,8 +189,8 @@ const styles = StyleSheet.create({
   },
   googleButtonLabel: {
     color: googleButton.textColor,
+    fontFamily: typography.family.bold,
     fontSize: 14,
-    fontWeight: '500',
     lineHeight: 20,
   },
   error: {

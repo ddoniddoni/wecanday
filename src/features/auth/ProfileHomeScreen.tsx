@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
+import { BackHandler } from 'react-native';
 
 import { featureFlags } from '@/config/featureFlags';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -25,6 +26,7 @@ import { AnnualStatisticsScreen } from '@/features/statistics/AnnualStatisticsSc
 import { MonthlyStatisticsScreen } from '@/features/statistics/MonthlyStatisticsScreen';
 import { WeeklyStatisticsScreen } from '@/features/statistics/WeeklyStatisticsScreen';
 import { ThemeSelectionScreen } from '@/features/settings/ThemeSelectionScreen';
+import { SettingsHubScreen } from '@/features/settings/SettingsHubScreen';
 import { LanguageSelectionScreen } from '@/features/settings/LanguageSelectionScreen';
 import { saveLocalePreference } from '@/features/settings/services/localePreferenceService';
 import { saveThemePreference } from '@/features/settings/services/themePreferenceService';
@@ -88,10 +90,65 @@ type AppScreen =
   | 'monthly-statistics'
   | 'profile'
   | 'theme-selection'
+  | 'settings-hub'
   | 'terms-of-service'
   | 'weekly-statistics'
   | 'today';
 type PlanCreationReturnScreen = 'plan-list' | 'today';
+
+type BackNavigationContext = {
+  legalReturnScreen: 'account-settings' | 'settings-hub';
+  planCreationReturnScreen: PlanCreationReturnScreen;
+  routineReturnScreen: 'plans' | 'today' | null;
+  themeSelectionReturnScreen: 'profile' | 'settings-hub';
+};
+
+function getPreviousScreen(
+  screen: AppScreen,
+  context: BackNavigationContext,
+): AppScreen | null {
+  switch (screen) {
+    case 'today':
+      return null;
+    case 'annual-statistics':
+    case 'monthly-statistics':
+      return 'weekly-statistics';
+    case 'weekly-statistics':
+    case 'community':
+    case 'plan-list':
+    case 'profile':
+      return 'today';
+    case 'plan-create':
+      return context.planCreationReturnScreen;
+    case 'routine-create':
+      return 'plan-list';
+    case 'routine-edit':
+      return context.routineReturnScreen === 'plans' ? 'plan-list' : 'today';
+    case 'notification-permission':
+      return 'today';
+    case 'settings-hub':
+    case 'companion-selection':
+    case 'friend-search':
+    case 'language-selection':
+    case 'premium':
+      return 'profile';
+    case 'theme-selection':
+      return context.themeSelectionReturnScreen;
+    case 'account-settings':
+      return 'settings-hub';
+    case 'privacy-policy':
+    case 'terms-of-service':
+      return context.legalReturnScreen;
+    case 'friend-connections':
+    case 'friend-requests':
+      return 'friend-search';
+    case 'challenge-create':
+    case 'challenge-invitations':
+      return 'friend-connections';
+  }
+
+  return null;
+}
 
 export function ProfileHomeScreen() {
   const auth = useAuth();
@@ -102,6 +159,10 @@ export function ProfileHomeScreen() {
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
   const [hasConfirmedInitialNickname, setHasConfirmedInitialNickname] = useState(false);
   const [screen, setScreen] = useState<AppScreen>('today');
+  const [themeSelectionReturnScreen, setThemeSelectionReturnScreen] =
+    useState<'profile' | 'settings-hub'>('profile');
+  const [legalReturnScreen, setLegalReturnScreen] =
+    useState<'account-settings' | 'settings-hub'>('account-settings');
   const [planCreationReturnScreen, setPlanCreationReturnScreen] =
     useState<PlanCreationReturnScreen>('today');
   const [selectedPlan, setSelectedPlan] = useState<PlanListItem | null>(null);
@@ -113,6 +174,32 @@ export function ProfileHomeScreen() {
     status: 'active' | 'paused';
     title: string;
   } | null>(null);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      const previousScreen = getPreviousScreen(screen, {
+        legalReturnScreen,
+        planCreationReturnScreen,
+        routineReturnScreen: selectedRoutine?.returnTo ?? null,
+        themeSelectionReturnScreen,
+      });
+
+      if (!previousScreen) {
+        return false;
+      }
+
+      setScreen(previousScreen);
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [
+    legalReturnScreen,
+    planCreationReturnScreen,
+    screen,
+    selectedRoutine?.returnTo,
+    themeSelectionReturnScreen,
+  ]);
 
   useEffect(() => {
     if (!supabaseClient || !profileForReminderSync || !userIdForReminderSync) {
@@ -378,7 +465,8 @@ export function ProfileHomeScreen() {
   if (screen === 'theme-selection') {
     return (
       <ThemeSelectionScreen
-        onBack={() => setScreen('profile')}
+        companionId={selectedCompanionId}
+        onBack={() => setScreen(themeSelectionReturnScreen)}
         onSave={async (preference) => {
           if (!supabaseClient) {
             throw new Error('THEME_PREFERENCE_SAVE_FAILED');
@@ -392,6 +480,28 @@ export function ProfileHomeScreen() {
           auth.replaceProfile(profile);
           setPreference(preference);
         }}
+        onSaveCompanion={saveSelectedCompanion}
+      />
+    );
+  }
+  if (screen === 'settings-hub') {
+    return (
+      <SettingsHubScreen
+        onBack={() => setScreen('profile')}
+        onOpenAccount={() => setScreen('account-settings')}
+        onOpenPrivacyPolicy={() => {
+          setLegalReturnScreen('settings-hub');
+          setScreen('privacy-policy');
+        }}
+        onOpenTermsOfService={() => {
+          setLegalReturnScreen('settings-hub');
+          setScreen('terms-of-service');
+        }}
+        onOpenTheme={() => {
+          setThemeSelectionReturnScreen('settings-hub');
+          setScreen('theme-selection');
+        }}
+        onSignOut={auth.signOut}
       />
     );
   }
@@ -412,9 +522,12 @@ export function ProfileHomeScreen() {
         displayName={auth.profile.display_name}
         hapticsEnabled={auth.profile.haptics_enabled !== false}
         reduceMotionEnabled={auth.profile.reduce_motion === true}
-        onBack={() => setScreen('profile')}
+        onBack={() => setScreen('settings-hub')}
         onDeleteAccount={auth.deleteAccount}
-        onOpenPrivacyPolicy={() => setScreen('privacy-policy')}
+        onOpenPrivacyPolicy={() => {
+          setLegalReturnScreen('account-settings');
+          setScreen('privacy-policy');
+        }}
         onSaveHapticsPreference={async (isEnabled) => {
           if (!supabaseClient) {
             throw new Error('HAPTICS_PREFERENCE_SAVE_FAILED');
@@ -452,15 +565,18 @@ export function ProfileHomeScreen() {
           auth.replaceProfile(profile);
         }}
         onSignOut={auth.signOut}
-        onOpenTermsOfService={() => setScreen('terms-of-service')}
+        onOpenTermsOfService={() => {
+          setLegalReturnScreen('account-settings');
+          setScreen('terms-of-service');
+        }}
       />
     );
   }
   if (screen === 'privacy-policy') {
-    return <LegalDocumentScreen document="privacy" onBack={() => setScreen('account-settings')} />;
+    return <LegalDocumentScreen document="privacy" onBack={() => setScreen(legalReturnScreen)} />;
   }
   if (screen === 'terms-of-service') {
-    return <LegalDocumentScreen document="terms" onBack={() => setScreen('account-settings')} />;
+    return <LegalDocumentScreen document="terms" onBack={() => setScreen(legalReturnScreen)} />;
   }
   if (screen === 'companion-selection') {
     return (
@@ -482,7 +598,7 @@ export function ProfileHomeScreen() {
     return (
       <FriendCodeSearchScreen
         client={supabaseClient}
-        onBack={() => setScreen('today')}
+        onBack={() => setScreen('profile')}
         onOpenConnections={() => setScreen('friend-connections')}
         onOpenRequests={() => setScreen('friend-requests')}
       />
@@ -494,7 +610,7 @@ export function ProfileHomeScreen() {
         companionId={selectedCompanionId}
         createdAt={auth.profile.created_at}
         displayName={auth.profile.display_name}
-        onOpenAccountSettings={() => setScreen('account-settings')}
+        onOpenAccountSettings={() => setScreen('settings-hub')}
         onOpenCompanionSelection={() => setScreen('companion-selection')}
         onOpenCommunity={() => setScreen('community')}
         onOpenFriendSearch={() => setScreen('friend-search')}
@@ -504,7 +620,10 @@ export function ProfileHomeScreen() {
         }}
         onOpenPlans={() => setScreen('plan-list')}
         onOpenStatistics={() => setScreen('weekly-statistics')}
-        onOpenThemes={() => setScreen('theme-selection')}
+        onOpenThemes={() => {
+          setThemeSelectionReturnScreen('profile');
+          setScreen('theme-selection');
+        }}
         onOpenToday={() => setScreen('today')}
         publicCode={auth.profile.public_code}
       />
@@ -565,6 +684,7 @@ export function ProfileHomeScreen() {
     return (
       <WeeklyStatisticsScreen
         client={supabaseClient}
+        companionId={selectedCompanionId}
         onBack={() => setScreen('today')}
         onOpenAnnual={() => setScreen('annual-statistics')}
         onOpenMonthly={() => setScreen('monthly-statistics')}
@@ -585,7 +705,9 @@ export function ProfileHomeScreen() {
     return (
       <MonthlyStatisticsScreen
         client={supabaseClient}
-        onBack={() => setScreen('today')}
+        onBack={() => setScreen('weekly-statistics')}
+        onOpenAnnual={() => setScreen('annual-statistics')}
+        onOpenWeekly={() => setScreen('weekly-statistics')}
         primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
@@ -603,7 +725,9 @@ export function ProfileHomeScreen() {
     return (
       <AnnualStatisticsScreen
         client={supabaseClient}
-        onBack={() => setScreen('today')}
+        onBack={() => setScreen('weekly-statistics')}
+        onOpenMonthly={() => setScreen('monthly-statistics')}
+        onOpenWeekly={() => setScreen('weekly-statistics')}
         primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
@@ -675,6 +799,7 @@ export function ProfileHomeScreen() {
     return (
       <PlanListScreen
         client={supabaseClient}
+        companionId={selectedCompanionId}
         onAddRoutine={(plan) => {
           setSelectedPlan(plan);
           setScreen('routine-create');

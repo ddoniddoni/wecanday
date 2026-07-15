@@ -22,7 +22,7 @@ export function FoundationScreen() {
           },
         ]}
       >
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+        <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
           {t('appName')}
         </Text>
         <Text

@@ -90,7 +90,7 @@ export function RoutineDayTiming({
         </Text>
         <Text style={[styles.endTime, { color: theme.colors.text }]}>{endTime}</Text>
       </View>
-      <Text style={[styles.remaining, { color: theme.colors.primary }]}>
+      <Text style={[styles.remaining, { color: theme.colors.textMuted }]}>
         {t('routineTiming.remaining', {
           hours: timing.remainingHours,
           minutes: timing.remainingMinutes,

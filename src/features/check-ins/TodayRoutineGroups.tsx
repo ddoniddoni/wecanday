@@ -95,7 +95,7 @@ export function TodayRoutineGroups({
                   style={({ pressed }) => [styles.copy, { opacity: pressed || isComplete || isReadOnly ? 0.64 : 1 }]}
                 >
                   {isNext ? (
-                    <Text style={[styles.nextLabel, { color: theme.colors.primary }]}>
+                    <Text style={[styles.nextLabel, { color: theme.colors.text }]}>
                       {t('nextRoutine')}
                     </Text>
                   ) : null}

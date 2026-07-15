@@ -4,11 +4,24 @@
   "description": "루틴, 친구, 설정을 한곳에서 관리하세요.",
   "memberSince": "{{date}}부터 함께하는 중",
   "toolsTitle": "나의 루틴 도구",
+  "achievements": {
+    "title": "업적 배지",
+    "earned": "{{count}}개 획득",
+    "lockedLabel": "{{name}}, 아직 획득하지 못함",
+    "badges": {
+      "streak": "7일 연속",
+      "early": "얼리버드",
+      "perfect": "완벽한 한 주",
+      "iron": "강철 체력",
+      "sleep": "수면 마스터",
+      "hydrated": "수분 충전"
+    }
+  },
   "friends": {
     "action": "친구 추가"
   },
   "premium": {
-    "title": "Routine Journey Pro",
+    "title": "위캔데이 Pro",
     "description": "루틴 제한을 없애고 더 깊은 통계를 확인하세요."
   },
   "language": {

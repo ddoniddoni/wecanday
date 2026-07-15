@@ -2,7 +2,7 @@ import type { CompanionId } from '@/features/companion/domain/companions';
 import { companionAccents } from '@/theme/tokens';
 import type { AppTheme, ThemeId } from '@/theme/types';
 
-type CompanionAccent = Pick<AppTheme['colors'], 'accent' | 'focus' | 'primary'>;
+type CompanionAccent = Pick<AppTheme['colors'], 'accent' | 'focus' | 'onPrimary' | 'primary'>;
 
 export function getCompanionAccent(
   themeId: ThemeId,

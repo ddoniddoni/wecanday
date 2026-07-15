@@ -120,7 +120,7 @@ describe('TodayRoutineScreen', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByRole('header', { name: 'Routine journey' })).toBeTruthy();
+    expect(screen.getByRole('header', { name: 'To-do' })).toBeTruthy();
     expect(screen.getByText('0 XP')).toBeTruthy();
     await screen.findByRole('checkbox', { name: 'Complete Morning walk' });
     await fireEvent.press(

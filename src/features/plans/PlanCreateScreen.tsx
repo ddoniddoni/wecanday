@@ -102,7 +102,7 @@ export function PlanCreateScreen({ onBack, onComplete, onSave }: PlanCreateScree
             <Text style={[styles.backButtonLabel, { color: theme.colors.text }]}>{t('back')}</Text>
           </Pressable>
         ) : null}
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
+        <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
           {t('eyebrow')}
         </Text>
         <Text

@@ -1,10 +1,10 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
 import type { RoutineDayConfig } from '@/features/routine-day/domain/routineDay';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, typography } from '@/theme/tokens';
+import { palette, radii, spacing, typography } from '@/theme/tokens';
 
 type TodayProgressSummaryProps = {
   completedCount: number;
@@ -18,7 +18,6 @@ export function TodayProgressSummary({
   completedCount,
   dailyStreak,
   isDailyStreakLoading,
-  routineDayConfig,
   totalCount,
 }: TodayProgressSummaryProps) {
   const { t } = useTranslation('today');
@@ -36,38 +35,45 @@ export function TodayProgressSummary({
         streak: streakLabel,
         total: totalCount,
       })}
-      style={[styles.container, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.primary,
+          borderBottomColor: theme.colors.focus,
+          borderColor: theme.colors.focus,
+        },
+      ]}
     >
-      <View style={styles.metric}>
-        <Text style={[styles.metricValue, { color: theme.colors.primary }]}>
+      <View style={[styles.metric, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <MaterialIcons color={palette.lightSecondary} name="check-circle-outline" size={20} />
+        <Text style={[styles.metricValue, { color: palette.lightSecondary }]}>
           {t('home.routineCount', { completed: completedCount, total: totalCount })}
         </Text>
         <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
           {t('home.routinesLabel')}
         </Text>
       </View>
-      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
-      <View style={styles.metric}>
-        <Text style={[styles.metricValue, { color: theme.colors.accent }]}>{streakLabel}</Text>
+      <View style={[styles.metric, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <MaterialIcons color={palette.lightAccent} name="local-fire-department" size={20} />
+        <Text style={[styles.metricValue, { color: theme.colors.text }]}>{streakLabel}</Text>
         <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
           {t('home.streakLabel')}
         </Text>
       </View>
-      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
-      <View style={styles.metric}>
+      <View style={[styles.metric, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <MaterialIcons color={palette.lightGold} name="workspace-premium" size={20} />
+        <Text style={[styles.metricValue, { color: theme.colors.text }]}>{t('home.proValue')}</Text>
         <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
-          {t('home.routineDayLabel')}
+          {t('home.proLabel')}
         </Text>
-        <RoutineDayTiming config={routineDayConfig} variant="inline" />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'stretch', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', minHeight: 84, paddingVertical: spacing.sm },
-  divider: { marginVertical: spacing.xs, width: 1 },
-  metric: { alignItems: 'center', flex: 1, gap: spacing.xs, justifyContent: 'center', minWidth: 0, paddingHorizontal: spacing.xs },
-  metricLabel: { fontSize: 11, lineHeight: 14, textAlign: 'center' },
-  metricValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, textAlign: 'center' },
+  container: { alignItems: 'stretch', borderBottomWidth: 4, borderRadius: radii.md, borderWidth: 2, flexDirection: 'row', gap: spacing.sm, minHeight: 112, padding: spacing.sm },
+  metric: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 2, flex: 1, gap: 2, justifyContent: 'center', minWidth: 0, paddingHorizontal: spacing.xs, paddingVertical: spacing.sm },
+  metricLabel: { fontFamily: typography.family.bold, fontSize: 11, lineHeight: 14, textAlign: 'center' },
+  metricValue: { fontFamily: typography.family.bold, fontSize: 16, lineHeight: 20, textAlign: 'center' },
 });

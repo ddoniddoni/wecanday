@@ -14,11 +14,25 @@ describe('CompanionSelectionScreen', () => {
       </ThemeProvider>,
     );
 
-    await fireEvent.press(screen.getByRole('button', { name: 'Choose Dew' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Choose Luna' }));
     await fireEvent.press(
       screen.getByRole('button', { name: 'Choose this pet' }),
     );
 
-    await waitFor(() => expect(onSave).toHaveBeenCalledWith('dew'));
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith('luna'));
+  });
+
+  it('returns to the previous screen after a successful save', async () => {
+    await i18n.changeLanguage('en');
+    const onBack = jest.fn();
+    const screen = await render(
+      <ThemeProvider preference="light">
+        <CompanionSelectionScreen onBack={onBack} onSave={jest.fn().mockResolvedValue(undefined)} />
+      </ThemeProvider>,
+    );
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Choose this pet' }));
+
+    await waitFor(() => expect(onBack).toHaveBeenCalledTimes(1));
   });
 });

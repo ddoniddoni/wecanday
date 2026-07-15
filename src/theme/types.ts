@@ -1,14 +1,13 @@
-export type ThemeId = 'light' | 'dark' | 'pixel-default';
+export type ThemeId = 'light' | 'dark';
 export type ThemePreference = 'system' | ThemeId;
 
 export function isThemePreference(value: string): value is ThemePreference {
-  return value === 'system' || value === 'light' || value === 'dark' || value === 'pixel-default';
+  return value === 'system' || value === 'light' || value === 'dark';
 }
 
 export type AppTheme = {
   id: ThemeId;
   isDark: boolean;
-  isPixel: boolean;
   colors: {
     background: string;
     surface: string;

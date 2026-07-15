@@ -4,11 +4,24 @@
   "description": "Your routines, friends, and preferences live here.",
   "memberSince": "Member since {{date}}",
   "toolsTitle": "Your routine tools",
+  "achievements": {
+    "title": "Achievement Badges",
+    "earned": "{{count}} earned",
+    "lockedLabel": "{{name}}, not earned yet",
+    "badges": {
+      "streak": "7 Day Streak",
+      "early": "Early Riser",
+      "perfect": "Perfect Week",
+      "iron": "Iron Man",
+      "sleep": "Sleep Master",
+      "hydrated": "Hydrated"
+    }
+  },
   "friends": {
     "action": "Add friend"
   },
   "premium": {
-    "title": "Routine Journey Pro",
+    "title": "WeCanDay Pro",
     "description": "Unlock unlimited routines and deeper insights."
   },
   "language": {

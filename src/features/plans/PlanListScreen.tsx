@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,7 +12,10 @@ import {
 } from 'react-native';
 
 import { AppTabScreen } from '@/components/AppTabScreen';
+import { JourneyHeader } from '@/components/JourneyHeader';
 import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
+import type { CompanionId } from '@/features/companion/domain/companions';
+import { loadCompanionProgress } from '@/features/companion/services/companionProgressService';
 import {
   getPlanErrorCode,
   getPlanListErrorCode,
@@ -25,10 +29,11 @@ import {
 } from '@/features/plans/services/planService';
 import type { Database } from '@/lib/supabase/database.types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { palette, radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 type PlanListScreenProps = {
   client: SupabaseClient<Database>;
+  companionId?: CompanionId;
   onAddRoutine: (plan: PlanListItem) => void;
   onBack: () => void;
   onCreatePlan: () => void;
@@ -78,7 +83,7 @@ function PlanListItemCard({
         },
       ]}
     >
-      <View style={styles.planCopy}>
+      <View style={[styles.planCopy, plan.routineItems.length > 0 && styles.hiddenPlanMeta]}>
         <Text style={[styles.planTitle, { color: theme.colors.text }]}>{plan.title}</Text>
         <Text style={[styles.routineCount, { color: theme.colors.textMuted }]}>
           {routineCountLabel}
@@ -87,6 +92,7 @@ function PlanListItemCard({
       <View
         style={[
           styles.statusBadge,
+          plan.routineItems.length > 0 && styles.hiddenPlanMeta,
           { backgroundColor: theme.colors.background, borderColor: theme.colors.border },
         ]}
       >
@@ -94,16 +100,48 @@ function PlanListItemCard({
           {statusLabel}
         </Text>
       </View>
-      {plan.routineItems.map((routine) => {
+      {plan.routineItems.map((routine, index) => {
         const isArchived = routine.status === 'archived';
+        const iconColor = index % 2 === 0 ? palette.lightSecondary : theme.colors.accent;
         const routineContent = (
           <>
-            <Text style={[styles.routineTitle, { color: theme.colors.text }]}>
-              {routine.title}
-            </Text>
-            <Text style={[styles.routineStatus, { color: theme.colors.textMuted }]}>
-              {t(`list.routineStatuses.${routine.status}`)}
-            </Text>
+            <View style={[styles.routineIcon, { backgroundColor: `${iconColor}22` }]}>
+              <MaterialIcons
+                color={isArchived ? theme.colors.textMuted : iconColor}
+                name={index % 2 === 0 ? 'delete-outline' : 'directions-run'}
+                size={22}
+              />
+            </View>
+            <View style={styles.routineText}>
+              <Text
+                style={[
+                  styles.routineTitle,
+                  {
+                    color: theme.colors.text,
+                    textDecorationLine: isArchived ? 'line-through' : 'none',
+                  },
+                ]}
+              >
+                {routine.title}
+              </Text>
+              <Text style={[styles.routineStatus, { color: theme.colors.textMuted }]}>
+                {t(`list.routineStatuses.${routine.status}`)}
+              </Text>
+            </View>
+            {!isArchived ? (
+              <Pressable
+                accessibilityLabel={t('list.archivePlanFor', { title: plan.title })}
+                accessibilityRole="button"
+                disabled={isArchiving}
+                onPress={(event) => {
+                  event.stopPropagation();
+                  onArchiveRequest();
+                }}
+                style={({ pressed }) => [styles.moreButton, { opacity: pressed || isArchiving ? 0.56 : 1 }]}
+              >
+                <MaterialIcons color={theme.colors.text} name="more-vert" size={22} />
+              </Pressable>
+            ) : null}
           </>
         );
 
@@ -252,6 +290,7 @@ function PlanListItemCard({
 
 export function PlanListScreen({
   client,
+  companionId = 'sprout',
   onAddRoutine,
   onBack,
   onCreatePlan,
@@ -267,6 +306,7 @@ export function PlanListScreen({
   const [archiveErrorCode, setArchiveErrorCode] = useState<PlanErrorCode | null>(null);
   const [archivePlanId, setArchivePlanId] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [experience, setExperience] = useState(0);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
@@ -274,7 +314,13 @@ export function PlanListScreen({
     setArchiveErrorCode(null);
 
     try {
-      setPlans(await loadPlans(client));
+      const [nextPlans, companionProgress] = await Promise.all([
+        loadPlans(client),
+        loadCompanionProgress(client).catch(() => null),
+      ]);
+
+      setPlans(nextPlans);
+      if (companionProgress) setExperience(companionProgress.experience);
     } catch (error) {
       setErrorCode(getPlanListErrorCode(error));
     } finally {
@@ -311,12 +357,20 @@ export function PlanListScreen({
     };
   }, [refresh]);
 
+  const totalRoutineCount = plans.reduce((count, plan) => count + plan.routineItems.length, 0);
+  const activeRoutineCount = plans.reduce((count, plan) => count + plan.activeRoutineCount, 0);
+  const progress = totalRoutineCount > 0
+    ? Math.round((activeRoutineCount / totalRoutineCount) * 100)
+    : 0;
+  const firstActivePlan = plans.find((plan) => plan.status === 'active') ?? null;
+
   return (
     <AppTabScreen
       activeTab={primaryNavigation ? 'plans' : undefined}
       navigation={primaryNavigation}
     >
       <ScrollView contentContainerStyle={styles.content}>
+        <JourneyHeader companionId={companionId} experience={experience} />
         <View style={styles.header}>
           {!primaryNavigation ? (
             <Pressable
@@ -333,13 +387,35 @@ export function PlanListScreen({
               </Text>
             </Pressable>
           ) : null}
-          <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('list.eyebrow')}</Text>
-          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
-            {t('list.title')}
-          </Text>
-          <Text style={[styles.headerDescription, { color: theme.colors.textMuted }]}>
-            {t('list.description')}
-          </Text>
+          <View style={styles.questTitleRow}>
+            <View style={styles.questTitleCopy}>
+              <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
+                {t('list.title')}
+              </Text>
+              <Text style={[styles.headerDescription, { color: theme.colors.textMuted }]}>
+                {t('list.progress', { active: activeRoutineCount, total: totalRoutineCount })}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityLabel={t('list.createPlan')}
+              accessibilityRole="button"
+              onPress={onCreatePlan}
+              style={({ pressed }) => [
+                styles.addButton,
+                {
+                  backgroundColor: theme.colors.primary,
+                  borderBottomColor: theme.colors.focus,
+                  opacity: pressed ? 0.72 : 1,
+                },
+                pressed && styles.buttonPressed,
+              ]}
+            >
+              <MaterialIcons color={theme.colors.onPrimary} name="add" size={26} />
+            </Pressable>
+          </View>
+          <View style={[styles.progressTrack, { backgroundColor: palette.lightContainerHigh }]}>
+            <View style={[styles.progressFill, { backgroundColor: theme.colors.primary, width: `${progress}%` }]} />
+          </View>
         </View>
 
         {isLoading ? (
@@ -387,14 +463,15 @@ export function PlanListScreen({
             </Text>
             <Pressable
               accessibilityRole="button"
-              onPress={onCreatePlan}
+              onPress={() => firstActivePlan ? onAddRoutine(firstActivePlan) : onCreatePlan()}
               style={({ pressed }) => [
-                styles.primaryButton,
-                { backgroundColor: theme.colors.primary, opacity: pressed ? 0.72 : 1 },
+                styles.customRoutineButton,
+                { backgroundColor: palette.lightContainerHigh, borderColor: theme.colors.border, opacity: pressed ? 0.72 : 1 },
               ]}
             >
-              <Text style={[styles.primaryButtonLabel, { color: theme.colors.onPrimary }]}>
-                {t('list.createPlan')}
+              <MaterialIcons color={theme.colors.text} name="add-circle-outline" size={20} />
+              <Text style={[styles.customRoutineLabel, { color: theme.colors.text }]}>
+                {t('list.addCustomRoutine')}
               </Text>
             </Pressable>
           </View>
@@ -420,7 +497,12 @@ export function PlanListScreen({
               onPress={onCreatePlan}
               style={({ pressed }) => [
                 styles.primaryButton,
-                { backgroundColor: theme.colors.primary, opacity: pressed ? 0.72 : 1 },
+                {
+                  backgroundColor: theme.colors.primary,
+                  borderBottomColor: theme.colors.focus,
+                  opacity: pressed ? 0.72 : 1,
+                },
+                pressed && styles.buttonPressed,
               ]}
             >
               <Text style={[styles.primaryButtonLabel, { color: theme.colors.onPrimary }]}>
@@ -435,28 +517,36 @@ export function PlanListScreen({
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, gap: spacing.lg, padding: spacing.lg },
-  header: { gap: spacing.xs, paddingTop: spacing.sm },
+  addButton: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.md, height: 52, justifyContent: 'center', width: 52 },
+  buttonPressed: { borderBottomWidth: 0, transform: [{ translateY: 4 }] },
+  content: { flexGrow: 1, gap: spacing.md, paddingBottom: spacing.xxl, paddingHorizontal: spacing.md },
+  header: { gap: spacing.sm },
   backButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   backButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.6, lineHeight: typography.lineHeight.caption, textTransform: 'uppercase' },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
-  headerDescription: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
+  title: { fontFamily: typography.family.extraBold, fontSize: 24, lineHeight: 32 },
+  headerDescription: { fontFamily: typography.family.body, fontSize: 13, lineHeight: 18 },
+  questTitleCopy: { flex: 1, gap: 2 },
+  questTitleRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
   stateText: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   planList: { gap: spacing.md },
-  planCard: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.lg },
+  planCard: { backgroundColor: palette.transparent, borderWidth: 0, gap: spacing.sm, padding: 0 },
   planCopy: { flex: 1, gap: spacing.xs },
   planTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
   routineCount: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   statusBadge: { borderRadius: radii.pill, borderWidth: 1, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   statusLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  routineRow: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between', minHeight: touchTarget.minimum * 1.2, paddingVertical: spacing.sm },
-  routineMarker: { borderRadius: radii.sm, borderWidth: 2, height: 24, width: 24 },
-  routineTitle: { flex: 1, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
+  routineRow: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between', minHeight: touchTarget.minimum * 1.55, paddingHorizontal: spacing.sm, paddingVertical: spacing.sm },
+  routineMarker: { borderRadius: 2, borderWidth: 1, height: 14, width: 14 },
+  routineIcon: { alignItems: 'center', borderRadius: radii.sm, height: 42, justifyContent: 'center', width: 42 },
+  routineText: { flex: 1, minWidth: 0 },
+  routineTitle: { fontFamily: typography.family.bold, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   routineStatus: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  planActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  planActions: { display: 'none' },
+  hiddenPlanMeta: { display: 'none' },
+  moreButton: { alignItems: 'center', height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
   addRoutineButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   addRoutineButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   archiveConfirmation: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
@@ -466,8 +556,12 @@ const styles = StyleSheet.create({
   archiveConfirmButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   archiveConfirmLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   archiveError: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
-  primaryButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum * 1.15, paddingHorizontal: spacing.lg },
+  primaryButton: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum * 1.15, paddingHorizontal: spacing.lg },
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  progressFill: { borderRadius: radii.pill, height: '100%' },
+  progressTrack: { borderRadius: radii.pill, height: 14, overflow: 'hidden' },
+  customRoutineButton: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', minHeight: 58 },
+  customRoutineLabel: { fontFamily: typography.family.bold, fontSize: 16, lineHeight: 22 },
   secondaryButton: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   secondaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });

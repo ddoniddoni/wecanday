@@ -11,30 +11,25 @@ import type { CompanionId } from '@/features/companion/domain/companions';
 import { applyCompanionAccent } from '@/theme/companionAccent';
 import { darkTheme } from '@/theme/themes/dark';
 import { lightTheme } from '@/theme/themes/light';
-import { pixelDefaultTheme } from '@/theme/themes/pixel-default';
 import type { AppTheme, ThemeId, ThemePreference } from '@/theme/types';
 
 const themes: Record<ThemeId, AppTheme> = {
   light: lightTheme,
   dark: darkTheme,
-  'pixel-default': pixelDefaultTheme,
 };
 
 const companionThemes: Record<ThemeId, Record<CompanionId, AppTheme>> = {
   dark: {
     dew: applyCompanionAccent(darkTheme, 'dew'),
     ember: applyCompanionAccent(darkTheme, 'ember'),
+    luna: applyCompanionAccent(darkTheme, 'luna'),
     sprout: applyCompanionAccent(darkTheme, 'sprout'),
   },
   light: {
     dew: applyCompanionAccent(lightTheme, 'dew'),
     ember: applyCompanionAccent(lightTheme, 'ember'),
+    luna: applyCompanionAccent(lightTheme, 'luna'),
     sprout: applyCompanionAccent(lightTheme, 'sprout'),
-  },
-  'pixel-default': {
-    dew: applyCompanionAccent(pixelDefaultTheme, 'dew'),
-    ember: applyCompanionAccent(pixelDefaultTheme, 'ember'),
-    sprout: applyCompanionAccent(pixelDefaultTheme, 'sprout'),
   },
 };
 

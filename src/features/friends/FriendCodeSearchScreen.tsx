@@ -238,11 +238,11 @@ export function FriendCodeSearchScreen({
               {t('search.avatarPreview', { seed: result.avatar_seed })}
             </Text>
             {hasBlockedResult ? (
-              <Text style={[styles.status, { color: theme.colors.primary }]}>
+              <Text style={[styles.status, { color: theme.colors.textMuted }]}>
                 {t('search.blocked')}
               </Text>
             ) : requestStatus ? (
-              <Text style={[styles.status, { color: theme.colors.primary }]}>
+              <Text style={[styles.status, { color: theme.colors.textMuted }]}>
                 {t(`search.requestStatus.${requestStatus}`)}
               </Text>
             ) : (

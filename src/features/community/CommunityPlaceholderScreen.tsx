@@ -1,10 +1,11 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppTabScreen } from '@/components/AppTabScreen';
 import type { PrimaryNavigationActions } from '@/components/PrimaryNavigation';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, typography } from '@/theme/tokens';
+import { palette, radii, spacing, typography } from '@/theme/tokens';
 
 type CommunityPlaceholderScreenProps = {
   primaryNavigation: PrimaryNavigationActions;
@@ -26,8 +27,10 @@ export function CommunityPlaceholderScreen({
             { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
           ]}
         >
-          <View style={[styles.icon, { backgroundColor: theme.colors.accent }]} />
-          <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('eyebrow')}</Text>
+          <View style={[styles.icon, { backgroundColor: palette.lightContainerHigh }]}>
+            <MaterialIcons color={theme.colors.focus} name="forum" size={30} />
+          </View>
+          <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>{t('eyebrow')}</Text>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('title')}
           </Text>
@@ -42,9 +45,9 @@ export function CommunityPlaceholderScreen({
 
 const styles = StyleSheet.create({
   content: { flex: 1, justifyContent: 'center', padding: spacing.lg },
-  card: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 1, gap: spacing.md, padding: spacing.xl },
-  icon: { borderRadius: radii.pill, height: 52, width: 52 },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
-  description: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
+  card: { alignItems: 'center', borderBottomWidth: 4, borderRadius: radii.lg, borderWidth: 2, gap: spacing.md, padding: spacing.xl },
+  icon: { alignItems: 'center', borderRadius: radii.pill, height: 58, justifyContent: 'center', width: 58 },
+  eyebrow: { fontFamily: typography.family.bold, fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
+  title: { fontFamily: typography.family.extraBold, fontSize: typography.size.title, lineHeight: typography.lineHeight.title, textAlign: 'center' },
+  description: { fontFamily: typography.family.body, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
 });
