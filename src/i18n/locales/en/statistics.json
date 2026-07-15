@@ -1,6 +1,7 @@
 {
-  "eyebrow": "Your progress",
-  "title": "Weekly statistics",
+  "eyebrow": "Routine Journey",
+  "title": "My Growth",
+  "period": { "week": "Week", "month": "Month", "year": "Year" },
   "back": "Back",
   "loading": "Loading weekly statistics…",
   "error": "We couldn’t load your weekly statistics. Please try again.",

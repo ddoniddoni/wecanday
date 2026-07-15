@@ -31,8 +31,9 @@ describe('OnboardingFlowScreen', () => {
       screen.getByRole('button', { name: 'Continue' }),
     );
 
-    expect(await screen.findByText('Choose your language')).toBeTruthy();
+    expect(await screen.findByText('What is your primary language?')).toBeTruthy();
     await fireEvent.press(screen.getByLabelText('Use 한국어'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Continue' }));
 
     expect(
       await screen.findByText('안녕하세요, 우리 할 수 있어요'),

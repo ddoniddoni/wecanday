@@ -58,7 +58,9 @@
     "archiveConfirm": "Archive"
   },
   "list": {
-    "title": "My plans",
+    "eyebrow": "Routine Journey",
+    "title": "Today's Quests",
+    "description": "Manage each routine and keep your journey moving.",
     "back": "Back to today",
     "loading": "Loading your plans",
     "retry": "Try again",

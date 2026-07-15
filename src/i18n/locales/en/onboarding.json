@@ -12,7 +12,7 @@
   "countryEmpty": "No matching country found.",
   "countryOptionLabel": "Select {{country}} ({{code}})",
   "selected": "Selected",
-  "languageTitle": "Choose your language",
+  "languageTitle": "What is your primary language?",
   "languageDescription": "You can change this anytime in settings.",
   "languageOptionLabel": "Use {{language}}",
   "greetingDescription": "Your country and language are set independently.",

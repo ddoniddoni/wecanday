@@ -1,16 +1,18 @@
 {
   "theme": {
     "eyebrow": "Appearance",
-    "title": "Choose your theme",
-    "description": "Your choice applies right away and stays with your account.",
-    "back": "Back to today",
+    "title": "App Theme",
+    "description": "Choose how Routine Journey looks. Your selection is applied and saved right away.",
+    "displayModeTitle": "Display Mode",
+    "characterThemeTitle": "Character Theme",
+    "back": "Back to profile",
     "saving": "Saving theme",
     "saveError": "We couldn't save your theme. Please try again.",
     "options": {
       "system": { "label": "System", "description": "Match your device appearance." },
       "light": { "label": "Light", "description": "A bright, calm workspace." },
       "dark": { "label": "Dark", "description": "A low-light workspace." },
-      "pixel-default": { "label": "Pixel day", "description": "A limited sky, navy, coral, and gold palette with crisp square details.", "previewLabel": "Pixel day palette preview" }
+      "pixel-default": { "label": "Routine Garden", "description": "A crisp pixel palette made for your existing routine pets.", "previewLabel": "Routine Garden palette preview" }
     }
   },
   "language": {

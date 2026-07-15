@@ -1,6 +1,14 @@
 {
   "eyebrow": "{{name}}’s routine day",
   "title": "Today",
+  "home": {
+    "journeyTitle": "Routine journey",
+    "experience": "{{count}} XP",
+    "routineCount": "{{completed}}/{{total}}",
+    "routinesLabel": "Routines",
+    "streakLabel": "Day streak",
+    "routineDayLabel": "Routine day"
+  },
   "dateSelector": {
     "accessibilityLabel": "Seven-day date selector",
     "selectDay": "Select {{date}}{{today}}",

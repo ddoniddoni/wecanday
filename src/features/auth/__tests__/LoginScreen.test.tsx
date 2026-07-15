@@ -17,6 +17,7 @@ describe('LoginScreen', () => {
     expect(
       screen.getByRole('button', { name: 'Continue with Google' }),
     ).toBeTruthy();
+    expect(screen.getByRole('header', { name: 'Log in or create profile' })).toBeTruthy();
     expect(screen.getByTestId('google-sign-in-logo')).toBeTruthy();
     expect(screen.queryByText('Continue with Apple')).toBeNull();
   });

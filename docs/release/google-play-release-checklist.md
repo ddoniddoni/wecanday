@@ -21,9 +21,11 @@
 ## 배포 전 확인
 
 - [ ] Google OAuth Android client ID, package name `com.wecanday.app`, SHA-1/SHA-256 인증서 fingerprint, Supabase redirect URL `wecanday://auth/callback`을 production 값으로 확인한다.
+- [ ] RevenueCat Android 공개 SDK 키, `premium` entitlement, 현재 Offering의 월간·연간 Google Play 상품을 production 값으로 연결한다.
+- [ ] RevenueCat 웹훅 서명 검증과 서버 entitlement mirror 갱신을 배포하고 sandbox 구매·취소·만료·복원을 검증한다.
 - [ ] 한국어·영어로 개인정보처리방침, 이용약관, 계정 삭제 흐름을 기기에서 검수한다.
 - [ ] `npm run lint`, `npm run typecheck`, `npm run test`, Supabase migration/RLS test, Android production 또는 internal build를 실행한다.
-- [ ] 실제 기기에서 Google 로그인, 첫 루틴 생성, 체크인, 알림 권한 거절, 친구 코드, 계정 삭제를 확인한다.
+- [ ] 실제 기기에서 Google 로그인, 첫 루틴 생성, 체크인, 알림 권한 거절, 친구 코드, Premium 구매·복원, 계정 삭제를 확인한다.
 
 ## 출시 책임자 확인
 

@@ -18,7 +18,7 @@ import {
 } from '@/features/companion/domain/companions';
 import { getCompanionAccent } from '@/theme/companionAccent';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
+import { palette, radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 type CompanionSelectionScreenProps = {
   initialCompanionId?: CompanionId;
@@ -53,15 +53,14 @@ export function CompanionSelectionScreen({
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-          {t('eyebrow')}
-        </Text>
-        <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
-          {t('title')}
-        </Text>
-        <Text style={[styles.description, { color: theme.colors.textMuted }]}>
-          {t('description')}
-        </Text>
+        <View style={styles.header}>
+          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.primary }]}>
+            {t('title')}
+          </Text>
+          <Text style={[styles.description, { color: theme.colors.textMuted }]}>
+            {t('description')}
+          </Text>
+        </View>
 
         <View style={styles.options}>
           {companionIds.map((companionId) => {
@@ -98,7 +97,15 @@ export function CompanionSelectionScreen({
                     {t(`options.${companionId}.description`)}
                   </Text>
                 </View>
-                <Text style={[styles.selectedLabel, { color: companionAccent.primary }]}>
+                <Text
+                  style={[
+                    styles.selectedLabel,
+                    {
+                      backgroundColor: isSelected ? companionAccent.primary : palette.transparent,
+                      color: isSelected ? theme.colors.onPrimary : companionAccent.primary,
+                    },
+                  ]}
+                >
                   {isSelected ? t('selected') : ''}
                 </Text>
               </Pressable>
@@ -147,20 +154,20 @@ export function CompanionSelectionScreen({
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { gap: spacing.md, padding: spacing.lg },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.8, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
-  description: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
+  content: { gap: spacing.md, padding: spacing.md },
+  header: { alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md },
+  title: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading, textAlign: 'center' },
+  description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   options: { gap: spacing.sm, marginTop: spacing.sm },
-  option: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 2, flexDirection: 'row', gap: spacing.sm, minHeight: 124, padding: spacing.md },
-  image: { height: 92, width: 80 },
-  optionCopy: { flex: 1, gap: spacing.xs },
-  optionName: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  optionDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
-  selectedLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  option: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 2, gap: spacing.xs, minHeight: 216, padding: spacing.md },
+  image: { height: 124, width: 124 },
+  optionCopy: { alignItems: 'center', gap: spacing.xs },
+  optionName: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, textAlign: 'center' },
+  optionDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
+  selectedLabel: { borderRadius: radii.pill, fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 14, minHeight: 18, overflow: 'hidden', paddingHorizontal: spacing.sm, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
-  footer: { flexDirection: 'row', gap: spacing.sm, padding: spacing.lg },
-  primaryButton: { alignItems: 'center', borderRadius: radii.pill, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  secondaryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  footer: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md },
+  primaryButton: { alignItems: 'center', borderRadius: radii.sm, flex: 1, justifyContent: 'center', minHeight: 56, paddingHorizontal: spacing.md },
+  secondaryButton: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   buttonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });

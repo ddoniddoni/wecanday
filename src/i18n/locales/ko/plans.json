@@ -58,7 +58,9 @@
     "archiveConfirm": "보관"
   },
   "list": {
-    "title": "내 계획",
+    "eyebrow": "루틴 여정",
+    "title": "오늘의 퀘스트",
+    "description": "루틴을 관리하고 나만의 여정을 이어가세요.",
     "back": "오늘로 돌아가기",
     "loading": "계획을 불러오고 있어요",
     "retry": "다시 시도",

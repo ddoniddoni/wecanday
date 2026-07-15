@@ -14,11 +14,14 @@ describe('ProfileOverviewScreen', () => {
     const screen = await render(
       <ThemeProvider preference="light">
         <ProfileOverviewScreen
+          companionId="sprout"
+          createdAt="2026-07-01T00:00:00.000Z"
           displayName="Jamie"
           onOpenAccountSettings={onOpenAccountSettings}
           onOpenCompanionSelection={onOpenCompanionSelection}
           onOpenFriendSearch={jest.fn()}
           onOpenLanguageSelection={onOpenLanguageSelection}
+          onOpenPremium={jest.fn()}
           onOpenPlans={jest.fn()}
           onOpenStatistics={jest.fn()}
           onOpenThemes={onOpenThemes}
@@ -28,7 +31,7 @@ describe('ProfileOverviewScreen', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByRole('header', { name: "Jamie's space" })).toBeTruthy();
+    expect(screen.getByRole('header', { name: 'Jamie' })).toBeTruthy();
     expect(screen.getByText('Ab7kL2xP9Qm4')).toBeTruthy();
 
     await fireEvent.press(screen.getByRole('button', { name: 'Change theme' }));
@@ -36,10 +39,10 @@ describe('ProfileOverviewScreen', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Open settings' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Change pet' }));
 
-    expect(screen.queryByText('Daily pet')).toBeNull();
-    expect(screen.queryByText('Language')).toBeNull();
-    expect(screen.queryByText('Appearance')).toBeNull();
-    expect(screen.queryByText('Account & privacy')).toBeNull();
+    expect(screen.getByText('Pet')).toBeTruthy();
+    expect(screen.getByText('Language')).toBeTruthy();
+    expect(screen.getByText('Theme')).toBeTruthy();
+    expect(screen.getByText('Settings')).toBeTruthy();
 
     expect(onOpenThemes).toHaveBeenCalledTimes(1);
     expect(onOpenLanguageSelection).toHaveBeenCalledTimes(1);

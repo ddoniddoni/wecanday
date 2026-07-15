@@ -1,7 +1,7 @@
 {
   "eyebrow": "나의 펫",
-  "title": "매일 함께할 친구를 골라요",
-  "description": "작은 한 걸음을 응원해 줄 펫을 선택하세요.",
+  "title": "함께할 펫을 골라요!",
+  "description": "여정을 함께할 친구를 선택하세요. 나중에 변경할 수 있어요.",
   "optionAccessibilityLabel": "{{name}} 선택",
   "imageAccessibilityLabel": "{{name}} 펫",
   "selected": "선택됨",

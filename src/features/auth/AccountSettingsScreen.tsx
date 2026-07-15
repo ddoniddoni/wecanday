@@ -142,29 +142,27 @@ export function AccountSettingsScreen({
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Pressable
-          accessibilityLabel={t('account.back')}
-          accessibilityRole="button"
-          disabled={isDeleting || isSigningOut}
-          onPress={onBack}
-          style={({ pressed }) => [
-            styles.backButton,
-            {
-              borderColor: theme.colors.border,
-              opacity: pressed || isDeleting || isSigningOut ? 0.72 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.backLabel, { color: theme.colors.text }]}>{t('account.back')}</Text>
-        </Pressable>
-        <View style={styles.copy}>
+        <View style={styles.header}>
+          <Pressable
+            accessibilityLabel={t('account.back')}
+            accessibilityRole="button"
+            disabled={isDeleting || isSigningOut}
+            onPress={onBack}
+            style={({ pressed }) => [
+              styles.backButton,
+              { opacity: pressed || isDeleting || isSigningOut ? 0.72 : 1 },
+            ]}
+          >
+            <Text style={[styles.backLabel, { color: theme.colors.text }]}>‹</Text>
+          </Pressable>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('account.title')}
           </Text>
-          <Text style={[styles.description, { color: theme.colors.textMuted }]}>
-            {t('account.description')}
-          </Text>
+          <View style={styles.headerSpacer} />
         </View>
+        <Text style={[styles.description, { color: theme.colors.textMuted }]}>
+          {t('account.description')}
+        </Text>
         <View style={[styles.section, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('account.nicknameTitle')}</Text>
           <Text style={[styles.sectionDescription, { color: theme.colors.textMuted }]}>
@@ -409,28 +407,29 @@ export function AccountSettingsScreen({
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { gap: spacing.lg, padding: spacing.lg },
-  backButton: { alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
-  backLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  copy: { gap: spacing.xs },
+  content: { gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl },
+  header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  headerSpacer: { width: touchTarget.minimum },
+  backButton: { alignItems: 'center', height: touchTarget.minimum, justifyContent: 'center', width: touchTarget.minimum },
+  backLabel: { fontSize: typography.size.title, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.title },
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
   description: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
-  section: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
-  dangerSection: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
+  section: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.lg },
+  dangerSection: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, marginTop: spacing.sm, padding: spacing.lg },
   sectionTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   sectionDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   settingRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   settingCopy: { flex: 1, gap: spacing.xs },
-  secondaryButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  secondaryButton: { alignItems: 'center', alignSelf: 'stretch', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   secondaryLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  dangerButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  dangerButton: { alignItems: 'center', alignSelf: 'stretch', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   dangerLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   confirmation: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
   confirmationTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   confirmationActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   legalActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   nicknameInput: { borderRadius: radii.sm, borderWidth: 1, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, minHeight: touchTarget.minimum, paddingHorizontal: spacing.sm },
-  deleteConfirmButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  deleteConfirmButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   deleteConfirmLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
 });

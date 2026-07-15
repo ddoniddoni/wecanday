@@ -1,7 +1,7 @@
 {
   "eyebrow": "YOUR PET",
-  "title": "Choose your daily pet",
-  "description": "Pick the pet who will cheer for each small step.",
+  "title": "Choose your companion!",
+  "description": "Select a buddy for your journey. You can change this later.",
   "optionAccessibilityLabel": "Choose {{name}}",
   "imageAccessibilityLabel": "{{name}} pet",
   "selected": "Selected",

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { Image } from 'expo-image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,7 +26,7 @@ import {
   EXPERIENCE_PER_ROUTINE_COMPLETION,
   getCompanionProgressForExperience,
 } from '@/features/companion/domain/progression';
-import type { CompanionId } from '@/features/companion/domain/companions';
+import { getCompanionAsset, type CompanionId } from '@/features/companion/domain/companions';
 import { TodayDateStrip } from '@/features/check-ins/TodayDateStrip';
 import { TodayProgressSummary } from '@/features/check-ins/TodayProgressSummary';
 import { TodayRoutineGroups } from '@/features/check-ins/TodayRoutineGroups';
@@ -60,6 +61,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 const SYNC_INTERVAL_MS = 30_000;
 const COMPLETION_FEEDBACK_DURATION_MS = 2_000;
 const selectedDateFormattersByLocale = new Map<string, Intl.DateTimeFormat>();
+const noOp = () => undefined;
 
 type CompletionFeedbackState = {
   completedCount: number;
@@ -77,6 +79,7 @@ type TodayRoutineScreenProps = {
   isHapticsEnabled: boolean;
   isMotionReduced: boolean;
   onCreatePlan: () => void;
+  onOpenCommunity?: () => void;
   onEditRoutine: (item: Pick<TodayRoutineItem, 'id' | 'reminder_minute' | 'schedule_weekdays' | 'title'>) => void;
   onOpenPlans: () => void;
   onOpenProfile: () => void;
@@ -96,6 +99,7 @@ export function TodayRoutineScreen({
   isHapticsEnabled,
   isMotionReduced,
   onCreatePlan,
+  onOpenCommunity = noOp,
   onEditRoutine,
   onOpenPlans,
   onOpenProfile,
@@ -120,6 +124,7 @@ export function TodayRoutineScreen({
   const [errorCode, setErrorCode] = useState<CheckInErrorCode | null>(null);
   const initialCompanionProgress = getCompanionProgressForExperience(0);
   const companionProgressRef = useRef(initialCompanionProgress);
+  const [companionProgress, setCompanionProgress] = useState(initialCompanionProgress);
   const [completionFeedback, setCompletionFeedback] =
     useState<CompletionFeedbackState | null>(null);
   const completionFeedbackIdRef = useRef(0);
@@ -176,6 +181,7 @@ export function TodayRoutineScreen({
         );
         if (loadedCompanionProgress) {
           companionProgressRef.current = loadedCompanionProgress;
+          setCompanionProgress(loadedCompanionProgress);
         }
         dailyStreakRef.current = loadedDailyStreak;
         setDailyStreak(loadedDailyStreak);
@@ -280,6 +286,7 @@ export function TodayRoutineScreen({
 
       completionFeedbackIdRef.current = feedbackId;
       companionProgressRef.current = nextCompanionProgress;
+      setCompanionProgress(nextCompanionProgress);
       setCompletionFeedback({
         completedCount: items.filter((candidate) => candidate.completedAt !== null).length + 1,
         experienceGained: EXPERIENCE_PER_ROUTINE_COMPLETION,
@@ -298,6 +305,7 @@ export function TodayRoutineScreen({
       );
 
       companionProgressRef.current = nextCompanionProgress;
+      setCompanionProgress(nextCompanionProgress);
     }
     if (isCompletingRoutineDay && dailyStreakRef.current !== null) {
       const nextDailyStreak = dailyStreakRef.current + 1;
@@ -383,6 +391,7 @@ export function TodayRoutineScreen({
     <AppTabScreen
       activeTab="today"
       navigation={{
+        onOpenCommunity,
         onOpenPlans,
         onOpenProfile,
         onOpenStatistics,
@@ -391,10 +400,24 @@ export function TodayRoutineScreen({
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
-            {t('title')}
-          </Text>
-          <Text style={[styles.date, { color: theme.colors.textMuted }]}>{selectedDateLabel}</Text>
+          <View style={styles.headerCopy}>
+            <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
+              {t('home.journeyTitle')}
+            </Text>
+            <Text style={[styles.date, { color: theme.colors.textMuted }]}>{selectedDateLabel}</Text>
+          </View>
+          <View style={[styles.experienceBadge, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+            <Image
+              accessibilityLabel={t('progressSummary.companionImageLabel')}
+              accessibilityRole="image"
+              contentFit="contain"
+              source={getCompanionAsset(companionId)}
+              style={styles.experiencePet}
+            />
+            <Text style={[styles.experienceLabel, { color: theme.colors.primary }]}>
+              {t('home.experience', { count: companionProgress.experience })}
+            </Text>
+          </View>
         </View>
         <TodayDateStrip
           onSelectRoutineDay={handleSelectRoutineDay}
@@ -403,7 +426,6 @@ export function TodayRoutineScreen({
         />
         {!isLoading && !errorCode && isCurrentRoutineDay ? (
           <TodayProgressSummary
-            companionId={companionId}
             completedCount={completedCount}
             dailyStreak={dailyStreak}
             isDailyStreakLoading={isDailyStreakLoading}
@@ -543,7 +565,11 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { flexGrow: 1, gap: spacing.lg, paddingBottom: spacing.xxl, paddingHorizontal: spacing.lg, paddingTop: spacing.md },
   date: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
-  header: { gap: spacing.xs },
+  experienceBadge: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, flexDirection: 'row', gap: 2, minHeight: touchTarget.minimum, paddingEnd: spacing.sm, paddingStart: spacing.xs },
+  experienceLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  experiencePet: { height: 28, width: 28 },
+  header: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
+  headerCopy: { flex: 1, gap: spacing.xs },
   title: { flexShrink: 1, fontSize: typography.size.title, fontWeight: typography.weight.bold, letterSpacing: -0.4, lineHeight: typography.lineHeight.title },
   success: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   error: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },

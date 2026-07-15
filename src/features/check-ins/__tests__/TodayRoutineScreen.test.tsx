@@ -120,13 +120,15 @@ describe('TodayRoutineScreen', () => {
       </ThemeProvider>,
     );
 
+    expect(screen.getByRole('header', { name: 'Routine journey' })).toBeTruthy();
+    expect(screen.getByText('0 XP')).toBeTruthy();
     await screen.findByRole('checkbox', { name: 'Complete Morning walk' });
     await fireEvent.press(
       screen.getByRole('checkbox', { name: 'Complete Morning walk' }),
     );
 
     await waitFor(() => {
-      expect(screen.getByText('1 of 1 complete')).toBeTruthy();
+      expect(screen.getByText('1/1')).toBeTruthy();
       expect(screen.getByText('Nice work! You did it.')).toBeTruthy();
       expect(screen.getByText('+10 XP')).toBeTruthy();
       expect(screen.getByText('1 day in a row!')).toBeTruthy();
@@ -346,7 +348,6 @@ describe('TodayRoutineScreen', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByText('Loading today’s routines…')).toBeTruthy();
     expect(await screen.findByText('Nothing is scheduled for this routine day.')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Create a plan' })).toBeTruthy();
   });

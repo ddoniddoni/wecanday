@@ -112,6 +112,7 @@ function PlanListItemCard({
             key={routine.id}
             style={[styles.routineRow, { borderColor: theme.colors.border }]}
           >
+            <View style={[styles.routineMarker, { borderColor: theme.colors.border }]} />
             {routineContent}
           </View>
         ) : (
@@ -131,6 +132,19 @@ function PlanListItemCard({
               },
             ]}
           >
+            <View
+              style={[
+                styles.routineMarker,
+                {
+                  backgroundColor: routine.status === 'active'
+                    ? theme.colors.primary
+                    : theme.colors.background,
+                  borderColor: routine.status === 'active'
+                    ? theme.colors.primary
+                    : theme.colors.border,
+                },
+              ]}
+            />
             {routineContent}
           </Pressable>
         );
@@ -319,8 +333,12 @@ export function PlanListScreen({
               </Text>
             </Pressable>
           ) : null}
+          <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{t('list.eyebrow')}</Text>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.colors.text }]}>
             {t('list.title')}
+          </Text>
+          <Text style={[styles.headerDescription, { color: theme.colors.textMuted }]}>
+            {t('list.description')}
           </Text>
         </View>
 
@@ -417,36 +435,39 @@ export function PlanListScreen({
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, gap: spacing.md, padding: spacing.lg },
-  header: { gap: spacing.sm },
-  backButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  content: { flexGrow: 1, gap: spacing.lg, padding: spacing.lg },
+  header: { gap: spacing.xs, paddingTop: spacing.sm },
+  backButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   backButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
+  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.6, lineHeight: typography.lineHeight.caption, textTransform: 'uppercase' },
   title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
+  headerDescription: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 180, padding: spacing.lg },
   stateText: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
-  planList: { gap: spacing.sm },
-  planCard: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
+  planList: { gap: spacing.md },
+  planCard: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.lg },
   planCopy: { flex: 1, gap: spacing.xs },
-  planTitle: { fontSize: typography.size.body, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.body },
+  planTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
   routineCount: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   statusBadge: { borderRadius: radii.pill, borderWidth: 1, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   statusLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  routineRow: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between', minHeight: touchTarget.minimum, paddingVertical: spacing.sm },
+  routineRow: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between', minHeight: touchTarget.minimum * 1.2, paddingVertical: spacing.sm },
+  routineMarker: { borderRadius: radii.sm, borderWidth: 2, height: 24, width: 24 },
   routineTitle: { flex: 1, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   routineStatus: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   planActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  addRoutineButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  addRoutineButton: { alignItems: 'center', alignSelf: 'flex-start', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   addRoutineButtonLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   archiveConfirmation: { borderRadius: radii.md, borderWidth: 1, gap: spacing.sm, padding: spacing.md },
   archiveConfirmationTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
   archiveConfirmationDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   archiveActions: { flexDirection: 'row', gap: spacing.sm, justifyContent: 'flex-end' },
-  archiveConfirmButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  archiveConfirmButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   archiveConfirmLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   archiveError: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
-  primaryButton: { alignItems: 'center', borderRadius: radii.pill, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
+  primaryButton: { alignItems: 'center', borderRadius: radii.sm, justifyContent: 'center', minHeight: touchTarget.minimum * 1.15, paddingHorizontal: spacing.lg },
   primaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  secondaryButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
+  secondaryButton: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.lg },
   secondaryButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
 });

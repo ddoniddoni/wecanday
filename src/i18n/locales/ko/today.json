@@ -1,6 +1,14 @@
 {
   "eyebrow": "{{name}}님의 루틴 데이",
   "title": "오늘",
+  "home": {
+    "journeyTitle": "루틴 여정",
+    "experience": "{{count}} XP",
+    "routineCount": "{{total}}개 중 {{completed}}개",
+    "routinesLabel": "루틴",
+    "streakLabel": "연속 실천",
+    "routineDayLabel": "루틴 데이"
+  },
   "dateSelector": {
     "accessibilityLabel": "7일 날짜 선택",
     "selectDay": "{{date}}{{today}} 선택",

@@ -18,10 +18,11 @@ M0~M4의 핵심 루틴, 통계, 소셜 기능과 계정 삭제 흐름을 포함�
 - 오늘 체크인·SQLite outbox·스트릭·로컬 알림
 - 동반자·테마, 주간·월간·연간 통계, 친구·차단·1:1 챌린지·소셜 푸시
 - 앱 내 계정 삭제, 개인정보처리방침, 이용약관
+- Routine Journey Pro 월간·연간 요금제 디자인 시안
 
 GitHub Actions CI와 Supabase 로컬 설정·마이그레이션이 구성되어 있습니다.
 실제 소셜 로그인에는 Supabase 프로젝트와 Google 공급자 설정이 필요합니다.
-Premium 결제와 Google Play 배포의 운영 체크는 아직 남아 있습니다. 자세한 출시 준비 항목은 [`docs/release/google-play-release-checklist.md`](docs/release/google-play-release-checklist.md)를 확인하세요.
+Premium 결제 SDK, 상품·entitlement·웹훅 연결은 출시 준비 단계에서 진행합니다. 자세한 출시 준비 항목은 [`docs/release/google-play-release-checklist.md`](docs/release/google-play-release-checklist.md)를 확인하세요.
 
 ## 환경 설정
 
@@ -33,6 +34,7 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
 
 모바일 앱에 `service_role` 또는 provider client secret을 넣지 않습니다.
+현재 Pro 화면은 디자인 확인용이며 구매를 시작하지 않습니다. RevenueCat 공개 SDK 키는 출시 준비 단계에서 Google Play 상품과 함께 연결합니다.
 
 ### Google 로그인 리다이렉트
 

@@ -2,23 +2,37 @@
   "eyebrow": "YOUR SPACE",
   "title": "{{name}}'s space",
   "description": "Your routines, friends, and preferences live here.",
+  "memberSince": "Member since {{date}}",
+  "toolsTitle": "Your routine tools",
+  "friends": {
+    "action": "Add friend"
+  },
+  "premium": {
+    "title": "Routine Journey Pro",
+    "description": "Unlock unlimited routines and deeper insights."
+  },
   "language": {
     "title": "Language",
+    "shortTitle": "Language",
     "description": "Choose the language you want to use in WeCanDay.",
     "action": "Change language"
   },
   "appearance": {
     "title": "Appearance",
+    "shortTitle": "Theme",
     "description": "Choose the mood that fits your day.",
     "action": "Change theme"
   },
   "companion": {
     "title": "Daily pet",
+    "shortTitle": "Pet",
+    "avatarLabel": "{{name}}'s selected pet",
     "description": "Choose the pet who cheers for your next small step.",
     "action": "Change pet"
   },
   "account": {
     "title": "Account & privacy",
+    "shortTitle": "Settings",
     "description": "Manage your account, privacy, and sign-in.",
     "action": "Open settings"
   }

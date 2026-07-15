@@ -1,15 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Image } from 'expo-image';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { getCompanionAsset, type CompanionId } from '@/features/companion/domain/companions';
 import { RoutineDayTiming } from '@/features/routine-day/RoutineDayTiming';
 import type { RoutineDayConfig } from '@/features/routine-day/domain/routineDay';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, typography } from '@/theme/tokens';
 
 type TodayProgressSummaryProps = {
-  companionId: CompanionId;
   completedCount: number;
   dailyStreak: number | null;
   isDailyStreakLoading: boolean;
@@ -18,7 +15,6 @@ type TodayProgressSummaryProps = {
 };
 
 export function TodayProgressSummary({
-  companionId,
   completedCount,
   dailyStreak,
   isDailyStreakLoading,
@@ -27,10 +23,6 @@ export function TodayProgressSummary({
 }: TodayProgressSummaryProps) {
   const { t } = useTranslation('today');
   const { theme } = useTheme();
-  const progressPercent = totalCount === 0 ? 0 : (completedCount / totalCount) * 100;
-  const progressLabel = totalCount === 0
-    ? t('progressSummary.noScheduled')
-    : t('progress', { completed: completedCount, total: totalCount });
   const streakLabel = isDailyStreakLoading
     ? t('stats.streakLoading')
     : dailyStreak === null
@@ -46,45 +38,36 @@ export function TodayProgressSummary({
       })}
       style={[styles.container, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
     >
-      <View style={styles.mainRow}>
-        <View style={styles.copy}>
-          <Text style={[styles.eyebrow, { color: theme.colors.textMuted }]}>
-            {t('progressSummary.eyebrow')}
-          </Text>
-          <Text style={[styles.progress, { color: theme.colors.text }]}>
-            {progressLabel}
-          </Text>
-          <View style={[styles.track, { backgroundColor: theme.colors.background }]}>
-            <View style={[styles.fill, { backgroundColor: theme.colors.primary, width: `${progressPercent}%` }]} />
-          </View>
-        </View>
-        <Image
-          accessibilityLabel={t('progressSummary.companionImageLabel')}
-          accessibilityRole="image"
-          contentFit="contain"
-          source={getCompanionAsset(companionId)}
-          style={styles.companion}
-        />
-      </View>
-      <View style={[styles.metaRow, { borderTopColor: theme.colors.border }]}>
-        <RoutineDayTiming config={routineDayConfig} variant="inline" />
-        <Text style={[styles.streak, { color: theme.colors.primary }]}>
-          {t('progressSummary.streak', { streak: streakLabel })}
+      <View style={styles.metric}>
+        <Text style={[styles.metricValue, { color: theme.colors.primary }]}>
+          {t('home.routineCount', { completed: completedCount, total: totalCount })}
         </Text>
+        <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
+          {t('home.routinesLabel')}
+        </Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+      <View style={styles.metric}>
+        <Text style={[styles.metricValue, { color: theme.colors.accent }]}>{streakLabel}</Text>
+        <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
+          {t('home.streakLabel')}
+        </Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+      <View style={styles.metric}>
+        <Text style={[styles.metricLabel, { color: theme.colors.textMuted }]}>
+          {t('home.routineDayLabel')}
+        </Text>
+        <RoutineDayTiming config={routineDayConfig} variant="inline" />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  companion: { height: 72, marginEnd: -spacing.sm, width: 72 },
-  container: { borderRadius: radii.lg, borderWidth: 1, overflow: 'hidden' },
-  copy: { flex: 1, gap: spacing.xs, minWidth: 0 },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.medium, lineHeight: typography.lineHeight.caption },
-  fill: { borderRadius: radii.pill, height: '100%' },
-  mainRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.md },
-  metaRow: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  progress: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
-  streak: { flexShrink: 1, fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right' },
-  track: { borderRadius: radii.pill, height: 8, overflow: 'hidden', width: '100%' },
+  container: { alignItems: 'stretch', borderRadius: radii.md, borderWidth: 1, flexDirection: 'row', minHeight: 84, paddingVertical: spacing.sm },
+  divider: { marginVertical: spacing.xs, width: 1 },
+  metric: { alignItems: 'center', flex: 1, gap: spacing.xs, justifyContent: 'center', minWidth: 0, paddingHorizontal: spacing.xs },
+  metricLabel: { fontSize: 11, lineHeight: 14, textAlign: 'center' },
+  metricValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body, textAlign: 'center' },
 });

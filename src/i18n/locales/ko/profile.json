@@ -2,23 +2,37 @@
   "eyebrow": "나의 공간",
   "title": "{{name}}님의 공간",
   "description": "루틴, 친구, 설정을 한곳에서 관리하세요.",
+  "memberSince": "{{date}}부터 함께하는 중",
+  "toolsTitle": "나의 루틴 도구",
+  "friends": {
+    "action": "친구 추가"
+  },
+  "premium": {
+    "title": "Routine Journey Pro",
+    "description": "루틴 제한을 없애고 더 깊은 통계를 확인하세요."
+  },
   "language": {
     "title": "언어",
+    "shortTitle": "언어",
     "description": "위캔데이에서 사용할 언어를 선택하세요.",
     "action": "언어 변경"
   },
   "appearance": {
     "title": "화면 모양",
+    "shortTitle": "테마",
     "description": "오늘의 기분에 맞는 테마를 골라보세요.",
     "action": "테마 변경"
   },
   "companion": {
     "title": "매일의 펫",
+    "shortTitle": "펫",
+    "avatarLabel": "{{name}}님의 선택된 펫",
     "description": "다음 작은 걸음을 응원할 펫을 골라보세요.",
     "action": "펫 변경"
   },
   "account": {
     "title": "계정 및 개인정보",
+    "shortTitle": "설정",
     "description": "계정, 개인정보, 로그인 설정을 관리하세요.",
     "action": "설정 열기"
   }

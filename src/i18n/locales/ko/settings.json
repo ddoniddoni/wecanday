@@ -1,16 +1,18 @@
 {
   "theme": {
     "eyebrow": "화면 모양",
-    "title": "테마를 선택하세요",
-    "description": "선택한 테마는 바로 적용되고 계정에 저장돼요.",
-    "back": "오늘로 돌아가기",
+    "title": "앱 테마",
+    "description": "Routine Journey의 화면 모양을 골라보세요. 선택 즉시 적용되고 계정에 저장돼요.",
+    "displayModeTitle": "화면 모드",
+    "characterThemeTitle": "캐릭터 테마",
+    "back": "프로필로 돌아가기",
     "saving": "테마 저장 중",
     "saveError": "테마를 저장하지 못했어요. 다시 시도해 주세요.",
     "options": {
       "system": { "label": "시스템 설정", "description": "기기의 화면 모양을 따라가요." },
       "light": { "label": "라이트", "description": "밝고 차분한 화면이에요." },
       "dark": { "label": "다크", "description": "어두운 곳에서 보기 편한 화면이에요." },
-      "pixel-default": { "label": "픽셀 데이", "description": "하늘색·남색·코랄·골드의 제한된 팔레트와 또렷한 사각 디테일을 사용해요.", "previewLabel": "픽셀 데이 팔레트 미리보기" }
+      "pixel-default": { "label": "루틴 가든", "description": "기존 루틴 펫과 어울리는 또렷한 픽셀 팔레트예요.", "previewLabel": "루틴 가든 팔레트 미리보기" }
     }
   },
   "language": {

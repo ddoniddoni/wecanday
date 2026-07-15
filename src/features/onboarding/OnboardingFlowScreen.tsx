@@ -18,11 +18,16 @@ import {
 } from '@/features/onboarding/domain/countries';
 import type { OnboardingPreferences } from '@/features/onboarding/domain/preferences';
 import { saveOnboardingPreferences } from '@/features/onboarding/data/onboardingPreferencesStorage';
-import { localeOptions, resolveSupportedLocale } from '@/i18n/types';
+import { localeOptions, resolveSupportedLocale, type SupportedLocale } from '@/i18n/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radii, spacing, touchTarget, typography } from '@/theme/tokens';
 
 type OnboardingStep = 'country' | 'language' | 'greeting';
+
+const languageSymbols: Record<SupportedLocale, string> = {
+  en: '🇺🇸',
+  ko: '🇰🇷',
+};
 
 type OnboardingFlowScreenProps = {
   initialPreferences: OnboardingPreferences;
@@ -193,9 +198,18 @@ export function OnboardingFlowScreen({
       return;
     }
 
-    const nextPreferences = { ...preferences, locale };
+    setPreferences((currentPreferences) => ({ ...currentPreferences, locale }));
+    setHasSaveError(false);
+  }
 
-    void persistAndApply(nextPreferences, async () => {
+  function handleLanguageContinue() {
+    if (!preferences.locale) {
+      return;
+    }
+
+    const locale = preferences.locale;
+
+    void persistAndApply(preferences, async () => {
       await i18n.changeLanguage(locale);
       setStep('greeting');
     });
@@ -299,52 +313,62 @@ export function OnboardingFlowScreen({
         edges={['top', 'bottom']}
         style={[styles.screen, { backgroundColor: theme.colors.background }]}
       >
-        <View style={styles.centeredContent}>
-          <Text style={[styles.progress, { color: theme.colors.primary }]}>
-            {t('stepProgress', { current: 2, total: 3 })}
-          </Text>
+        <View style={styles.languageContent}>
+          <Pressable
+            accessibilityLabel={t('back')}
+            accessibilityRole="button"
+            disabled={isSaving}
+            onPress={() => setStep('country')}
+            style={({ pressed }) => [styles.closeButton, { opacity: pressed || isSaving ? 0.6 : 1 }]}
+          >
+            <Text style={[styles.closeLabel, { color: theme.colors.text }]}>×</Text>
+          </Pressable>
           <Text
             accessibilityRole="header"
-            style={[styles.title, { color: theme.colors.text }]}
+            style={[styles.languageTitle, { color: theme.colors.text }]}
           >
             {t('languageTitle')}
           </Text>
-          <Text style={[styles.description, { color: theme.colors.textMuted }]}>
-            {t('languageDescription')}
-          </Text>
           <View style={styles.languageOptions}>
-            {localeOptions.map((option) => (
-              <Pressable
-                accessibilityLabel={t('languageOptionLabel', {
-                  language: option.nativeName,
-                })}
-                accessibilityRole="button"
-                disabled={isSaving}
-                key={option.code}
-                onPress={() => handleLanguageSelect(option.code)}
-                style={({ pressed }) => [
-                  styles.languageOption,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.border,
-                    opacity: isSaving ? 0.45 : pressed ? 0.75 : 1,
-                  },
-                ]}
-              >
-                <Text style={[styles.languageName, { color: theme.colors.text }]}>
-                  {option.nativeName}
-                </Text>
-              </Pressable>
-            ))}
+            {localeOptions.map((option) => {
+              const isSelected = preferences.locale === option.code;
+
+              return (
+                <Pressable
+                  accessibilityLabel={t('languageOptionLabel', {
+                    language: option.nativeName,
+                  })}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
+                  disabled={isSaving}
+                  key={option.code}
+                  onPress={() => handleLanguageSelect(option.code)}
+                  style={({ pressed }) => [
+                    styles.languageOption,
+                    {
+                      backgroundColor: theme.colors.surface,
+                      borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                      opacity: isSaving ? 0.45 : pressed ? 0.75 : 1,
+                    },
+                  ]}
+                >
+                  <View style={[styles.languageSymbol, { backgroundColor: theme.colors.background }]}>
+                    <Text style={styles.languageSymbolText}>{languageSymbols[option.code]}</Text>
+                  </View>
+                  <Text style={[styles.languageName, { color: theme.colors.text }]}>
+                    {option.nativeName}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
           {errorMessage}
         </View>
         <View style={styles.footer}>
           <ActionButton
-            isDisabled={isSaving}
-            label={t('back')}
-            onPress={() => setStep('country')}
-            variant="secondary"
+            isDisabled={!preferences.locale || isSaving}
+            label={t('continue')}
+            onPress={handleLanguageContinue}
           />
         </View>
       </SafeAreaView>
@@ -397,12 +421,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
   },
-  centeredContent: {
-    flex: 1,
-    gap: spacing.md,
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
+  languageContent: { flex: 1, paddingHorizontal: spacing.sm, paddingTop: spacing.sm },
+  closeButton: { alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.minimum, minWidth: touchTarget.minimum, width: touchTarget.minimum },
+  closeLabel: { fontSize: typography.size.heading, lineHeight: typography.lineHeight.heading },
+  languageTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading, marginHorizontal: spacing.md, marginTop: spacing.sm, textAlign: 'center' },
   greetingContent: {
     flex: 1,
     gap: spacing.md,
@@ -475,20 +497,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   languageOptions: {
-    gap: spacing.md,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
     marginTop: spacing.md,
   },
   languageOption: {
-    borderRadius: radii.lg,
+    alignItems: 'center',
+    borderRadius: radii.sm,
     borderWidth: 1,
+    flexBasis: '48%',
+    gap: spacing.sm,
     justifyContent: 'center',
-    minHeight: 72,
-    paddingHorizontal: spacing.lg,
+    minHeight: 112,
+    padding: spacing.sm,
   },
+  languageSymbol: { alignItems: 'center', borderRadius: radii.sm, height: 44, justifyContent: 'center', width: 44 },
+  languageSymbolText: { fontSize: 24, lineHeight: 30 },
   languageName: {
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.body,
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.medium,
+    lineHeight: typography.lineHeight.caption,
+    textAlign: 'center',
   },
   footer: {
     gap: spacing.sm,
@@ -496,10 +526,10 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: 'center',
-    borderRadius: radii.pill,
+    borderRadius: radii.sm,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: touchTarget.minimum,
+    minHeight: 56,
     paddingHorizontal: spacing.lg,
   },
   actionButtonLabel: {

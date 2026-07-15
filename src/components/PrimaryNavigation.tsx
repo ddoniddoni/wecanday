@@ -2,12 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeProvider';
-import { radii, spacing, typography } from '@/theme/tokens';
+import { palette, radii, spacing, typography } from '@/theme/tokens';
 
-export type PrimaryNavigationTab = 'plans' | 'profile' | 'statistics' | 'today';
+export type PrimaryNavigationTab = 'community' | 'plans' | 'profile' | 'statistics' | 'today';
 
 type PrimaryNavigationProps = {
   activeTab: PrimaryNavigationTab;
+  onOpenCommunity: () => void;
   onOpenPlans: () => void;
   onOpenProfile: () => void;
   onOpenStatistics: () => void;
@@ -17,6 +18,15 @@ type PrimaryNavigationProps = {
 export type PrimaryNavigationActions = Omit<PrimaryNavigationProps, 'activeTab'>;
 
 function TabIcon({ color, tab }: { color: string; tab: PrimaryNavigationTab }) {
+  if (tab === 'community') {
+    return (
+      <View style={styles.communityIcon}>
+        <View style={[styles.communityBubble, styles.communityBubbleBack, { borderColor: color }]} />
+        <View style={[styles.communityBubble, styles.communityBubbleFront, { borderColor: color }]} />
+      </View>
+    );
+  }
+
   if (tab === 'today') {
     return (
       <View style={styles.iconBox}>
@@ -59,6 +69,7 @@ function ProfileIcon({ color }: { color: string }) {
 
 export function PrimaryNavigation({
   activeTab,
+  onOpenCommunity,
   onOpenPlans,
   onOpenProfile,
   onOpenStatistics,
@@ -69,6 +80,7 @@ export function PrimaryNavigation({
   const tabs: readonly { onPress: () => void; tab: PrimaryNavigationTab }[] = [
     { onPress: onOpenToday, tab: 'today' },
     { onPress: onOpenPlans, tab: 'plans' },
+    { onPress: onOpenCommunity, tab: 'community' },
     { onPress: onOpenStatistics, tab: 'statistics' },
     { onPress: onOpenProfile, tab: 'profile' },
   ];
@@ -77,15 +89,13 @@ export function PrimaryNavigation({
     <View
       style={[
         styles.bar,
-        {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
-        },
+        { backgroundColor: theme.colors.surface },
       ]}
     >
       {tabs.map(({ onPress, tab }) => {
         const isActive = activeTab === tab;
-        const color = isActive ? theme.colors.primary : theme.colors.textMuted;
+        const iconColor = isActive ? theme.colors.primary : theme.colors.textMuted;
+        const labelColor = isActive ? theme.colors.primary : theme.colors.textMuted;
         const label = t(`navigation.${tab}`);
 
         return (
@@ -98,16 +108,15 @@ export function PrimaryNavigation({
             style={({ pressed }) => [
               styles.tab,
               {
-                backgroundColor: isActive
-                  ? theme.colors.background
-                  : theme.colors.surface,
-                borderColor: isActive ? theme.colors.border : theme.colors.surface,
+                backgroundColor: palette.transparent,
                 opacity: pressed ? 0.72 : 1,
               },
             ]}
           >
-            <TabIcon color={color} tab={tab} />
-            <Text style={[styles.tabLabel, { color }]}>{label}</Text>
+            <View style={styles.iconContainer}>
+              <TabIcon color={iconColor} tab={tab} />
+            </View>
+            <Text numberOfLines={1} style={[styles.tabLabel, { color: labelColor }]}>{label}</Text>
           </Pressable>
         );
       })}
@@ -117,33 +126,31 @@ export function PrimaryNavigation({
 
 const styles = StyleSheet.create({
   bar: {
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    elevation: 4,
     flexDirection: 'row',
-    marginHorizontal: spacing.lg,
-    padding: spacing.xs,
-    shadowColor: '#000000',
-    shadowOffset: { height: 3, width: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
   },
   tab: {
     alignItems: 'center',
-    borderRadius: radii.lg,
-    borderWidth: 1,
+    borderRadius: radii.md,
     flex: 1,
-    gap: 2,
+    gap: spacing.xs,
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: 56,
   },
-  tabLabel: { fontSize: 11, fontWeight: typography.weight.bold, lineHeight: 14 },
+  iconContainer: { alignItems: 'center', height: 24, justifyContent: 'center', width: 28 },
+  tabLabel: { fontSize: 10, fontWeight: typography.weight.bold, lineHeight: 12, maxWidth: 62, textAlign: 'center' },
   iconBox: { alignItems: 'center', height: 20, justifyContent: 'flex-end', width: 22 },
   homeRoof: { borderLeftWidth: 2, borderTopWidth: 2, height: 12, transform: [{ rotate: '45deg' }], width: 12 },
   homeBody: { borderBottomWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, bottom: 0, height: 11, position: 'absolute', width: 14 },
   documentIcon: { borderRadius: 3, borderWidth: 2, gap: 3, height: 20, justifyContent: 'center', paddingHorizontal: 3, width: 15 },
   documentLine: { borderRadius: 2, height: 2, width: '100%' },
   documentLineShort: { width: '65%' },
+  communityIcon: { height: 20, position: 'relative', width: 22 },
+  communityBubble: { borderRadius: radii.pill, borderWidth: 2, height: 12, position: 'absolute', width: 15 },
+  communityBubbleBack: { left: 0, top: 1 },
+  communityBubbleFront: { bottom: 0, right: 0 },
   chartIcon: { alignItems: 'flex-end', flexDirection: 'row', gap: 2, height: 20, width: 20 },
   chartBar: { borderRadius: 2, width: 5 },
   chartBarShort: { height: 7 },

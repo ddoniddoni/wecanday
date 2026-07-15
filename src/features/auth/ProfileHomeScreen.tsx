@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
 
+import { featureFlags } from '@/config/featureFlags';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { AccountSettingsScreen } from '@/features/auth/AccountSettingsScreen';
+import { NicknameSetupScreen } from '@/features/auth/NicknameSetupScreen';
 import { updateOwnDisplayName } from '@/features/auth/services/profileService';
 import { ChallengeCreateScreen } from '@/features/challenges/ChallengeCreateScreen';
 import { ChallengeInvitationsScreen } from '@/features/challenges/ChallengeInvitationsScreen';
+import { PremiumScreen } from '@/features/billing/PremiumScreen';
 import { TodayRoutineScreen } from '@/features/check-ins/TodayRoutineScreen';
 import { LegalDocumentScreen } from '@/features/legal/LegalDocumentScreen';
 import { CompanionSelectionScreen } from '@/features/companion/CompanionSelectionScreen';
+import { CommunityPlaceholderScreen } from '@/features/community/CommunityPlaceholderScreen';
 import {
   isCompanionId,
   type CompanionId,
@@ -66,10 +70,12 @@ import { isThemePreference } from '@/theme/types';
 type AppScreen =
   | 'challenge-create'
   | 'challenge-invitations'
+  | 'community'
   | 'companion-selection'
   | 'notification-permission'
   | 'plan-create'
   | 'plan-list'
+  | 'premium'
   | 'routine-create'
   | 'routine-edit'
   | 'annual-statistics'
@@ -94,6 +100,7 @@ export function ProfileHomeScreen() {
   const profileLocale = auth.status === 'signed_in' ? auth.profile.locale : null;
   const userIdForReminderSync = auth.status === 'signed_in' ? auth.userId : null;
   const [hasPlanCreationSuccess, setHasPlanCreationSuccess] = useState(false);
+  const [hasConfirmedInitialNickname, setHasConfirmedInitialNickname] = useState(false);
   const [screen, setScreen] = useState<AppScreen>('today');
   const [planCreationReturnScreen, setPlanCreationReturnScreen] =
     useState<PlanCreationReturnScreen>('today');
@@ -194,34 +201,12 @@ export function ProfileHomeScreen() {
 
   const authenticatedUserId = auth.userId;
   const primaryNavigation = {
+    onOpenCommunity: () => setScreen('community'),
     onOpenPlans: () => setScreen('plan-list'),
     onOpenProfile: () => setScreen('profile'),
     onOpenStatistics: () => setScreen('weekly-statistics'),
     onOpenToday: () => setScreen('today'),
   };
-
-  if (
-    auth.profile.time_zone === null ||
-    auth.profile.day_start_minute === null ||
-    auth.profile.routine_day_settings_completed_at === null
-  ) {
-    return (
-      <RoutineDaySetupScreen
-        onSave={async (config) => {
-          if (!supabaseClient) {
-            throw new Error('Supabase client is unavailable.');
-          }
-
-          const profile = await completeInitialRoutineDaySettings(
-            supabaseClient,
-            config,
-          );
-
-          auth.replaceProfile(profile);
-        }}
-      />
-    );
-  }
 
   async function saveSelectedCompanion(companionId: CompanionId) {
     if (!supabaseClient) {
@@ -256,8 +241,53 @@ export function ProfileHomeScreen() {
 
   const selectedCompanionId = auth.profile.companion_id;
 
+  if (!isCompanionId(selectedCompanionId) && !hasConfirmedInitialNickname) {
+    return (
+      <NicknameSetupScreen
+        initialDisplayName={auth.profile.display_name}
+        onBack={() => void auth.signOut()}
+        onSave={async (displayName) => {
+          if (!supabaseClient) {
+            throw new Error('PROFILE_UPDATE_FAILED');
+          }
+
+          const profile = await updateOwnDisplayName(
+            supabaseClient,
+            authenticatedUserId,
+            displayName,
+          );
+          auth.replaceProfile(profile);
+          setHasConfirmedInitialNickname(true);
+        }}
+      />
+    );
+  }
+
   if (!isCompanionId(selectedCompanionId)) {
     return <CompanionSelectionScreen onSave={saveSelectedCompanion} />;
+  }
+
+  if (
+    auth.profile.time_zone === null ||
+    auth.profile.day_start_minute === null ||
+    auth.profile.routine_day_settings_completed_at === null
+  ) {
+    return (
+      <RoutineDaySetupScreen
+        onSave={async (config) => {
+          if (!supabaseClient) {
+            throw new Error('Supabase client is unavailable.');
+          }
+
+          const profile = await completeInitialRoutineDaySettings(
+            supabaseClient,
+            config,
+          );
+
+          auth.replaceProfile(profile);
+        }}
+      />
+    );
   }
 
   function showPlanCreation(returnScreen: PlanCreationReturnScreen) {
@@ -365,6 +395,9 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'premium') {
+    return <PremiumScreen onClose={() => setScreen('profile')} />;
+  }
   if (screen === 'language-selection') {
     return (
       <LanguageSelectionScreen
@@ -438,6 +471,9 @@ export function ProfileHomeScreen() {
       />
     );
   }
+  if (screen === 'community') {
+    return <CommunityPlaceholderScreen primaryNavigation={primaryNavigation} />;
+  }
   if (screen === 'friend-search') {
     if (!supabaseClient) {
       return null;
@@ -455,11 +491,17 @@ export function ProfileHomeScreen() {
   if (screen === 'profile') {
     return (
       <ProfileOverviewScreen
+        companionId={selectedCompanionId}
+        createdAt={auth.profile.created_at}
         displayName={auth.profile.display_name}
         onOpenAccountSettings={() => setScreen('account-settings')}
         onOpenCompanionSelection={() => setScreen('companion-selection')}
+        onOpenCommunity={() => setScreen('community')}
         onOpenFriendSearch={() => setScreen('friend-search')}
         onOpenLanguageSelection={() => setScreen('language-selection')}
+        onOpenPremium={() => {
+          if (featureFlags.premiumEnabled) setScreen('premium');
+        }}
         onOpenPlans={() => setScreen('plan-list')}
         onOpenStatistics={() => setScreen('weekly-statistics')}
         onOpenThemes={() => setScreen('theme-selection')}
@@ -524,6 +566,8 @@ export function ProfileHomeScreen() {
       <WeeklyStatisticsScreen
         client={supabaseClient}
         onBack={() => setScreen('today')}
+        onOpenAnnual={() => setScreen('annual-statistics')}
+        onOpenMonthly={() => setScreen('monthly-statistics')}
         primaryNavigation={primaryNavigation}
         routineDayConfig={{
           dayStartMinute: auth.profile.day_start_minute,
@@ -674,6 +718,7 @@ export function ProfileHomeScreen() {
       isHapticsEnabled={auth.profile.haptics_enabled !== false}
       isMotionReduced={auth.profile.reduce_motion === true}
       onCreatePlan={() => showPlanCreation('today')}
+      onOpenCommunity={() => setScreen('community')}
       onEditRoutine={(routine) => {
         setSelectedRoutine({
           ...routine,

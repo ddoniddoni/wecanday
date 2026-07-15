@@ -1,0 +1,31 @@
+{
+  "close": "Routine Journey Pro 닫기",
+  "brand": "Routine Journey Pro",
+  "title": "가능성을",
+  "accentTitle": "끝까지 펼쳐보세요",
+  "description": "제한 없는 루틴 기록과 더 깊은 통계로 좋은 습관을 만들어 보세요.",
+  "benefits": {
+    "unlimited": { "title": "무제한", "description": "무료 제한 없이 모든 루틴을 기록해요." },
+    "insights": { "title": "인사이트", "description": "더 깊은 루틴 분석을 확인해요." },
+    "coaching": { "title": "맞춤 코칭", "description": "기능 출시 후 AI 기반 루틴 제안을 받아보세요." }
+  },
+  "packages": {
+    "annual": {
+      "title": "연간",
+      "description": "출시 전 요금제 확정 예정",
+      "accessibilityLabel": "연간 구독 디자인 선택"
+    },
+    "monthly": {
+      "title": "월간",
+      "description": "출시 전 요금제 확정 예정",
+      "accessibilityLabel": "월간 구독 디자인 선택"
+    },
+    "pricePending": "가격 미정"
+  },
+  "preview": {
+    "title": "지금은 디자인 미리보기예요",
+    "description": "Google Play 결제와 RevenueCat 연동은 출시 준비 단계에서 진행할게요."
+  },
+  "comingSoon": "출시 준비 단계에서 연결 예정",
+  "legal": "현재 화면에서는 결제나 청구가 발생하지 않아요. 실제 가격과 구독 조건은 출시 전 Google Play 상품을 연결한 뒤 표시됩니다."
+}

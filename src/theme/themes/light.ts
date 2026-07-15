@@ -11,7 +11,7 @@ export const lightTheme: AppTheme = {
     text: palette.lightText,
     textMuted: palette.lightMuted,
     primary: palette.lightPrimary,
-    onPrimary: palette.lightSurface,
+    onPrimary: palette.lightText,
     accent: palette.lightAccent,
     border: palette.lightBorder,
     focus: palette.lightPrimary,

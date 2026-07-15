@@ -26,6 +26,8 @@ import type { AppTheme } from '@/theme/types';
 type WeeklyStatisticsScreenProps = {
   client: SupabaseClient<Database>;
   onBack: () => void;
+  onOpenAnnual?: () => void;
+  onOpenMonthly?: () => void;
   primaryNavigation?: PrimaryNavigationActions;
   routineDayConfig: RoutineDayConfig;
   userId: string;
@@ -34,6 +36,8 @@ type WeeklyStatisticsScreenProps = {
 export function WeeklyStatisticsScreen({
   client,
   onBack,
+  onOpenAnnual,
+  onOpenMonthly,
   primaryNavigation,
   routineDayConfig,
   userId,
@@ -113,6 +117,43 @@ export function WeeklyStatisticsScreen({
           </Pressable> : null}
         </View>
 
+        {onOpenMonthly && onOpenAnnual ? (
+          <View
+            accessibilityRole="tablist"
+            style={[styles.periodTabs, { backgroundColor: theme.colors.surface }]}
+          >
+            <View
+              accessibilityRole="tab"
+              accessibilityState={{ selected: true }}
+              style={[styles.periodTab, { backgroundColor: theme.colors.primary }]}
+            >
+              <Text style={[styles.periodTabLabel, { color: theme.colors.onPrimary }]}>
+                {t('period.week')}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityState={{ selected: false }}
+              onPress={onOpenMonthly}
+              style={({ pressed }) => [styles.periodTab, { opacity: pressed ? 0.72 : 1 }]}
+            >
+              <Text style={[styles.periodTabLabel, { color: theme.colors.textMuted }]}>
+                {t('period.month')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityState={{ selected: false }}
+              onPress={onOpenAnnual}
+              style={({ pressed }) => [styles.periodTab, { opacity: pressed ? 0.72 : 1 }]}
+            >
+              <Text style={[styles.periodTabLabel, { color: theme.colors.textMuted }]}>
+                {t('period.year')}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+
         {isLoading ? (
           <View style={styles.stateContainer}>
             <ActivityIndicator accessibilityLabel={t('loading')} color={theme.colors.primary} />
@@ -149,7 +190,7 @@ export function WeeklyStatisticsScreen({
 
         {!isLoading && !hasError && statistics && statistics.scheduledCount > 0 ? (
           <View accessibilityLabel={accessibilitySummary} style={styles.statistics}>
-            <View style={styles.summary}>
+            <View style={[styles.summary, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
               <Text style={[styles.label, { color: theme.colors.textMuted }]}>{t('completionRate')}</Text>
               <View style={styles.summaryRateRow}>
                 <Text style={[styles.rate, { color: theme.colors.primary }]}>
@@ -297,30 +338,33 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, gap: spacing.lg, padding: spacing.lg },
   header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
   headerCopy: { flex: 1, gap: spacing.xs },
-  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
-  title: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
-  backButton: { alignItems: 'center', borderRadius: radii.pill, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
+  eyebrow: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.6, lineHeight: typography.lineHeight.caption, textTransform: 'uppercase' },
+  title: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title },
+  backButton: { alignItems: 'center', borderRadius: radii.sm, borderWidth: 1, justifyContent: 'center', minHeight: touchTarget.minimum, paddingHorizontal: spacing.md },
   backButtonLabel: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  periodTabs: { borderRadius: radii.md, flexDirection: 'row', padding: spacing.xs },
+  periodTab: { alignItems: 'center', borderRadius: radii.sm, flex: 1, justifyContent: 'center', minHeight: touchTarget.minimum },
+  periodTabLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
   stateContainer: { alignItems: 'center', gap: spacing.sm, justifyContent: 'center', minHeight: 220, padding: spacing.lg },
   stateText: { fontSize: typography.size.body, lineHeight: typography.lineHeight.body, textAlign: 'center' },
   description: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
   statistics: { gap: spacing.md },
-  summary: { gap: spacing.xs, paddingVertical: spacing.sm },
+  summary: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.sm, padding: spacing.lg },
   summaryRateRow: { alignItems: 'baseline', flexDirection: 'row', justifyContent: 'space-between' },
   summaryCount: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
-  summaryTrack: { borderRadius: radii.pill, height: 10, overflow: 'hidden' },
+  summaryTrack: { borderRadius: radii.pill, height: 14, overflow: 'hidden' },
   summaryFill: { borderRadius: radii.pill, height: '100%' },
   summaryDescription: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   label: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption },
   rate: { fontSize: typography.size.display, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.display },
-  card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.xs, padding: spacing.md },
-  cardTitle: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },
+  card: { borderRadius: radii.lg, borderWidth: 1, gap: spacing.xs, padding: spacing.lg },
+  cardTitle: { fontSize: typography.size.heading, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.heading },
   dayRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, minHeight: touchTarget.minimum },
   dayKey: { fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, width: 72 },
   progressTrack: { borderRadius: radii.pill, flex: 1, height: 8, overflow: 'hidden' },
   progressFill: { borderRadius: radii.pill, height: '100%' },
   dayValue: { flexShrink: 0, fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption, textAlign: 'right' },
-  streakSummary: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', paddingTop: spacing.md },
+  streakSummary: { alignItems: 'center', borderRadius: radii.lg, borderWidth: 1, flexDirection: 'row', padding: spacing.lg },
   streakItem: { flex: 1, gap: spacing.xs },
   streakDivider: { height: touchTarget.minimum, marginHorizontal: spacing.md, width: 1 },
   streakValue: { fontSize: typography.size.body, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.body },

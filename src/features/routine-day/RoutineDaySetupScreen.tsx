@@ -109,50 +109,43 @@ export function RoutineDaySetupScreen({
       style={[styles.screen, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.content}>
-        <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>
-          {t('eyebrow')}
-        </Text>
-        <Text
-          accessibilityRole="header"
-          style={[styles.title, { color: theme.colors.text }]}
-        >
-          {t('title')}
-        </Text>
-        <Text style={[styles.description, { color: theme.colors.textMuted }]}>
-          {t('description')}
-        </Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          <Text style={[styles.brand, { color: theme.colors.primary }]}>{t('brand')}</Text>
+          <Text
+            accessibilityRole="header"
+            style={[styles.title, { color: theme.colors.text }]}
+          >
+            {t('title')}
+          </Text>
+          <Text style={[styles.description, { color: theme.colors.textMuted }]}>
+            {t('description')}
+          </Text>
 
-        <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: theme.colors.text }]}>
-            {t('timeZoneLabel')}
-          </Text>
-          <TextInput
-            accessibilityLabel={t('timeZoneInputAccessibilityLabel')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={setTimeZone}
-            placeholder={t('timeZonePlaceholder')}
-            placeholderTextColor={theme.colors.textMuted}
-            style={[
-              styles.timeZoneInput,
-              {
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.border,
-                color: theme.colors.text,
-              },
-            ]}
-            value={timeZone}
-          />
-          <Text style={[styles.hint, { color: theme.colors.textMuted }]}>
-            {t('timeZoneHint')}
-          </Text>
-        </View>
+          <View style={styles.fieldGroup}>
+            <Text style={[styles.label, { color: theme.colors.text }]}>{t('timeZoneLabel')}</Text>
+            <TextInput
+              accessibilityLabel={t('timeZoneInputAccessibilityLabel')}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={setTimeZone}
+              placeholder={t('timeZonePlaceholder')}
+              placeholderTextColor={theme.colors.textMuted}
+              style={[
+                styles.timeZoneInput,
+                {
+                  backgroundColor: theme.colors.background,
+                  borderColor: theme.colors.border,
+                  color: theme.colors.text,
+                },
+              ]}
+              value={timeZone}
+            />
+            <Text style={[styles.hint, { color: theme.colors.textMuted }]}>{t('timeZoneHint')}</Text>
+          </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: theme.colors.text }]}>
-            {t('dayStartLabel')}
-          </Text>
-          <View style={styles.dayStartControl}>
+          <View style={styles.fieldGroup}>
+            <Text style={[styles.label, { color: theme.colors.text }]}>{t('dayStartLabel')}</Text>
+            <View style={styles.dayStartControl}>
             <Pressable
               accessibilityLabel={t('decreaseDayStartAccessibilityLabel')}
               accessibilityRole="button"
@@ -208,44 +201,44 @@ export function RoutineDaySetupScreen({
                 +
               </Text>
             </Pressable>
+            </View>
+            <Text style={[styles.hint, { color: theme.colors.textMuted }]}>{t('dayStartHint')}</Text>
           </View>
-          <Text style={[styles.hint, { color: theme.colors.textMuted }]}>
-            {t('dayStartHint')}
-          </Text>
-        </View>
 
-        {errorMessage ? (
-          <Text
-            accessibilityRole="alert"
-            style={[styles.error, { color: theme.colors.text }]}
-          >
-            {errorMessage}
-          </Text>
-        ) : null}
+          <View style={styles.windowSummary}>
+            <Text style={[styles.windowLabel, { color: theme.colors.textMuted }]}>{t('routineWindowLabel')}</Text>
+            <View style={[styles.windowTrack, { backgroundColor: theme.colors.background }]}>
+              <View style={[styles.windowFill, { backgroundColor: theme.colors.primary }]}>
+                <Text style={[styles.windowValue, { color: theme.colors.onPrimary }]}>{t('routineWindowValue')}</Text>
+              </View>
+            </View>
+          </View>
 
-        <Pressable
-          accessibilityRole="button"
-          disabled={isSaving}
-          onPress={() => void handleSave()}
-          style={({ pressed }) => [
-            styles.saveButton,
-            {
-              backgroundColor: theme.colors.primary,
-              opacity: pressed || isSaving ? 0.7 : 1,
-            },
-          ]}
-        >
-          {isSaving ? (
-            <ActivityIndicator
-              accessibilityLabel={t('saving')}
-              color={theme.colors.onPrimary}
-            />
-          ) : (
-            <Text style={[styles.saveButtonLabel, { color: theme.colors.onPrimary }]}>
-              {t('continue')}
+          {errorMessage ? (
+            <Text accessibilityRole="alert" style={[styles.error, { color: theme.colors.text }]}>
+              {errorMessage}
             </Text>
-          )}
-        </Pressable>
+          ) : null}
+
+          <Pressable
+            accessibilityRole="button"
+            disabled={isSaving}
+            onPress={() => void handleSave()}
+            style={({ pressed }) => [
+              styles.saveButton,
+              {
+                backgroundColor: theme.colors.primary,
+                opacity: pressed || isSaving ? 0.7 : 1,
+              },
+            ]}
+          >
+            {isSaving ? (
+              <ActivityIndicator accessibilityLabel={t('saving')} color={theme.colors.onPrimary} />
+            ) : (
+              <Text style={[styles.saveButtonLabel, { color: theme.colors.onPrimary }]}>{t('continue')}</Text>
+            )}
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -257,27 +250,24 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: spacing.md,
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: spacing.sm,
   },
-  eyebrow: {
-    fontSize: typography.size.caption,
-    fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.caption,
-  },
+  card: { borderRadius: radii.md, borderWidth: 1, gap: spacing.md, padding: spacing.md },
+  brand: { fontSize: typography.size.title, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.title, textAlign: 'center' },
   title: {
-    fontSize: typography.size.title,
+    fontSize: typography.size.heading,
     fontWeight: typography.weight.bold,
-    lineHeight: typography.lineHeight.title,
+    lineHeight: typography.lineHeight.heading,
+    textAlign: 'center',
   },
   description: {
-    fontSize: typography.size.body,
-    lineHeight: typography.lineHeight.body,
+    fontSize: typography.size.caption,
+    lineHeight: typography.lineHeight.caption,
+    textAlign: 'center',
   },
   fieldGroup: {
     gap: spacing.sm,
-    marginTop: spacing.sm,
   },
   label: {
     fontSize: typography.size.body,
@@ -332,10 +322,10 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     alignItems: 'center',
-    borderRadius: radii.pill,
+    borderRadius: radii.sm,
     justifyContent: 'center',
     marginTop: spacing.md,
-    minHeight: touchTarget.minimum,
+    minHeight: 56,
     paddingHorizontal: spacing.lg,
   },
   saveButtonLabel: {
@@ -343,4 +333,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
     lineHeight: typography.lineHeight.body,
   },
+  windowSummary: { gap: spacing.sm, marginTop: spacing.sm },
+  windowLabel: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, letterSpacing: 0.8, lineHeight: typography.lineHeight.caption, textAlign: 'center' },
+  windowTrack: { borderRadius: radii.pill, height: 44, justifyContent: 'center', overflow: 'hidden', padding: spacing.xs },
+  windowFill: { alignItems: 'center', borderRadius: radii.pill, height: '100%', justifyContent: 'center' },
+  windowValue: { fontSize: typography.size.caption, fontWeight: typography.weight.bold, lineHeight: typography.lineHeight.caption },
 });

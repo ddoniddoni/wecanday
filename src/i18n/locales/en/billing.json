@@ -1,0 +1,31 @@
+{
+  "close": "Close Routine Journey Pro",
+  "brand": "Routine Journey Pro",
+  "title": "Unlock your",
+  "accentTitle": "full potential",
+  "description": "Build better habits with unlimited tracking and advanced insights.",
+  "benefits": {
+    "unlimited": { "title": "Unlimited", "description": "Track every routine without the free limit." },
+    "insights": { "title": "Insights", "description": "See deeper routine analytics." },
+    "coaching": { "title": "Personalized Coaching", "description": "Get AI-driven routine suggestions when this feature becomes available." }
+  },
+  "packages": {
+    "annual": {
+      "title": "Annual",
+      "description": "Plan details will be set before launch",
+      "accessibilityLabel": "Select the annual subscription design"
+    },
+    "monthly": {
+      "title": "Monthly",
+      "description": "Plan details will be set before launch",
+      "accessibilityLabel": "Select the monthly subscription design"
+    },
+    "pricePending": "Price TBD"
+  },
+  "preview": {
+    "title": "Design preview only",
+    "description": "Google Play Billing and RevenueCat will be connected during release preparation."
+  },
+  "comingSoon": "To be connected before launch",
+  "legal": "This screen cannot start a purchase or charge you. Final prices and subscription terms will appear after Google Play products are connected before launch."
+}

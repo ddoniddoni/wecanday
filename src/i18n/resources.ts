@@ -1,6 +1,8 @@
 import enAuth from '@/i18n/locales/en/auth.json';
+import enBilling from '@/i18n/locales/en/billing.json';
 import enChallenges from '@/i18n/locales/en/challenges.json';
 import enCommon from '@/i18n/locales/en/common.json';
+import enCommunity from '@/i18n/locales/en/community.json';
 import enCompanion from '@/i18n/locales/en/companion.json';
 import enFriends from '@/i18n/locales/en/friends.json';
 import enLegal from '@/i18n/locales/en/legal.json';
@@ -14,8 +16,10 @@ import enSettings from '@/i18n/locales/en/settings.json';
 import enStatistics from '@/i18n/locales/en/statistics.json';
 import enToday from '@/i18n/locales/en/today.json';
 import koAuth from '@/i18n/locales/ko/auth.json';
+import koBilling from '@/i18n/locales/ko/billing.json';
 import koChallenges from '@/i18n/locales/ko/challenges.json';
 import koCommon from '@/i18n/locales/ko/common.json';
+import koCommunity from '@/i18n/locales/ko/community.json';
 import koCompanion from '@/i18n/locales/ko/companion.json';
 import koFriends from '@/i18n/locales/ko/friends.json';
 import koLegal from '@/i18n/locales/ko/legal.json';
@@ -32,8 +36,10 @@ import koToday from '@/i18n/locales/ko/today.json';
 export const resources = {
   en: {
     auth: enAuth,
+    billing: enBilling,
     challenges: enChallenges,
     common: enCommon,
+    community: enCommunity,
     companion: enCompanion,
     friends: enFriends,
     legal: enLegal,
@@ -49,8 +55,10 @@ export const resources = {
   },
   ko: {
     auth: koAuth,
+    billing: koBilling,
     challenges: koChallenges,
     common: koCommon,
+    community: koCommunity,
     companion: koCompanion,
     friends: koFriends,
     legal: koLegal,
